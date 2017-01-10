@@ -1,0 +1,16 @@
+{
+  "name": "jsvgdl",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Jake Burga",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "gamejs": "^2.0.2"
+  }
+}
