@@ -8,19 +8,19 @@ JSVGDL
 In order to get all the packages and actually be able to use anything,
 follow the GameJS instructions to setup 
 
-* npm install -g grunt-cli 
-* npm install
-* grunt
+    $ npm install -g grunt-cli 
+    $ npm install
+    $ grunt
 
 #### Running
 
 running the server
 
-* npm start
+    $ npm start
 
 running tests
 
-* npm test
+    $ npm test
 
 GameJs
 =======
