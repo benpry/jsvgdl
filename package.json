@@ -14,7 +14,7 @@
   },
   "scripts": {
     "test": "mocha vgdl_tests",
-    "start": "http-server vgdl"
+    "start": "http-server examples"
   },
   "main": "./src/gamejs",
   "directories": {

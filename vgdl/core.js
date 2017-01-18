@@ -1,11 +1,10 @@
-console.log('hello from core');
 var Core = function () {
-	console.log('hello from within core');
-	var that = Object.create(Core.prototype);
+	var core = Object.create(Core.prototype);
 
-	var gamejs = require('gamejs');
-	var tools = require('/tools.js');
-	var ontology = require('/ontology.js')
+	// var gamejs = require('gamejs');
+	var gamejs = require('../src/gamejs.js');
+	var tools = require('../vgdl/tools.js');
+	var ontology = require('../vgdl/ontology.js')
 
 
 
@@ -37,29 +36,27 @@ var Core = function () {
 '[20, 20, 100]': 'DARKBLUE',
 '[140, 20, 140]': 'PURPLE'};
 
-	that.VGDLParser = function () {
-		var that = Object.create(VGDLParser.prototype);
+	core.VGDLParser = function () {
+		var parser = Object.create(null);
 		var verbose = false;
 
-		/**
-		 * @param  {[type]}
-		 * @return {[type]}
-		 */
-		that.parseGame = function (tree) {
+		var parseGame = function (tree) {
 
-			if (!tree instanceof tools.Node())
+			if (!(tree instanceof tools.Node))
 				tree = tools.indentTreeParser(tree).children[0];
 
-			[sclass, args] = that._parseArgs(tree.content);
-			that.game = sclass(args)
+			[sclass, args] = _parseArgs(tree.content);
+			parser.game = sclass(args);
 			tree.children.forEach(function (child) {
 				parse[child.content](child.children);
 			});
 
-			return that.game;
+			return parser.game;
 		}
 
-		var _eval(estr) {
+		var _eval = function (estr) {
+			// Oh shit...
+			estr = 'core.' + estr;
 			return eval(estr);
 		}
 
@@ -71,8 +68,8 @@ var Core = function () {
 						var [pair, edef] = inode.content.split('>').map(function (s) {
 							return s.trim();
 						});
-						var [eclass, args] = that._parseArgs(edef);
-						that.game.collision_eff.push(
+						var [eclass, args] = _parseArgs(edef);
+						parser.game.collision_eff.push(
 							pair.split(' ').map(function (s) {
 								return s.trim();
 							}).concat([eclass, args])
@@ -91,12 +88,12 @@ var Core = function () {
 					var [key, sdef] = snode.content.split('>').map(function (s) {
 						return s.trim();
 					});
-					var [sclass, args] = that._parseArgs(sdef, parentclass, parentargs.copy());
-					var stypes = parenttypes.concat(keys);
+					var [sclass, args] = _parseArgs(sdef, parentClass, Object.assign({}, parentargs));
+					var stypes = parenttypes.concat(key);
 
-					if (args.indexOf('singleton') != -1) {
+					if ('singleton' in args) {
 						if (args['singleton'] == true) 
-							that.game.singletons.push(key);
+							parser.game.singletons.push(key);
 						args = tools.clone(args);
 						delete args['singleton'];
 					}
@@ -104,12 +101,14 @@ var Core = function () {
 					if (snode.children.length == 0) {
 						if (verbose) 
 							console.log('Defining:', key, sclass, args, stypes);
-						that.game.sprite_constr[key] = [sclass, args, stypes];
-						if (that.game.sprite_order.indexOf(key) != -1) {
-							var index = that.game.sprite_order.indexOf(key);
-							that.game.sprite_order.splice(index, 1);
+						// console.log('parser', parser);
+						// console.log('game', parser.game);
+						parser.game.sprite_constr[key] = [sclass, args, stypes];
+						if (key in parser.game.sprite_order) {
+							var index = parser.game.sprite_order.indexOf(key);
+							parser.game.sprite_order.splice(index, 1);
 						}
-						that.game.sprite_order.push(key);
+						parser.game.sprite_order.push(key);
 					} else {
 						parse['SpriteSet'](snode.children, sclass, args, stypes);
 					}
@@ -121,7 +120,7 @@ var Core = function () {
 					var [sclass, args] = self._parsArgs(tnode.content);
 					if (verbose)
 						console.log('Adding:', sclass, args);
-					that.game.terminations.append(sclass(args));
+					parser.game.terminations.append(sclass(args));
 				});
 			},
 			//parseConditions
@@ -132,10 +131,10 @@ var Core = function () {
 							return s.trim();
 						});
 
-						var [cclass, cargs] = that._parseArgs(conditional);
-						var [eclass, eargs] = that._parseArgs(interaction);
+						var [cclass, cargs] = _parseArgs(conditional);
+						var [eclass, eargs] = _parseArgs(interaction);
 
-						that.game.conditions.push([cclass(cargs), [eclass, eargs]]);
+						parser.game.conditions.push([cclass(cargs), [eclass, eargs]]);
 					}
 				});
 
@@ -158,28 +157,26 @@ var Core = function () {
 				if (verbose) 
 					console.log("Mapping", c, keys);
 
-				that.game.char_mapping[c] = keys;
+				parser.game.char_mapping[c] = keys;
 			});
 
 		}
 
-		var _parseArgs = function (string, sclass=null, args=null) {
-			if (args === null)
-				args = {};
-
+		var _parseArgs = function (string, sclass={}, args={}) {
 			var sparts = string.split(' ').map(function (s) {
 				return s.trim();
 			});
-
-			var sclass;
+			
 			if (sparts.length == 0)
 				return [sclass, args];	
 
+			console.log('sparts[0]', sparts[0]);
 			if (sparts[0].indexOf('=') == -1) {
 				sclass = _eval(sparts[0]);
 				sparts = sparts.slice(1);
 			}
-
+			console.log('sclass', sclass);
+			console.log('sparts', sparts);	
 			sparts.forEach(function (spart) {
 				var [k, val] = spart.split('=');
 
@@ -193,15 +190,28 @@ var Core = function () {
 			return [sclass, args];
 		}
 
-		Object.freeze(that);
-		return that;
+		parser.playGame = function (game_str, map_str) {
+
+			var game = parseGame(game_str);
+
+			game.buildLevel(map_str);
+			// game.uiud;
+			game.startGame();
+
+			return game;
+		}
+
+
+		Object.freeze(parser);
+		return parser;
 	}
+
 
 	/**
 	 * params {**kwargs} any number of arguments which will be used in the game
 	 */
-	that.BasicGame = function () {
-		var that = Object.create(BasicGame.prototype);
+	core.BasicGame = function () {
+		var that = Object.create(null);
 
 		var Immovable = ontology.Immovable;
 		var DARKGRAY = ontology.DARKGRAY;
@@ -210,13 +220,23 @@ var Core = function () {
 
 		var MAX_SPRITES = 10000;
 
-		var default_mapping = {'w': ['wall'], 'A', ['avatar']};
+		var default_mapping = {'w': ['wall'], 'A': ['avatar']};
 
 		var block_size = 10;
 		var frame_rate = 20;
 		var load_save_enabled;
 
-		//INIT
+		that.reset = function () {
+			that.score = 0;
+			that.time = 0;
+			that.ended = false;
+			that.num_sprites = 0;
+			that.kill_list = [];
+			that.all_killed = [];
+
+		}
+
+				//INIT
 
 		//grab all arguments
 
@@ -231,7 +251,7 @@ var Core = function () {
 
 		that.char_mapping = {};
 
-		that.terminations = [Termination()];
+		that.terminations = [core.Termination()];
 
 		that.conditions = [];
 
@@ -244,16 +264,6 @@ var Core = function () {
 		that.effectList = [];
 		that.reset();
 
-		that.reset = function () {
-			that.score = 0;
-			that.time = 0;
-			that.ended = false;
-			that.num_sprites = 0;
-			that.kill_list = [];
-			that.all_killed = [];
-
-		}
-
 		that.buildLevel = function (lstr) {
 			var stochastic_effects = ontology.stochastic_effects;
 
@@ -265,7 +275,7 @@ var Core = function () {
 			that.width = lengths[0];
 			that.height = lines.length;
 
-			console.assert(that.width > 1 and that.height > 1, 'Level too small');
+			console.assert(that.width > 1 && that.height > 1, 'Level too small');
 
 			that.block_size = Math.max(2, Math.floor(800/Math.max(that.width, that.height)));
 			that.screensize = [that.width*that.block_size, that.height*that.block_size];
@@ -300,16 +310,16 @@ var Core = function () {
 				var [_, _, effect, _] = item;
 				if (stochastic_effects.indexOf(effect) != -1)
 					that.is_stochastic = true;
-			})	
+			});
 		}
 
 		that.emptyBlocks = function () {
-			var alls = //iterate over all the sprites
+			var alls;//iterate over all the sprites
 		}
 
 		that.randomizeAvatar = function () {
 			if (that.getAvatars().length == 0)
-				that._createSprite(['avatar'], )
+				that._createSprite(['avatar'], [0, 0]);
 		}
 
 		that._createSprite = function (keys, pos) {
@@ -322,14 +332,15 @@ var Core = function () {
 				var [sclass, args, stypes] = that.sprite_constr[key];
 
 				var anyother = false;
-				stypes.reverse().forEach(function (pk) {
+
+				for (var pk in stypes.reverse()) {
 					if (that.singletons.indexOf(pk) == -1){
 						if (that.numSprites(pk) > 0) {
 							anyother = true;
 							break;
 						}
-					}
-				});
+					}					
+				}
 
 				var s = sclass(pos, [that.block_size, that.block_size], key, args);
 				s.stypes = stypes;
@@ -429,10 +440,10 @@ var Core = function () {
 					var type_vector = {'color': colorDict[obj.color.toString()],
 					                   'row': [obj.rect.top]};
 					var sprite = ob;
-					var obj_list[ob.ID] = {'sprite': sprite, 
-																 'position': [ob.rect.left, ob.rect.top],
-																 'features': features,
-																 'type': type_vector};
+					obj_list[ob.ID] = {'sprite': sprite, 
+										   'position': [ob.rect.left, ob.rect.top],
+										   'features': features,
+										   'type': type_vector};
 				});
 			});
 
@@ -461,7 +472,7 @@ var Core = function () {
 					});
 					if (s.resources)
 						attrs['resources'] = s.resources; // Should be object
-				}
+				});
 			});
 		}
 
@@ -516,18 +527,7 @@ var Core = function () {
 		return that;
 	}
 
-	// Static method of VGDLParser
-	that.VGDLParser.prototype.playGame = function (game_str, map_str) {
-		var game = that.VGDLParser().parseGame(game_str);
-
-		game.buildLevel(map_str);
-		// game.uiud;
-		game.startGame();
-
-		return game;
-	}
-
-	that.Avatar = function () {
+	core.Avatar = function () {
 		var that = Object.create(Avatar.prototype);
 
 		that.shrinkfactor = 0.15;
@@ -538,7 +538,7 @@ var Core = function () {
 	}
 
 
-	that.VGDLSprite = function () {
+	core.VGDLSprite = function () {
 		var that = Object.create(VGDLSprite.prototype);
 
 		that.name = null;
@@ -589,8 +589,8 @@ var Core = function () {
 		return that;
 	}
 
-	that.Resource = function () {
-		var that = Object.create(Resource.prototype);
+	core.Resource = function () {
+		var that = Object.create(null);
 
 		that.value = 1;
 		that.limit = 2;
@@ -605,8 +605,8 @@ var Core = function () {
 	}
 
 
-	that.Termination = function () {
-		var that = Object.create(Termination.prototype);
+	core.Termination = function () {
+		var that = Object.create(null);
 
 		that.isDone = function (game) {
 
@@ -616,15 +616,15 @@ var Core = function () {
 		return that;
 	}
 
-	that.Conditional = function () {
-		var that = Object.create(Conditional.prototype);
+	core.Conditional = function () {
+		var that = Object.create(null);
 
 		Object.freeze(that);
 		return that;
 	}
 
-Object.freeze(that);
-return that;
+Object.freeze(core);
+return core;
 }
 
-module.exports = Core;
+module.exports = Core();
