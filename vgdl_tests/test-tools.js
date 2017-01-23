@@ -2,7 +2,8 @@
 
 var read = require('read-file');
 var assert = require("assert");
-var tools = require("../vgdl/tools.js");
+var tools_module = require("../vgdl/tools.js");
+var tools = tools_module();
 
 describe("Testing tools", function() {
 

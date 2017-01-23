@@ -1,12 +1,15 @@
+// var gamejs = require('gamejs');
+var gamejs = require('../src/gamejs.js');
+var tools_module = require('../vgdl/tools.js');
+var ontology_module = require('../vgdl/ontology.js'); 
+
 var Core = function () {
 	var core = Object.create(Core.prototype);
 
-	// var gamejs = require('gamejs');
-	var gamejs = require('../src/gamejs.js');
-	var tools = require('../vgdl/tools.js');
-	var ontology = require('../vgdl/ontology.js')
+	console.log('ontology', ontology_module());
 
-
+	var tools = tools_module();
+	var ontology = ontology_module();
 
 	var disableContinuousKeyPress = true;
 	var actionToKeyPress = {};
@@ -37,7 +40,7 @@ var Core = function () {
 '[140, 20, 140]': 'PURPLE'};
 
 	core.VGDLParser = function () {
-		var parser = Object.create(null);
+		var parser = Object.create(core.VGDLParser.prototype);
 		var verbose = false;
 
 		var parseGame = function (tree) {
@@ -56,8 +59,9 @@ var Core = function () {
 
 		var _eval = function (estr) {
 			// Oh shit...
-			estr = 'core.' + estr;
-			return eval(estr);
+			console.log('thing to evaluate', estr);
+			console.log(eval('core.' + estr) || eval('ontology.' + estr));
+			return eval('core.' + estr) || eval('ontology.' + estr);
 		}
 
 		var parse = {
@@ -213,7 +217,7 @@ var Core = function () {
 	core.BasicGame = function () {
 		var that = Object.create(null);
 
-		var Immovable = ontology.Immovable;
+		var Immovable = core.Immovable;
 		var DARKGRAY = ontology.DARKGRAY;
 		var MovingAvatar = ontology.MovingAvatar;
 		var GOLD = ontology.GOLD;
@@ -627,4 +631,4 @@ Object.freeze(core);
 return core;
 }
 
-module.exports = Core();
+module.exports = Core;

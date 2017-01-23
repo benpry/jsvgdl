@@ -187,4 +187,4 @@ var Tools = function () {
 	return that;
 }
 
-module.exports = Tools();
+module.exports = Tools;

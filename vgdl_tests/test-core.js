@@ -4,8 +4,8 @@ var read = require('read-file');
 
 describe("Testing core", function() {
   it('test import', function () {
-    var core = require("../vgdl/core.js");
-    var tools = require('../vgdl/tools.js');
+    var core = require("../vgdl/core.js")();
+    var tools = require('../vgdl/tools.js')();
 
     var VGDLParser = core.VGDLParser();
 
