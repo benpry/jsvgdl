@@ -1,6 +1,6 @@
+var tools = require('../tools.js');
+
 function GridPhysics () {
-	var that = Object.create(GridPhysics.prototype);	
-	return that;
 }
 
 GridPhysics.prototype = { 
@@ -40,13 +40,13 @@ GridPhysics.prototype = {
 }
 
 function ContinuousPhysics () {
-	var that = Object.create(GridPhysics.prototype);
-	that.gravity = 0.0;
-	that.friction = 0.02;
-	return that;
+	GridPhysics.call(this, arguments);
+	this.gravity = 0.0;
+	this.friction = 0.02;
 }
+ContinuousPhysics.prototype = Object.create(GridPhysics.prototype);
 
-ContinuousPhysics.prototype = {
+ContinuousPhysics.prototype.extend({
 	passiveMovement : function (sprite) {
 
 	},
@@ -66,20 +66,20 @@ ContinuousPhysics.prototype = {
 	distance : function (r1, r2) {
 		return (Math.pow(Math.sqrt((r1.top - r2.top), 2)) + Math.pow(Math.sqrt(r1.left - r2.left), 2));
 	}
-}
+});
 
 
 function NoFrictionPhysics () {
-	var that = Object.create(ContiniousPhysics.prototype);
-	that.friction = 0.0;
-	return that;
+	ContinuousPhysics.call(this, arguments);
+	this.friction = 0.0;
 }
+NoFrictionPhysics.prototype = Object.create(ContinuousPhysics.prototype);
 
 function GravityPhysics () {
-	var that = Object.create(ContiniuousPhysics.prototype);
-	that.gravity = 0.8;
-	return that;
+	ContinuousPhysics.call(this, arguments);
+	this.gravity = 0.8;
 }
+GravityPhysics.prototype = Object.create(GravityPhysics.prototype);
 
 var PhysicsModule = {GridPhysics : GridPhysics,
 					 ContinuousPhysics : ContinuousPhysics};

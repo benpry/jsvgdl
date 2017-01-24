@@ -8,3 +8,9 @@ Conditional.prototype = {
 		return false;
 	}
 }
+
+var conditional = {
+	Conditional : Conditional
+};
+
+module.exports = conditional;

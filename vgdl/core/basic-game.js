@@ -2,16 +2,13 @@
  * params {**kwargs} any number of arguments which will be used in the game
  */
 var BasicGame = function () {
-	var that = Object.create(null);
-
-	var Immovable = core.Immovable;
-	// var DARKGRAY = ontology.DARKGRAY;
-	// var MovingAvatar = ontology.MovingAvatar;
-	// var GOLD = ontology.GOLD;
+	var that = Object.create(BasicGame.prototype);
+	var ontology = require('../ontology/ontology.js');
+	var gamejs = require('../../src/gamejs.js');
 
 	var MAX_SPRITES = 10000;
 
-	var default_mapping = {'w': ['wall'], 'A': ['avatar']};
+	that.default_mapping = {'w': ['wall'], 'A': ['avatar']};
 
 	var block_size = 10;
 	var frame_rate = 20;
@@ -31,8 +28,8 @@ var BasicGame = function () {
 
 	//grab all arguments
 
-	that.sprite_constr = {'wall': [Immovable, {'color': DARKGRAY}, ['wall']],
-												'avatar': [MovingAvatar, {}, ['avatar']]};
+	that.sprite_constr = {'wall': [ontology.Immovable, {'color': ontology.DARKGRAY}, ['wall']],
+												'avatar': [ontology.MovingAvatar, {}, ['avatar']]};
 
 	that.sprite_order = ['wall', 'avatar'];
 
@@ -42,7 +39,7 @@ var BasicGame = function () {
 
 	that.char_mapping = {};
 
-	that.terminations = [core.Termination()];
+	that.terminations = [ontology.Termination()];
 
 	that.conditions = [];
 
@@ -58,22 +55,23 @@ var BasicGame = function () {
 	that.buildLevel = function (lstr) {
 		var stochastic_effects = ontology.stochastic_effects;
 
-		var lines = lstr.split('\n').filter(function (l) {return l.length > 0});
+		var lines = lstr.split('\n').map(l => {return l.trimRight()}).filter(l => {return l.length > 0});
 		var lengths = lines.map(function (line) {return line.length});
 
-		console.assert(Math.min(lengths) == Math.min(lengths), "Inconsistent line lengths");
+		
+		console.assert(Math.min.apply(null, lengths) == Math.max.apply(null, lengths), "Inconsistent line lengths");
 
 		that.width = lengths[0];
 		that.height = lines.length;
-
 		console.assert(that.width > 1 && that.height > 1, 'Level too small');
 
 		that.block_size = Math.max(2, Math.floor(800/Math.max(that.width, that.height)));
 		that.screensize = [that.width*that.block_size, that.height*that.block_size];
+		for (var res_type in that.sprite_constr) {
+		    if (!(that.sprite_constr.hasOwnProperty(res_type))) continue;
 
-		that.sprite_constr.forEach(function (item) {
-			var [res_time, [sclass, args, _]] = item;
-			if (sclass.prototype instanceof core.Resource) {
+			var [sclass, args, _] = that.sprite_constr[res_type];
+			if (sclass.prototype instanceof ontology.Resource) {
 				if (args['res_type']) 
 					res_type = args['res_type'];
 				if (args['color'])
@@ -81,18 +79,19 @@ var BasicGame = function () {
 				if (args['limit'])
 					that.resources_limits[res_type] = args['limit'];
 			}
-		});
+		};
 
 		lines.forEach(function (line, row) {
-			line.forEach(function (c, col) {
-				if (that.char_mapping.indexOf(c) != -1) {
+			for (var col in line) {
+				var c = line[c];
+				if (c in that.char_mapping) {
 					var pos = [col*that.block_size, row*that.block_size];
 					that._createSprite(that.char_mapping[c], pos);
-				} else if (that.default_mapping.indexOf(c) != -1) {
+				} else if (c in that.default_mapping) {
 					var pos = [col*that.block_size, row*that.block_size];
 					that._createSprite(that.default_mapping[c], pos);
 				}
-			})
+			}
 		});
 
 		that.kill_list = [];
@@ -501,7 +500,15 @@ var ignoredattributes = ['stypes',
 		var keyPressPrev = null;
 
 		//Prep for Sprite Induction 
-		var sprite_types = [Immovable, Passive, Resource, ResourcePack, RandomNPC, Chaser, AstarChaser, OrintedSprite, Missile];
+		var sprite_types = [ontology.Immovable, 
+							ontology.Passive, 
+							ontology.Resource, 
+							ontology.ResourcePack, 
+							ontology.RandomNPC, 
+							ontology.Chaser, 
+							ontology.AstarChaser, 
+							ontology.OrintedSprite, 
+							ontology.Missile];
 		that.all_objects = that.getObjects(); // Save all objects, some which may be killed in game
 
 		// figure out keypress type
@@ -549,7 +556,6 @@ var ignoredattributes = ['stypes',
 
 	}
 
-	Object.freeze(that);
 	return that;
 }
 

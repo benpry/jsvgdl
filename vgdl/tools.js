@@ -1,3 +1,14 @@
+Object.prototype.extend = function () {
+	// console.log(arguments);
+	for (argument in arguments) {
+		for (property in arguments[argument]) {
+			// console.log(property);
+			if (property != 'extend')
+				this[property] = arguments[argument][property];
+		}
+	}
+}
+
 /**
  * @param  {String}	tabSize
  * @return {String}	new string with expanded tabs

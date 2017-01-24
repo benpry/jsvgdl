@@ -1,34 +1,23 @@
-Object.prototype.extend = function (object) {
-	for (property in object) {
-		this[property] = object[property];
-	}
-}
-
-var tools_module = require('../../vgdl/tools.js');
-var basic_game = require('./basic-game.js');
-
-var vgdl_sprite = require('../ontology/vgdl-sprite.js');
-
-var Ontology = {};
-Ontology.BasicGame = basic_game;
-
-Ontology.extend(vgdl_sprite);
-
-console.log(Ontology);
-
-var tools = tools_module();
-
 var VGDLParser = function () {
-	var parser = Object.create(null);
-	var verbose = false;
+	var tools_module = require('../../vgdl/tools.js');
+	var basic_game = require('./basic-game.js');
+	var ontology = {};
+	ontology.BasicGame = basic_game;
+	ontology.extend(require('../ontology/ontology.js'));
 
+	var tools = tools_module();
+
+
+	var parser = Object.create(VGDLParser.prototype);
+	var verbose = false;
 	var parseGame = function (tree) {
 
 		if (!(tree instanceof tools.Node))
 			tree = tools.indentTreeParser(tree).children[0];
 
-		[sclass, args] = _parseArgs(tree.content);
+		var [sclass, args] = _parseArgs(tree.content);
 		parser.game = sclass(args);
+
 		tree.children.forEach(function (child) {
 			parse[child.content](child.children);
 		});
@@ -37,10 +26,9 @@ var VGDLParser = function () {
 	}
 
 	var _eval = function (estr) {
-		// Oh shit...
-		console.log(estr);
-		console.log(parser[estr]);
-		return Ontology[estr];
+		if (verbose && !(ontology[estr]))
+			console.log('undefined', estr);
+		return ontology[estr];
 	}
 
 	var parse = {
@@ -71,6 +59,7 @@ var VGDLParser = function () {
 				var [key, sdef] = snode.content.split('>').map(function (s) {
 					return s.trim();
 				});
+				console.log('sprite parsing', key, sdef);
 				var [sclass, args] = _parseArgs(sdef, parentClass, Object.assign({}, parentargs));
 				var stypes = parenttypes.concat(key);
 
@@ -84,8 +73,6 @@ var VGDLParser = function () {
 				if (snode.children.length == 0) {
 					if (verbose) 
 						console.log('Defining:', key, sclass, args, stypes);
-					// console.log('parser', parser);
-					// console.log('game', parser.game);
 					parser.game.sprite_constr[key] = [sclass, args, stypes];
 					if (key in parser.game.sprite_order) {
 						var index = parser.game.sprite_order.indexOf(key);
@@ -100,10 +87,11 @@ var VGDLParser = function () {
 		//parseTerminations
 		'TerminationSet' : function (tnodes) {
 			tnodes.forEach(function (tnode) {
-				var [sclass, args] = self._parsArgs(tnode.content);
+				console.log(tnode.content);
+				var [sclass, args] = _parseArgs(tnode.content);
 				if (verbose)
 					console.log('Adding:', sclass, args);
-				parser.game.terminations.append(sclass(args));
+				parser.game.terminations.push(sclass(args));
 			});
 		},
 		//parseConditions
@@ -121,28 +109,27 @@ var VGDLParser = function () {
 				}
 			});
 
+		},
+
+		//parseMapping
+		'LevelMapping' : function (mnodes) {
+			mnodes.forEach(function (mnode) {
+				var [c, val] = mnode.content.split('>').map(function (x) {
+					return x.trim();
+				});
+
+				console.assert(c.length == 1, "Only single character mappings allowed");
+
+				var keys = val.split(' ').map(function (x) {
+					return x.trim();
+				});
+
+				if (verbose) 
+					console.log("Mapping", c, keys);
+
+				parser.game.char_mapping[c] = keys;
+			});			
 		}
-	}
-
-
-	var parseMappings = function (mnodes) {
-		mnodes.forEach(function (mnode) {
-			var [c, val] = mnode.split('>').map(function (x) {
-				return x.trim();
-			});
-
-			console.assert(c.length == 1, "Only single character mappings allowed");
-
-			var keys = val.split(' ').map(function (x) {
-				return x.trim();
-			});
-
-			if (verbose) 
-				console.log("Mapping", c, keys);
-
-			parser.game.char_mapping[c] = keys;
-		});
-
 	}
 
 	var _parseArgs = function (string, sclass={}, args={}) {
@@ -153,13 +140,10 @@ var VGDLParser = function () {
 		if (sparts.length == 0)
 			return [sclass, args];	
 
-		console.log('sparts[0]', sparts[0]);
 		if (sparts[0].indexOf('=') == -1) {
 			sclass = _eval(sparts[0]);
 			sparts = sparts.slice(1);
 		}
-		console.log('sclass', sclass);
-		console.log('sparts', sparts);	
 		sparts.forEach(function (spart) {
 			var [k, val] = spart.split('=');
 
@@ -169,7 +153,6 @@ var VGDLParser = function () {
 				args[k] = val;
 			}
 		});
-
 		return [sclass, args];
 	}
 
@@ -185,7 +168,7 @@ var VGDLParser = function () {
 	}
 
 
-	Object.freeze(parser);
+	// Object.freeze(parser);
 	return parser;
 }
 

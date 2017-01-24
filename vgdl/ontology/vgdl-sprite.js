@@ -1,40 +1,41 @@
-function VGDLSprite (pos, size = (10, 10), color = null, speed = null, cooldown = null, physicstype = null, kwargs) {
-	var that = Object.create(VGDLSprite.prototype);
+var effect = require('./effect.js');
 
-	that.name = null;
-	that.COLOR_DISC = [20, 80, 140, 200];
-	that.is_static = false;
-	that.only_active = false;
-	that.is_avatar = false;
-	that.is_stochastic =false;
-	that.color = null;
-	that.cooldown = 0;
-	that.speed = null;
-	that.mass = 1;
-	that.physicstype = null;
-	that.shrinkfactor = 0;
+function VGDLSprite(pos, size = [10, 10], color = null, speed = null, cooldown = null, physicstype = null, kwargs) {
+	this.name = null;
+	this.COLOR_DISC = [20, 80, 140, 200];
+	this.is_static = false;
+	this.only_active = false;
+	this.is_avatar = false;
+	this.is_stochastic =false;
+	this.color = null;
+	this.cooldown = 0;
+	this.speed = null;
+	this.mass = 1;
+	this.physicstype = null;
+	this.shrinkfactor = 0;
+	this.dirtyrects = [];
 
 	// import GridPhysics
 	
-	that.rect = gamejs.Rect(pos, size);
-	that.x = pos[0];
-	that.y = pos[1];
-	that.lastrect = that.rect;
-	that.physicstype = physicstype || that.physicstype // || GridPhysics;
-	that.physics = that.physicstype();
-	that.physics.gridsize = size;
-	that.speed = speed || that.speed;
-	that.cooldown = cooldown || that.cooldown;
-	that.ID = id(that);
-	that.direction = null;
+	this.rect = gamejs.Rect(pos, size);
+	this.x = pos[0];
+	this.y = pos[1];
+	this.lastrect = this.rect;
+	this.physicstype = physicstype || this.physicstype // || GridPhysics;
+	this.physics = this.physicstype();
+	this.physics.gridsize = size;
+	this.speed = speed || this.speed;
+	this.cooldown = cooldown || this.cooldown;
+	this.ID = id(this);
+	this.direction = null;
 
-	that.color = color || that.color || [140, 20, 140];
+	this.color = color || this.color || [140, 20, 140];
 
 	// iterate over kwargs
 	Object.keys(kwargs).forEach(function (name) {
 		var value = kwargs[name];
 		try {
-			that[name] = value;
+			this[name] = value;
 		}
 		catch (e) {
 			console.log(e);
@@ -42,17 +43,13 @@ function VGDLSprite (pos, size = (10, 10), color = null, speed = null, cooldown 
 	});
 
 	// how many timesteps ago was the last move
-	that.lastmove = 0;
+	this.lastmove = 0;
 
 	// management of resources contained in the sprite
-	that.resources = {};
-
-	return that;
+	this.resources = {};
 }
 
 VGDLSprite.prototype = {
-
-	dirtyrects : [],
 	update : function (game) {
 		this.x = this.rect.x;
 		this.y = this.rect.y;
@@ -141,32 +138,37 @@ VGDLSprite.prototype = {
 	},
 
 	inspect : function () {
-		return `${this.name} at (${this.rect.left}, ${this.rect.top})`; 
+		return `${this.name} at (${this.rect.left}, ${this.rect.top})`; // tick marks are cool
 	}
 }
 
 function Immovable () {
-	var that = Object.create(VGDLSprite.prototype);
-
-	that.color = GRAY;
-	that.is_static = true;
-
-	return that;
+	VGDLSprite.call(this, arguments);
+	this.color = GRAY;
+	this.is_static = true;
 }
+Immovable.prototype = Object.create(VGDLSprite.prototype);
 
 function Passive () {
-	var that = Object.create(VGDLSprite.prototype);
-	that.color = RED;
-	return that;
+	VGDLSprite.call(this, arguments);
+	this.color = RED;
 }
+Passive.prototype = Object.create(VGDLSprite.prototype);
 
 function Flicker (kwargs) {
-	var that = VGDLSprite.apply(null, kwargs);
+	VGDLSprite.call(this, arguments); // This needs to be redone so kwargs actually gets passed to the right spot
+	this._age = 0;
+	this.color = RED;
+	this.limit = 1;
+}
+Flicker.prototype = Object.create(Flicker.prototype);
 
-	that.color = RED;
-	that.limit = 1;
+Flicker.prototype.update = function (game) {
+	VGDLSprite.prototype.update.call(this, game);
+	if (this._age > this.limit) 
+		effect.killSprite(this, null, game);
 
-	return that;
+	this._age ++;	
 }
 
 var vgdl_sprite = {

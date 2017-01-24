@@ -1,20 +1,13 @@
 BasicGame
     SpriteSet    
-        pad    > Immovable color=BLUE 
-        avatar > AimedAvatar stype=bullet
-        bullet > Missile physicstype=GravityPhysics speed=25 singleton=True
+        pad > Immovable color=BLUE 
+        avatar > MovingAvatar
             
     TerminationSet
-        SpriteCounter stype=pad    win=True     
-        SpriteCounter stype=avatar win=False     
+        SpriteCounter stype=pad    win=True      
            
     InteractionSet
-        wall bullet > killSprite 
-        bullet wall > killSprite 
-        pad bullet > killSprite
-        avatar wall > stepBack
         avatar EOS > stepBack
-        bullet EOS > killSprite
 
     LevelMapping
         G > pad

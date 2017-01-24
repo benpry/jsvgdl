@@ -24,3 +24,10 @@ function ResourcePack () {
 
 	return that;
 }
+
+var resource = {
+	Resource : Resource,
+	ResourcePack : ResourcePack
+}
+
+module.exports = resource;
