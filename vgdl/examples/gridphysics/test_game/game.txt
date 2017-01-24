@@ -1,0 +1,13 @@
+BasicGame
+    SpriteSet    
+        pad > Immovable color=BLUE 
+        avatar > MovingAvatar
+            
+    TerminationSet
+        SpriteCounter stype=pad    win=True      
+           
+    InteractionSet
+        avatar EOS > stepBack
+
+    LevelMapping
+        G > pad
