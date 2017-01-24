@@ -1,3 +1,23 @@
+Object.prototype.extend = function (object) {
+	for (property in object) {
+		this[property] = object[property];
+	}
+}
+
+var tools_module = require('../../vgdl/tools.js');
+var basic_game = require('./basic-game.js');
+
+var vgdl_sprite = require('../ontology/vgdl-sprite.js');
+
+var Ontology = {};
+Ontology.BasicGame = basic_game;
+
+Ontology.extend(vgdl_sprite);
+
+console.log(Ontology);
+
+var tools = tools_module();
+
 var VGDLParser = function () {
 	var parser = Object.create(null);
 	var verbose = false;
@@ -18,8 +38,9 @@ var VGDLParser = function () {
 
 	var _eval = function (estr) {
 		// Oh shit...
-		estr = 'core.' + estr;
-		return eval(estr);
+		console.log(estr);
+		console.log(parser[estr]);
+		return Ontology[estr];
 	}
 
 	var parse = {

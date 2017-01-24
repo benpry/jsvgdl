@@ -4,7 +4,7 @@
 var BasicGame = function () {
 	var that = Object.create(null);
 
-	// var Immovable = core.Immovable;
+	var Immovable = core.Immovable;
 	// var DARKGRAY = ontology.DARKGRAY;
 	// var MovingAvatar = ontology.MovingAvatar;
 	// var GOLD = ontology.GOLD;
@@ -351,7 +351,7 @@ var ignoredattributes = ['stypes',
 			var [g1, g2, effect, kwargs] = eff;
 
 			[g1, g2].forEach(function (g) {
-				if (g not in ss) {
+				if (!(g in ss)) {
 					if (g in that.sprite_groups) {
 						var tmp = that.sprite_groups[g];
 					} else {
@@ -369,25 +369,25 @@ var ignoredattributes = ['stypes',
 
 			if (g2 == 'EOS') {
 				var [ss1, l1] = ss[g1];
-				ss1.forEach(s1) {
+				ss1.forEach(function (s1) {
 					if (!(gamejs.Rect([0, 0], that.screensize).contains(s1.rect))) {
 						var e = effect(s1, null, that, kwargs);
 						if (e != null) {
 							that.effectList.push(e);
 						}
 					}
-				}
+				});
 
-				continue;
+				return;
 			}
 
 			var [ss1, l1] = ss[g1];
 			var [ss2, l2] = ss[g2];
 
 			if (l1 < l2)
-				var [shartss, longss, switch] = [ss1, ss2, false];
+				var [shartss, longss, switch_vars] = [ss1, ss2, false];
 			else
-				var [shortss, longss, switch] = [ss2, ss1, true];
+				var [shortss, longss, switch_vars] = [ss2, ss1, true];
 
 			var score = 0;
 			if ('scoreChange' in kwargs) {
@@ -407,7 +407,7 @@ var ignoredattributes = ['stypes',
 				collidelistall(longss).forEach(function (ci) {
 					var s2 = longss[ci];
 					if (s1 == s2)
-						continue
+						return;
 
 					if (score > 0) 
 						that.score += score;
@@ -421,7 +421,7 @@ var ignoredattributes = ['stypes',
 							var e = effect(sC, s1, self, kwargs_use);
 						});
 						that.effectList.push(e);
-						continue;
+						return;
 					}
 				})
 
@@ -433,17 +433,17 @@ var ignoredattributes = ['stypes',
 
 					spritesFiltered.forEach(function (sC) {
 						if (!(s1 in that.kill_list)) {
-							if (switch) 
+							if (switch_vars) 
 								var e = effect(sC, s1, that, kwargs);
 							else
 								var e = effect(s1, sC, that, kwargs);
 						}
 
 						that.effectList.push(e);
-						continue;
+						return;
 					});
 
-					if (switch)
+					if (switch_vars)
 						[s1, s2] = [s2, s1];
 
 					if (!(s1 in that.kill_list)) {

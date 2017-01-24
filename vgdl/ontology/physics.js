@@ -81,8 +81,7 @@ function GravityPhysics () {
 	return that;
 }
 
-var PhysicsModule = function () {
-
-}
+var PhysicsModule = {GridPhysics : GridPhysics,
+					 ContinuousPhysics : ContinuousPhysics};
 
 module.exports = PhysicsModule;

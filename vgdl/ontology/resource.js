@@ -16,3 +16,11 @@ Resource.prototype = {
 			return this.res_type;
 	}
 }
+
+function ResourcePack () {
+	var that = Object.create(Resource.prototype);
+
+	that.is_static = true;
+
+	return that;
+}

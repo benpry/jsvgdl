@@ -10,7 +10,7 @@ describe("Testing core", function() {
     var VGDLParser = core.VGDLParser();
 
     var game_txt = read.sync('vgdl_tests/test_game/game.txt').toString();
-    var level_txt = read.sync('vgdl_tests/test_game/level.txt').toString()
+    var level_txt = read.sync('vgdl_tests/test_game/level.txt').toString();
     VGDLParser.playGame(game_txt, level_txt);
 
   });

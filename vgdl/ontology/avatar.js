@@ -9,3 +9,5 @@ var Avatar = function () {
 Avatar.prototype = {
 	shrinkfactor : 0.15
 }
+
+module.exports = {Avatar : Avatar};

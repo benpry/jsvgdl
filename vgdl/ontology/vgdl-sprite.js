@@ -144,3 +144,36 @@ VGDLSprite.prototype = {
 		return `${this.name} at (${this.rect.left}, ${this.rect.top})`; 
 	}
 }
+
+function Immovable () {
+	var that = Object.create(VGDLSprite.prototype);
+
+	that.color = GRAY;
+	that.is_static = true;
+
+	return that;
+}
+
+function Passive () {
+	var that = Object.create(VGDLSprite.prototype);
+	that.color = RED;
+	return that;
+}
+
+function Flicker (kwargs) {
+	var that = VGDLSprite.apply(null, kwargs);
+
+	that.color = RED;
+	that.limit = 1;
+
+	return that;
+}
+
+var vgdl_sprite = {
+	VGDLSprite : VGDLSprite,
+	Immovable : Immovable,
+	Passive : Passive,
+	Flicker : Flicker
+};
+
+module.exports = vgdl_sprite;
