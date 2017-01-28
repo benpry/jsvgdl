@@ -1,3 +1,26 @@
+var new_id = (function () {
+
+	var id_number = 0;
+
+	var generate_id = function () {
+		id_number ++;
+		return id_number;
+	}
+
+	return generate_id;
+})();
+
+function defaultDict(base) {
+    this.get = function (key) {
+        if (this.hasOwnProperty(key)) {
+        	if (key == 'get') return [];
+            return key;
+        } else {
+            return base;
+        }
+    }
+}
+
 Object.prototype.extend = function () {
 	// console.log(arguments);
 	for (argument in arguments) {
@@ -102,6 +125,24 @@ var Tools = function () {
 	 * @return {[type]}
 	 */
 	that.roundedPoints = function (rect) {
+		return [[rect.x, rect.y], 
+				[rect.x+rect.width, rect.y], 
+				[rect.x, rect.y+rect.height],
+				[rect.x+rect.width, rect.y+rect.height]];
+
+		var size = rect.size[0];
+		console.assert(rect.size[1] == size, "Assumes square shape.");
+		size = size*.92;
+		var res = [];
+		BASEDIRS.forEach((dir) => {
+			var [d0, d1] = dir;
+			res.concat([[d0*size/32*15-(d1)*7*size/16, d1*size/32*15+(d0)*7*size/16],
+                [d0*size/2-(d1)*3*size/8, d1*size/2+(d0)*3*size/8],
+                [d0*size/2+(d1)*3*size/8, d1*size/2-(d0)*3*size/8],
+                [d0*size/32*15+(d1)*7*size/16, d1*size/32*15-(d0)*7*size/16]]);
+            console.log(res, typeof res);
+            return res.map(p => {return [p[0]+rect.center[0], p[1]+rect.center[1]]});
+		})
 
 	}
 
@@ -198,4 +239,8 @@ var Tools = function () {
 	return that;
 }
 
-module.exports = Tools;
+try {
+	module.exports = Tools;
+} catch (e) {
+	
+}

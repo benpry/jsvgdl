@@ -46,11 +46,15 @@ SpriteCounter.prototype.isDone = function (game) {
 }
 
 
-var termination = {
+var TerminationModule = {
 	Termination : Termination,
 	Timeout : Timeout,
 	SpriteCounter : SpriteCounter
 };
 
 
-module.exports = termination;
+try {
+	module.exports = TerminationModule;
+} catch (e) {
+	
+}

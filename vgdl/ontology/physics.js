@@ -1,4 +1,4 @@
-var tools = require('../tools.js');
+var tools = Tools || require('../tools.js');
 
 function GridPhysics () {
 }
@@ -28,8 +28,17 @@ GridPhysics.prototype = {
 			return null;
 		}
 	},
-	activeMovement : function (sprite, action, speed=null) {
+	activeMovement : function (sprite, action, speed) {
+		// console.log('active movement', speed);
+		if (!speed) {
+			if (!sprite.speed) 
+				var speed = 1.0;
+			else
+				var speed = sprite.speed;
+		}
 
+		if (speed != 0 && action) 
+			sprite._updatePos(action, speed /* this.gridsize[0]*/);
 	},
 	calculateActiveMovement : function (sprite, action, speed = null) {
 
@@ -84,4 +93,8 @@ GravityPhysics.prototype = Object.create(GravityPhysics.prototype);
 var PhysicsModule = {GridPhysics : GridPhysics,
 					 ContinuousPhysics : ContinuousPhysics};
 
-module.exports = PhysicsModule;
+try {
+	module.exports = PhysicsModule;
+} catch (e) {
+	
+}

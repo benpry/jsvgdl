@@ -1,9 +1,9 @@
-var VGDLParser = function () {
-	var tools_module = require('../../vgdl/tools.js');
-	var basic_game = require('./basic-game.js');
-	var ontology = {};
-	ontology.BasicGame = basic_game;
-	ontology.extend(require('../ontology/ontology.js'));
+
+var VGDLParser = function (gamejs) {
+	var tools_module = Tools; //|| require('../../vgdl/tools.js');
+	var basic_game = BasicGame; //|| require('./basic-game.js');
+	var gamejs = gamejs;
+	// ontology.extend(require('../ontology/ontology.js'));
 
 	var tools = tools_module();
 
@@ -16,7 +16,7 @@ var VGDLParser = function () {
 			tree = tools.indentTreeParser(tree).children[0];
 
 		var [sclass, args] = _parseArgs(tree.content);
-		parser.game = sclass(args);
+		parser.game = sclass(gamejs); //always start it with gamejs
 
 		tree.children.forEach(function (child) {
 			parse[child.content](child.children);
@@ -26,9 +26,7 @@ var VGDLParser = function () {
 	}
 
 	var _eval = function (estr) {
-		if (verbose && !(ontology[estr]))
-			console.log('undefined', estr);
-		return ontology[estr];
+		return eval(estr);
 	}
 
 	var parse = {
@@ -59,7 +57,6 @@ var VGDLParser = function () {
 				var [key, sdef] = snode.content.split('>').map(function (s) {
 					return s.trim();
 				});
-				console.log('sprite parsing', key, sdef);
 				var [sclass, args] = _parseArgs(sdef, parentClass, Object.assign({}, parentargs));
 				var stypes = parenttypes.concat(key);
 
@@ -87,11 +84,10 @@ var VGDLParser = function () {
 		//parseTerminations
 		'TerminationSet' : function (tnodes) {
 			tnodes.forEach(function (tnode) {
-				console.log(tnode.content);
 				var [sclass, args] = _parseArgs(tnode.content);
 				if (verbose)
 					console.log('Adding:', sclass, args);
-				parser.game.terminations.push(sclass(args));
+				parser.game.terminations.push(new sclass(args));
 			});
 		},
 		//parseConditions
@@ -105,7 +101,7 @@ var VGDLParser = function () {
 					var [cclass, cargs] = _parseArgs(conditional);
 					var [eclass, eargs] = _parseArgs(interaction);
 
-					parser.game.conditions.push([cclass(cargs), [eclass, eargs]]);
+					parser.game.conditions.push([new cclass(cargs), [eclass, eargs]]);
 				}
 			});
 
@@ -162,9 +158,7 @@ var VGDLParser = function () {
 
 		game.buildLevel(map_str);
 		// game.uiud;
-		game.startGame();
-
-		return game;
+		return game.startGame;
 	}
 
 
@@ -172,4 +166,5 @@ var VGDLParser = function () {
 	return parser;
 }
 
-module.exports = VGDLParser;
+try {module.exports = VGDLParser}
+catch (e) {}

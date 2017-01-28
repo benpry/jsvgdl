@@ -1,18 +1,15 @@
 /**
  * params {**kwargs} any number of arguments which will be used in the game
  */
-var BasicGame = function () {
+var BasicGame = function (gamejs, args) {
 	var that = Object.create(BasicGame.prototype);
-	var ontology = require('../ontology/ontology.js');
-	var gamejs = require('../../src/gamejs.js');
-
 	var MAX_SPRITES = 10000;
 
 	that.default_mapping = {'w': ['wall'], 'A': ['avatar']};
 
 	var block_size = 10;
 	var frame_rate = 20;
-	var load_save_enabled;
+	var load_save_enabled = true;
 
 	that.reset = function () {
 		that.score = 0;
@@ -28,50 +25,69 @@ var BasicGame = function () {
 
 	//grab all arguments
 
-	that.sprite_constr = {'wall': [ontology.Immovable, {'color': ontology.DARKGRAY}, ['wall']],
-												'avatar': [ontology.MovingAvatar, {}, ['avatar']]};
+	for (arg in args) {
+		if (arg in that)
+			that[arg] = args[arg];
+		else
+			console.log(`WARNING: undefined parameters ${arg} for game!`);
+	}
 
+	// contains mappings to constructor (just a few defaults are known)
+	that.sprite_constr = {'wall': [Immovable, {'color': DARKGRAY}, ['wall']],
+						  'avatar': [MovingAvatar, {}, ['avatar']]};
+
+	// z-level of sprite types (in case of overlap)
 	that.sprite_order = ['wall', 'avatar'];
 
-	that.singletons = [];
-
+	// contains instance lists
+	that.sprite_groups = new defaultDict([]);
+	// which sprite types (abstract or not) are singletons?
+	that.singletons = [];	
+	// collision effects (ordered by execution order)
 	that.collision_eff = [];
 
+	that.playback_actions = [];
+	that.playbacx_index = 0;
+	// for reading levels
 	that.char_mapping = {};
-
-	that.terminations = [ontology.Termination()];
-
+	// temination criteria
+	that.terminations = [Termination()];
+	// conditional criteria
 	that.conditions = [];
-
-	that.resources_limits;
-	that.resources_colors;
+	// resource properties
+	that.resources_limits = new defaultDict(2);
+	that.resources_colors = new defaultDict(GOLD);
 
 	that.is_stochastic = false;
 	that._lastsaved = null;
 	that.win = null;
-	that.effectList = [];
+	that.effectList = []; // list of effects that happened this current time step
+	that.spriteDistribution = {};
+	that.movement_options = {};
+	that.all_objects = null;
+
 	that.reset();
 
 	that.buildLevel = function (lstr) {
-		var stochastic_effects = ontology.stochastic_effects;
-
 		var lines = lstr.split('\n').map(l => {return l.trimRight()}).filter(l => {return l.length > 0});
 		var lengths = lines.map(function (line) {return line.length});
 
-		
 		console.assert(Math.min.apply(null, lengths) == Math.max.apply(null, lengths), "Inconsistent line lengths");
 
 		that.width = lengths[0];
 		that.height = lines.length;
 		console.assert(that.width > 1 && that.height > 1, 'Level too small');
 
+		// rescale pixels per block to adapt to the level
 		that.block_size = Math.max(2, Math.floor(800/Math.max(that.width, that.height)));
 		that.screensize = [that.width*that.block_size, that.height*that.block_size];
+
+		//Set up resources
 		for (var res_type in that.sprite_constr) {
 		    if (!(that.sprite_constr.hasOwnProperty(res_type))) continue;
-
 			var [sclass, args, _] = that.sprite_constr[res_type];
-			if (sclass.prototype instanceof ontology.Resource) {
+			if (sclass.prototype instanceof Resource) {
+				console.log('resource');
 				if (args['res_type']) 
 					res_type = args['res_type'];
 				if (args['color'])
@@ -81,9 +97,10 @@ var BasicGame = function () {
 			}
 		};
 
+		// create sprites
 		lines.forEach(function (line, row) {
 			for (var col in line) {
-				var c = line[c];
+				var c = line[col];
 				if (c in that.char_mapping) {
 					var pos = [col*that.block_size, row*that.block_size];
 					that._createSprite(that.char_mapping[c], pos);
@@ -131,15 +148,16 @@ var BasicGame = function () {
 					}
 				}					
 			}
-
-			var s = sclass(pos, [that.block_size, that.block_size], key, args);
+			args.key = key;
+			var s = new sclass(gamejs, pos, [that.block_size, that.block_size], args);
 			s.stypes = stypes;
-			that.sprite_groups[key].append(s);
+			that.sprite_groups.get(key).push(s);
 			that.num_sprites += 1;
 			if (s.is_stochastic)
 				that.is_stochastic = true;
 			res.push(s);
 		});
+
 		return res;
 
 	}
@@ -149,45 +167,46 @@ var BasicGame = function () {
 	}
 
 	that._initScreen = function (size) {
-		var LIGHTGRAY = ontology.LIGHTGRAY;
-		that.screen = gamejs.display.setMode(size);
-		that.background = gamejs.graphics.Surface(size);
-		that.background.fill(LIGHTGRAY);
-		that.scsreen.surface.blit(that.background, [0, 0]);
-		
+		var LIGHTGRAY = LIGHTGRAY;
+		that.screen = gamejs.display.getSurface();
+		// that.background = gamejs.graphics.Surface(size);
+		// that.background.fill(LIGHTGRAY);
+		// that.screen.blit(that.background, [0, 0]);
 	}
 
-	/**
-	 * Seems mostly useless
-	 * 
-	 * @return {[type]}
-	 */
-	that.__iter__ = function () {
-
+	that._iterAll = function () {
+		return that.sprite_order.reduce((base, key) => {
+			return base.concat(that.sprite_groups.get(key));
+		}, []);
 	}
 
 	that.numSprites = function (key) {
 		var deleted = that.kill_list.filter(function (s) {return s.stypes[key]}).length;
-		if (that.sprite_groups[key]) 
-			return that.sprite_groups[key].length-deleted;
+		if (that.sprite_groups.get(key)) 
+			return that.sprite_groups.get(key).length-deleted;
 		else
 			return 0; // Should be __iter__ - deleted
 
 	}
 
 	that.getSprites = function (key) {
-		if (that.sprite_groups[key])
-			return that.sprite_groups[key].filter(function(s) {return that.kill_list.indexOf(s) == -1});
+		if (that.sprite_groups.get(key))
+			return that.sprite_groups.get(key).filter(function(s) {return that.kill_list.indexOf(s) == -1});
 		else
 			return s.stypes.filter(function(s) {return that.kill_list.indexOf(s) == -1});
 	}
 
 	that.getAvatars = function () {
 		var res = [];
-		that.sprite_groups.values().forEach(function (ss) {
-			if (ss && ss[0] instanceof Avatar)
-				res.concat(ss.filter(function(s) {return that.kill_list.indexOf(s) == -1}));
-		});
+		for (var key in that.sprite_groups) {
+		    if (Object.prototype.hasOwnProperty.call(that.sprite_groups, key)) {
+
+		        var ss = that.sprite_groups.get(key);
+		        if (ss && ss[0] instanceof Avatar)
+					res.concat(ss.filter(function(s) {return that.kill_list.indexOf(s) == -1}));
+		    }
+		}
+
 		return res;
 	}
 
@@ -223,19 +242,19 @@ var ignoredattributes = ['stypes',
 		var fs = that.getFullState();
 		var obs = fs['objects'];
 
-		obs.forEach(function (obj_type) {
+		for (obj_type in obs) {
 			that.getSprites(obj_type).forEach(function (obj) {
 				var features = {'color': colorDict[obj.color.toString()],
 				                'row': [obj.rect.top]};
 				var type_vector = {'color': colorDict[obj.color.toString()],
 				                   'row': [obj.rect.top]};
-				var sprite = ob;
-				obj_list[ob.ID] = {'sprite': sprite, 
-									   'position': [ob.rect.left, ob.rect.top],
+				var sprite = obj;
+				obj_list[obj.ID] = {'sprite': sprite, 
+									   'position': [obj.rect.left, obj.rect.top],
 									   'features': features,
 									   'type': type_vector};
 			});
-		});
+		};
 
 		return obj_list;
 	}
@@ -243,7 +262,8 @@ var ignoredattributes = ['stypes',
 	that.getFullState = function (as_string = false) {
 		ias = that.ignoredattributes;
 		obs = {};
-		that.sprite_groups.forEach(function (key) {
+		for (key in that.sprite_groups) {
+			if (!(that.sprite_groups.hasOwnProperty(key))) break;
 			var ss = {};
 			var obs = {};
 			that.getSprites(key).forEach(function (s) {
@@ -263,7 +283,13 @@ var ignoredattributes = ['stypes',
 				if (s.resources)
 					attrs['resources'] = s.resources; // Should be object
 			});
-		});
+		};
+
+		return {'score': that.score,
+				'ended': that.ended,
+				'win'  : that.win,
+				'objects': obs
+		};
 	}
 
 	that.setFullState = function (fs, as_string = false) {
@@ -317,6 +343,9 @@ var ignoredattributes = ['stypes',
 	}
 
 	that._clearAll = function (onscreen = true) {
+		console.log('not implemented');
+		return ;
+
 		that.kill_list.forEach(function (s) {
 			that.all_killed.push(s);
 			if (onscreen)
@@ -325,14 +354,18 @@ var ignoredattributes = ['stypes',
 		});
 
 		if (onscreen)
-			for (s in that) 
+			for (s in that) {
+				console.log('s', s);
 				s._clear(that.screen, that.background);
+			}
 		that.kill_list = [];
 	}
 
 	that._drawAll = function () {
-		for (s in that)
+
+		that._iterAll().forEach(s => {
 			s._draw(that);
+		})
 	}
 
 	that._updateCollisionDict = function (changedsprite) {
@@ -346,20 +379,22 @@ var ignoredattributes = ['stypes',
 		that.lastcollisions = {};
 		var ss = that.lastcollisions;
 		that.effectList = [];
+		console.log(that.sprite_groups);
 		that.collision_eff.forEach(function (eff) {
 			var [g1, g2, effect, kwargs] = eff;
 
 			[g1, g2].forEach(function (g) {
 				if (!(g in ss)) {
 					if (g in that.sprite_groups) {
-						var tmp = that.sprite_groups[g];
+						var tmp = that.sprite_groups.get(g);
 					} else {
 						var tmp = [];
-						that.sprite_groups.forEach(function (key) {
-							var v = that.sprite_groups[key];
+						for (key in that.sprite_groups) {
+							var v = that.sprite_groups.get(key);
+							console.log(v);
 							if (v && g in v[0].stypes)
 								tmp.concat(v);
-						})
+						}
 					}
 
 					ss[g] = [tmp, tmp.length];
@@ -484,7 +519,7 @@ var ignoredattributes = ['stypes',
 		// var f = stypes
 		// m = re.search('[A-Za-z0-9+)\.py', f)?
 		
-		var name = m.group(1);
+		// var name = m.group(1);
 		var gamelog = "";
 
 		// -------------- Game-play ----------------
@@ -494,34 +529,35 @@ var ignoredattributes = ['stypes',
 		var finalEventList = [];
 		var agentStatePrev = [];
 		var agentState = {};
-		that.getAvatars()[0].resources.forEach(function (resource) {
-			agentState[resource[0]] = resource[1];
-		})
+
+		// that.getAvatars()[0].resources.forEach(function (resource) {
+		// 	agentState[resource[0]] = resource[1];
+		// })
 		var keyPressPrev = null;
 
 		//Prep for Sprite Induction 
-		var sprite_types = [ontology.Immovable, 
-							ontology.Passive, 
-							ontology.Resource, 
-							ontology.ResourcePack, 
-							ontology.RandomNPC, 
-							ontology.Chaser, 
-							ontology.AstarChaser, 
-							ontology.OrintedSprite, 
-							ontology.Missile];
+		var sprite_types = [Immovable
+							// Passive, 
+							// Resource, 
+							// ResourcePack, 
+							// RandomNPC, 
+							// Chaser, 
+							// AstarChaser, 
+							// OrintedSprite, 
+							// Missile
+							];
 		that.all_objects = that.getObjects(); // Save all objects, some which may be killed in game
 
 		// figure out keypress type
-		disableContinuousKeyPress = that.all_objects.keys().every(function (k) {
+		disableContinuousKeyPress = Object.keys(that.all_objects).every(function (k) {
 			return that.all_objects[k]['sprite'].physicstype.__name__ == 'GridPhysics';
 		});
 
 		var objects = that.getObjects();
 		that.spriteDistribution = {};
 		that.movement_options = {};
-
-		objects.forEach(function (sprite) {
-			that.spriteDitribution[sprite] = initializeDistribution(sprite_types);
+		Object.keys(objects).forEach(function (sprite) {
+			that.spriteDistribution[sprite] = initializeDistribution(sprite_types);
 			that.movement_options[sprite] = {"OTHER": {}};
 			sprite_types.forEach(function (sprite_type) {
 				that.movement_options[sprite][sprite_type] = {};
@@ -529,23 +565,49 @@ var ignoredattributes = ['stypes',
 		});
 
 		// This should actually be in a game loop function, or something.
-		while (!(that.ended)) {
-			that.time ++;
+		
+	
+		that.time ++;
 
-			that._clearAll();
+		that._clearAll();
 
-			var objects = that.getObjects();
-			objects.forEach(function (sprite) {
-				if (!(that.spriteDistribution in sprite)) {
-					that.all_objects[sprite] = objects[sprite];
-					that.spriteDistribution[sprite] = initializeDistribution(sprite_types);
-					that.movement_options[sprite] = {"OTHER": {}};
-					sprite_types.forEach(function (sprite_type) {
-						that.movement_options[sprite][sprite_type] = {};
-					})
-				}
+		var objects = that.getObjects();
+		Object.keys(objects).forEach(function (sprite_number) {
+			var sprite = objects[sprite_number];
+			if (!(that.spriteDistribution in sprite)) {
+				that.all_objects[sprite] = objects[sprite];
+				that.spriteDistribution[sprite] = initializeDistribution(sprite_types);
+				that.movement_options[sprite] = {"OTHER": {}};
+				sprite_types.forEach(function (sprite_type) {
+					that.movement_options[sprite][sprite_type] = {};
+				})
+			}
+		});
+
+		that.keystate = {};
+
+		gamejs.event.onKeyDown (event => {
+			that.keystate[event.key] = true;
+		});
+
+		gamejs.event.onKeyUp (event => {
+			that.keystate[event.key] = false;
+		})
+
+		gamejs.onTick(function () {
+
+			// that._eventHandling();
+
+			that.screen.fill('#000000');
+			that._drawAll();
+
+			that._iterAll().forEach(sprite => {
+				sprite.update(that);
 			})
-		}
+			
+		})
+
+		
 	}
 
 	that.getPossibleActions = function () {
@@ -559,4 +621,5 @@ var ignoredattributes = ['stypes',
 	return that;
 }
 
-module.exports = BasicGame;
+try {module.exports = BasicGame}
+catch (e) {};

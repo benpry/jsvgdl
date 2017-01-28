@@ -9,6 +9,7 @@
  * that do the actual collision detection.
  *
  */
+
 var gamejs = require('gamejs');
 var pixelcollision = require('gamejs/pixelcollision');
 var $v = require('gamejs/math/vectors');

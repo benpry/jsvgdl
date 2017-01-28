@@ -1,14 +1,17 @@
-var tools = require('../tools.js');
+var tools = Tools || require('../tools.js');
 
 
-var ontology = {};
-ontology.extend(require('./vgdl-sprite.js'),
-				require('./avatar.js'),
-				require('./physics.js'),
-				require('./resource.js'),
-				require('./termination.js'),
-				require('./conditional.js'),
-				require('./constants.js'),
-				require('./effect.js'))	
+var Ontology = {};
+Ontology.extend(VGDLSprite || require('./vgdl-sprite.js'),
+				AvatarModule ||require('./avatar.js'),
+				PhysicsModule || require('./physics.js'),
+				ResourceModule || require('./resource.js'),
+				TerminationModule || require('./termination.js'),
+				ConditionalModule || require('./conditional.js'),
+				Effect || require('./effect.js'))	
 
-module.exports = ontology;
+try {
+	module.exports = Ontology;
+} catch (e) {
+	
+}

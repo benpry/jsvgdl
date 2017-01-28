@@ -25,9 +25,13 @@ function ResourcePack () {
 	return that;
 }
 
-var resource = {
+var ResourceModule = {
 	Resource : Resource,
 	ResourcePack : ResourcePack
 }
 
-module.exports = resource;
+try {
+	module.exports = ResourceModule;
+} catch (e) {
+	
+}

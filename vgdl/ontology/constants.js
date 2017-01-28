@@ -1,29 +1,31 @@
-var constants = {
-	GREEN : [0, 200, 0],
-	BLUE : [0, 0, 200],
-	RED : [200, 0, 0],
-	GRAY : [90, 90, 90],
-	WHITE : [250, 250, 250],
-	BROWN : [140, 120, 100],
-	BLACK : [0, 0, 0],
-	ORANGE : [250, 160, 0],
-	YELLOW : [250, 250, 0],
-	PINK : [250, 200, 200],
-	GOLD : [250, 212, 0],
-	LIGHTRED : [250, 50, 50],
-	LIGHTORANGE : [250, 200, 100],
-	LIGHTBLUE : [50, 100, 250],
-	LIGHTGREEN : [50, 250, 50],
-	LIGHTGRAY : [150, 150, 150],
-	DARKGRAY : [30, 30, 30],
-	DARKBLUE : [20, 20, 100],
-	PURPLE : [140, 20, 140],
-	UP : [0, -1],
-	DOWN : [0, 1],
-	LEFT : [-1, 0],
-	RIGHT : [1, 0],
-	BASEDIRS : [this.UP, this.LEFT, this.DOWN, this.RIGHT],
-	colorDict : {}
-};
+var BLUE = '#0000c8';
+var GRAY = '#5a5a5a';
+var GOLD = '#fad400';
+var BROWN = '#8c7864';
+var DARKBLUE = '#141464';
+var DARKGRAY = '#1e1e1e';
+var LIGHTGRAY = '#969696';
+var YELLOW = '#fafa00';
+var LIGHTGREEN = '#32fa32';
+var LIGHTORANGE = '#fac864';
+var PURPLE = '#8c148c';
+var GREEN = '#00c800';
+var PINK = '#fac8c8';
+var LIGHTRED = '#fa3232';
+var ORANGE = '#faa000';
+var BLACK = '#000000';
+var WHITE = '#fafafa';
+var LIGHTBLUE = '#3264fa';
+var RED = '#c80000';
+var UP = [0, -1]
+var DOWN = [0, 1]
+var LEFT = [-1, 0]
+var RIGHT = [1, 0]
+var BASEDIRS = [this.UP, this.LEFT, this.DOWN, this.RIGHT]
+var colorDict = {}
 
-module.exports = constants;
+try {
+	module.exports = Constants;
+} catch (e) {
+	
+}

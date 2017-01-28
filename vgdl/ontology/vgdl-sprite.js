@@ -1,7 +1,11 @@
-var effect = require('./effect.js');
+var tools = Tools();
 
-function VGDLSprite(pos, size = [10, 10], color = null, speed = null, cooldown = null, physicstype = null, kwargs) {
-	this.name = null;
+function VGDLSprite(gamejs, pos, size = [10, 10], args) {
+
+	
+	this.gamejs = gamejs
+
+	this.name = args.key || null;
 	this.COLOR_DISC = [20, 80, 140, 200];
 	this.is_static = false;
 	this.only_active = false;
@@ -13,34 +17,36 @@ function VGDLSprite(pos, size = [10, 10], color = null, speed = null, cooldown =
 	this.mass = 1;
 	this.physicstype = null;
 	this.shrinkfactor = 0;
-	this.dirtyrects = [];
+	// this.dirtyrects = [];
 
 	// import GridPhysics
 	
-	this.rect = gamejs.Rect(pos, size);
+	this.rect = new gamejs.Rect(pos, size);
 	this.x = pos[0];
 	this.y = pos[1];
 	this.lastrect = this.rect;
-	this.physicstype = physicstype || this.physicstype // || GridPhysics;
-	this.physics = this.physicstype();
+	this.physicstype = args.physicstype || this.physicstype || GridPhysics;
+	this.physics = new this.physicstype();
 	this.physics.gridsize = size;
-	this.speed = speed || this.speed;
-	this.cooldown = cooldown || this.cooldown;
-	this.ID = id(this);
+	this.speed = args.speed || this.speed;
+	this.cooldown = args.cooldown || this.cooldown;
+	this.ID = new_id();
 	this.direction = null;
 
-	this.color = color || this.color || [140, 20, 140];
+	this.color = args.color || this.color || '#8c148c';
 
 	// iterate over kwargs
-	Object.keys(kwargs).forEach(function (name) {
-		var value = kwargs[name];
-		try {
-			this[name] = value;
-		}
-		catch (e) {
-			console.log(e);
-		}
-	});
+	if (args) {
+		Object.keys(args).forEach(function (name) {
+			var value = args[name];
+			try {
+				this[name] = value;
+			}
+			catch (e) {
+				console.log(e);
+			}
+		});
+	}
 
 	// how many timesteps ago was the last move
 	this.lastmove = 0;
@@ -48,6 +54,8 @@ function VGDLSprite(pos, size = [10, 10], color = null, speed = null, cooldown =
 	// management of resources contained in the sprite
 	this.resources = {};
 }
+
+VGDLSprite.dirtyrects = [];
 
 VGDLSprite.prototype = {
 	update : function (game) {
@@ -61,11 +69,12 @@ VGDLSprite.prototype = {
 	},
 
 	_updatePos : function (orientation, speed = null) {
-		if (speed = null)
+		if (speed == null)
 			speed = this.speed;
 
 		if (!(this.cooldown > this.lastmove) || Math.abs(orientation[0]) + Math.abs(orientation[1]) == 0) {
-			this.rect = this.rect.move((orientation[0] * speed, orientation[1] * speed));
+			// this.rect = this.rect.move(orientation[0] * speed, orientation[1] * speed);
+			this.rect.moveIp(orientation[0] * speed, orientation[1] * speed);
 			this.lastmove = 0;
 		}
 
@@ -84,6 +93,10 @@ VGDLSprite.prototype = {
 
 	_draw : function (game) {
 		// import lightgreen;
+		// console.log(this.rect);
+		this.gamejs.graphics.rect(game.screen, this.color, this.rect);
+
+		return;
 		var screen = game.screen;
 		if (this.shrinkfactor != 0)
 			var shrunk = this.rect.inflate(-this.rect.width * this.shrinkfactor,
@@ -92,23 +105,23 @@ VGDLSprite.prototype = {
 			var shrunk = this.rect;
 
 		if (this.is_avatar) {
-			var rounded = roundedPoints(shrunk);
-			gamejs.graphics.polygon(screen, this.color, rounded);
-			gamejs.graphics.lines(screen, '#32fa32', true, roudned, 2);
-			var r = this.rect.copy();
+			var rounded = tools.roundedPoints(shrunk);
+			this.gamejs.graphics.polygon(screen, this.color, rounded);
+			this.gamejs.graphics.lines(screen, '#32fa32', true, rounded, 2);
+			var r = this.rect.clone();
 		} 
 		else if (!(this.is_static)) {
 			var rounded = roundedPoints(shrunk);
-			gamejs.graphics.polygon(screen, this.color, rounded);
-			var r = this.rect.copy;
+			this.gamejs.graphics.polygon(screen, this.color, rounded);
+			var r = this.rect.clone();
 		} 
-		else 
+		else {
 			var r = screen.fill(this.color, shrunk);
+		}
 
-		if (this.resources) 
-			this._drawResources(game, screen, shrunk);
-		
-		VGDLSprite.prototype.dirtyrects.push(r);
+		// if (this.resources) 
+		// 	this._drawResources(game, screen, shrunk);
+		VGDLSprite.dirtyrects.push(r);
 	},
 
 	_drawResources : function (game, screen, rect) {
@@ -142,20 +155,21 @@ VGDLSprite.prototype = {
 	}
 }
 
-function Immovable () {
-	VGDLSprite.call(this, arguments);
+function Immovable (gamejs, pos, size = [10, 10], args) {
 	this.color = GRAY;
 	this.is_static = true;
+	VGDLSprite.call(this, gamejs, pos, size, args);
 }
+
 Immovable.prototype = Object.create(VGDLSprite.prototype);
 
-function Passive () {
-	VGDLSprite.call(this, arguments);
+function Passive (gamejs) {
 	this.color = RED;
+	VGDLSprite.call(this, arguments);
 }
 Passive.prototype = Object.create(VGDLSprite.prototype);
 
-function Flicker (kwargs) {
+function Flicker (gamejs, kwargs) {
 	VGDLSprite.call(this, arguments); // This needs to be redone so kwargs actually gets passed to the right spot
 	this._age = 0;
 	this.color = RED;
@@ -171,11 +185,15 @@ Flicker.prototype.update = function (game) {
 	this._age ++;	
 }
 
-var vgdl_sprite = {
+var VGDLSpriteModule = {
 	VGDLSprite : VGDLSprite,
 	Immovable : Immovable,
 	Passive : Passive,
 	Flicker : Flicker
 };
 
-module.exports = vgdl_sprite;
+try {
+	module.exports = VGDLSpriteModule;
+} catch (e) {
+	
+}

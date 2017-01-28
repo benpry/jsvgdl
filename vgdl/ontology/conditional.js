@@ -9,8 +9,12 @@ Conditional.prototype = {
 	}
 }
 
-var conditional = {
+var ConditionalModule = {
 	Conditional : Conditional
 };
 
-module.exports = conditional;
+try {
+	module.exports = conditional;
+} catch (e) {
+	
+}

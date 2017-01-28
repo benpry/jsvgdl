@@ -1,13 +1,17 @@
-var Effect = {
-	killSprite : function (sprite, partner, game) {
-		game.kill_list.push(sprite);
-		if (!(null in [sprite, partner]))
-			return ["killSprite", sprite.ID, partner.ID];
-	},
+function stepBack () {
+	console.log('effect called');
+}
 
-	stochastic_effects : []
-};
+function killSprite () {
+
+}
 
 
+var stochastic_effects = []//[teleportToExit, windGust, slipForward, attractGaze, flipDirection];
+var kill_effects = [killSprite] //killIfSlow, transformTo, killIfOtherHasLess, killIfOtherHasMore, killIfHasMore, killIfHasLess, killIfFromAbove, killIfAlive];
 
-module.exports = Effect;
+try {
+	module.exports = Effect;
+} catch (e) {
+	
+}
