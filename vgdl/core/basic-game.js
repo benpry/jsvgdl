@@ -37,10 +37,10 @@ var BasicGame = function (gamejs, args) {
 						  'avatar': [MovingAvatar, {}, ['avatar']]};
 
 	// z-level of sprite types (in case of overlap)
-	that.sprite_order = ['wall', 'avatar'];
+	that.sprite_order = ['wall'];
 
 	// contains instance lists
-	that.sprite_groups = new defaultDict([]);
+	that.sprite_groups = {};
 	// which sprite types (abstract or not) are singletons?
 	that.singletons = [];	
 	// collision effects (ordered by execution order)
@@ -51,7 +51,7 @@ var BasicGame = function (gamejs, args) {
 	// for reading levels
 	that.char_mapping = {};
 	// temination criteria
-	that.terminations = [Termination()];
+	that.terminations = [new Termination()];
 	// conditional criteria
 	that.conditions = [];
 	// resource properties
@@ -151,7 +151,11 @@ var BasicGame = function (gamejs, args) {
 			args.key = key;
 			var s = new sclass(gamejs, pos, [that.block_size, that.block_size], args);
 			s.stypes = stypes;
-			that.sprite_groups.get(key).push(s);
+			// console.log('adding', s, 'to', key);
+			if (that.sprite_groups[key])
+				that.sprite_groups[key].push(s);
+			else 
+				that.sprite_groups[key] = [s];
 			that.num_sprites += 1;
 			if (s.is_stochastic)
 				that.is_stochastic = true;
@@ -167,33 +171,33 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that._initScreen = function (size) {
-		var LIGHTGRAY = LIGHTGRAY;
 		that.screen = gamejs.display.getSurface();
-		// that.background = gamejs.graphics.Surface(size);
-		// that.background.fill(LIGHTGRAY);
-		// that.screen.blit(that.background, [0, 0]);
+		that.background = new gamejs.graphics.Surface(size);
+		that.background.fill(LIGHTGRAY);
+		that.screen.blit(that.background, [0, 0]);
 	}
 
 	that._iterAll = function () {
 		return that.sprite_order.reduce((base, key) => {
-			return base.concat(that.sprite_groups.get(key));
+			return base.concat(that.sprite_groups[key]);
 		}, []);
 	}
 
 	that.numSprites = function (key) {
 		var deleted = that.kill_list.filter(function (s) {return s.stypes[key]}).length;
-		if (that.sprite_groups.get(key)) 
-			return that.sprite_groups.get(key).length-deleted;
+		if (that.sprite_groups[key]) 
+			return that.sprite_groups[key].length-deleted;
 		else
 			return 0; // Should be __iter__ - deleted
 
 	}
 
 	that.getSprites = function (key) {
-		if (that.sprite_groups.get(key))
-			return that.sprite_groups.get(key).filter(function(s) {return that.kill_list.indexOf(s) == -1});
+		if (that.sprite_groups[key] instanceof Array){
+			return that.sprite_groups[key].filter(function(s) {return that.kill_list.indexOf(s) == -1});
+		}
 		else
-			return s.stypes.filter(function(s) {return that.kill_list.indexOf(s) == -1});
+			return that._iterAll().filter(function(s) {return that.kill_list.indexOf(s) == -1});
 	}
 
 	that.getAvatars = function () {
@@ -201,7 +205,7 @@ var BasicGame = function (gamejs, args) {
 		for (var key in that.sprite_groups) {
 		    if (Object.prototype.hasOwnProperty.call(that.sprite_groups, key)) {
 
-		        var ss = that.sprite_groups.get(key);
+		        var ss = that.sprite_groups[key];
 		        if (ss && ss[0] instanceof Avatar)
 					res.concat(ss.filter(function(s) {return that.kill_list.indexOf(s) == -1}));
 		    }
@@ -210,7 +214,7 @@ var BasicGame = function (gamejs, args) {
 		return res;
 	}
 
-var ignoredattributes = ['stypes',
+	that.ignoredattributes = ['stypes',
                            'name',
                            'lastmove',
                            'color',
@@ -260,8 +264,8 @@ var ignoredattributes = ['stypes',
 	}
 
 	that.getFullState = function (as_string = false) {
-		ias = that.ignoredattributes;
-		obs = {};
+		var ias = that.ignoredattributes;
+		var obs = {};
 		for (key in that.sprite_groups) {
 			if (!(that.sprite_groups.hasOwnProperty(key))) break;
 			var ss = {};
@@ -343,28 +347,30 @@ var ignoredattributes = ['stypes',
 	}
 
 	that._clearAll = function (onscreen = true) {
-		console.log('not implemented');
-		return ;
+		// console.log('not implemented');
+		// return ;
 
 		that.kill_list.forEach(function (s) {
 			that.all_killed.push(s);
 			if (onscreen)
 				s._clear(that.screen, that.background, double = true);
-			delete that.sprite_groups[s.name];
+			// delete that.sprite_groups[s.name][s];
+			that.sprite_groups[s.name].remove(s);
+			// console.log(that.sprite_groups[s.name]);
 		});
 
 		if (onscreen)
-			for (s in that) {
-				console.log('s', s);
-				s._clear(that.screen, that.background);
-			}
+			that._iterAll().forEach(s =>  {
+				// s._clear(that.screen, that.background);
+			})
 		that.kill_list = [];
 	}
+
 
 	that._drawAll = function () {
 
 		that._iterAll().forEach(s => {
-			s._draw(that);
+			if (s) s._draw(that);
 		})
 	}
 
@@ -375,25 +381,49 @@ var ignoredattributes = ['stypes',
 		}
 	}
 
+	that._terminationHandling = function () {
+		that.terminations.forEach(t => {
+			var [ended, win] = t.isDone(that);
+			that.ended = ended;
+			if (that.ended) {
+				if (win) {
+					if (that.score <= 0)
+						that.score = 1;
+
+					that.win = true;
+					// console.log(`Game won, with score ${that.score}`);
+				} else {
+					that.win = false;
+					// console.log(`Game lost. score ${that.score}`);
+				}
+				// console.log('should end everything here');
+				return;
+			}
+		});
+	}
+
 	that._eventHandling = function () {
 		that.lastcollisions = {};
 		var ss = that.lastcollisions;
 		that.effectList = [];
-		console.log(that.sprite_groups);
 		that.collision_eff.forEach(function (eff) {
 			var [g1, g2, effect, kwargs] = eff;
-
+			// console.log(eff);	
 			[g1, g2].forEach(function (g) {
 				if (!(g in ss)) {
 					if (g in that.sprite_groups) {
-						var tmp = that.sprite_groups.get(g);
+						var tmp = that.sprite_groups[g];
 					} else {
 						var tmp = [];
 						for (key in that.sprite_groups) {
-							var v = that.sprite_groups.get(key);
-							console.log(v);
-							if (v && g in v[0].stypes)
-								tmp.concat(v);
+							var v = that.sprite_groups[key];
+							// console.log(v);	
+							if (v instanceof Array && v.length) {
+								if (v && g in v[0].stypes && v instanceof Array) {
+									// console.log(v);
+									tmp.concat(v);
+								}
+							}
 						}
 					}
 
@@ -404,7 +434,7 @@ var ignoredattributes = ['stypes',
 			if (g2 == 'EOS') {
 				var [ss1, l1] = ss[g1];
 				ss1.forEach(function (s1) {
-					if (!(gamejs.Rect([0, 0], that.screensize).contains(s1.rect))) {
+					if (!(new gamejs.Rect([0, 0], that.screensize).collideRect(s1.rect))) {
 						var e = effect(s1, null, that, kwargs);
 						if (e != null) {
 							that.effectList.push(e);
@@ -415,11 +445,12 @@ var ignoredattributes = ['stypes',
 				return;
 			}
 
+			// console.log(ss);
 			var [ss1, l1] = ss[g1];
 			var [ss2, l2] = ss[g2];
 
 			if (l1 < l2)
-				var [shartss, longss, switch_vars] = [ss1, ss2, false];
+				var [shortss, longss, switch_vars] = [ss1, ss2, false];
 			else
 				var [shortss, longss, switch_vars] = [ss2, ss1, true];
 
@@ -437,8 +468,11 @@ var ignoredattributes = ['stypes',
 				delete kwargs['dim'];
 			}
 
+			// console.log(longss);
 			shortss.forEach(function (s1) {
-				collidelistall(longss).forEach(function (ci) {
+				var rects = longss.map(os => {return os.rect});
+				if (s1.rect.collidelistall(rects) == -1) return ;
+				s1.rect.collidelistall(rects).forEach(function (ci) {
 					var s2 = longss[ci];
 					if (s1 == s2)
 						return;
@@ -457,47 +491,50 @@ var ignoredattributes = ['stypes',
 						that.effectList.push(e);
 						return;
 					}
-				})
+				
 
-				if (dim) {
-					var sprites = that.getSprites(g1);
-					var spritesFiltered = sprites.filter(function (sprite) {
-						return sprite[dim] == s2[dim];
-					});
+					if (dim) {
+						var sprites = that.getSprites(g1);
+						var spritesFiltered = sprites.filter(function (sprite) {
+							return sprite[dim] == s2[dim];
+						});
 
-					spritesFiltered.forEach(function (sC) {
-						if (!(s1 in that.kill_list)) {
-							if (switch_vars) 
-								var e = effect(sC, s1, that, kwargs);
-							else
-								var e = effect(s1, sC, that, kwargs);
-						}
-
-						that.effectList.push(e);
-						return;
-					});
+						spritesFiltered.forEach(function (sC) {
+							if (!(s1 in that.kill_list)) {
+								if (switch_vars) 
+									var e = effect(sC, s1, that, kwargs);
+								else
+									var e = effect(s1, sC, that, kwargs);
+							}
+							// console.log(e);
+							that.effectList.push(e);
+							return;
+						});
+					}
 
 					if (switch_vars)
 						[s1, s2] = [s2, s1];
 
 					if (!(s1 in that.kill_list)) {
+						// console.log(s1);
 						if (effect.__name__ == 'changeResource') {
 							var resource = kwargs['resource'];
 							var [sclass, args, stypes] = that.sprite_constr[resource];
 							var resource_color = args['color'];
 							var e = effect(s1, s2, resource_color, that, kwargs);
 						} else {
+							// console.log('apply effect', effect); 	  	
+							// why are all the effects happeening
 							var e = effect(s1, s2, that, kwargs);
 						}
-
 						if (e != null) {
-							that.effectList.append(e);
+							that.effectList.push(e);
 						}
 					}
-				}
-			})
+				});
+			});
 		});
-
+		// console.log(that.effectList);
 		return that.effectList;
 	}
 
@@ -569,7 +606,7 @@ var ignoredattributes = ['stypes',
 	
 		that.time ++;
 
-		that._clearAll();
+		// that._clearAll();
 
 		var objects = that.getObjects();
 		Object.keys(objects).forEach(function (sprite_number) {
@@ -594,17 +631,38 @@ var ignoredattributes = ['stypes',
 			that.keystate[event.key] = false;
 		})
 
+		// Main Game Loop
+		var date_obj = new Date();
+		var pre_time = new Date().getTime();
+		console.log(pre_time);
+		var new_time = 0;
+		var frames = 0;
+		var ms = 0;
+
+		console.log(that._iterAll());
+		console.log(that.sprite_order);
 		gamejs.onTick(function () {
+			new_time = new Date().getTime();
+			ms = (new_time - pre_time);
 
-			// that._eventHandling();
+			if (ms < 66) return;
+			frames ++;
+			pre_time = new_time;
 
-			that.screen.fill('#000000');
+			that._terminationHandling();
+			that._eventHandling();
+
+			// that.background.fill(LIGHTGRAY);
+			that.background.fill(LIGHTGRAY);
+			that.screen.blit(that.background, [0, 0]);
+			that._clearAll();
+			// console.log(VGDLSprite.dirtyrects);
 			that._drawAll();
 
 			that._iterAll().forEach(sprite => {
-				sprite.update(that);
+				if(sprite) sprite.update(that);
 			})
-			
+
 		})
 
 		

@@ -38,7 +38,7 @@ GridPhysics.prototype = {
 		}
 
 		if (speed != 0 && action) 
-			sprite._updatePos(action, speed /* this.gridsize[0]*/);
+			sprite._updatePos(action, speed * this.gridsize[0]);
 	},
 	calculateActiveMovement : function (sprite, action, speed = null) {
 

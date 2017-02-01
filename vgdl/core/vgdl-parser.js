@@ -71,10 +71,8 @@ var VGDLParser = function (gamejs) {
 					if (verbose) 
 						console.log('Defining:', key, sclass, args, stypes);
 					parser.game.sprite_constr[key] = [sclass, args, stypes];
-					if (key in parser.game.sprite_order) {
-						var index = parser.game.sprite_order.indexOf(key);
-						parser.game.sprite_order.splice(index, 1);
-					}
+					if (key in parser.game.sprite_order) 
+						parser.game.sprite_order.remove(key)
 					parser.game.sprite_order.push(key);
 				} else {
 					parse['SpriteSet'](snode.children, sclass, args, stypes);

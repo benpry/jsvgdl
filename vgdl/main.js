@@ -22,7 +22,8 @@ BasicGame
            
    InteractionSet
       avatar EOS > stepBack
-      pad avatar > killSprite	
+      avatar wall > stepBack
+      pad avatar > killSprite
 
    LevelMapping
       G > pad`;

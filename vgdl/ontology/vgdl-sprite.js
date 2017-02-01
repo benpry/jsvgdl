@@ -17,14 +17,14 @@ function VGDLSprite(gamejs, pos, size = [10, 10], args) {
 	this.mass = 1;
 	this.physicstype = null;
 	this.shrinkfactor = 0;
-	// this.dirtyrects = [];
+	this.dirtyrects = [];
 
 	// import GridPhysics
 	
 	this.rect = new gamejs.Rect(pos, size);
 	this.x = pos[0];
 	this.y = pos[1];
-	this.lastrect = this.rect;
+	this.lastrect = this.rect.clone();
 	this.physicstype = args.physicstype || this.physicstype || GridPhysics;
 	this.physics = new this.physicstype();
 	this.physics.gridsize = size;
@@ -59,19 +59,23 @@ VGDLSprite.dirtyrects = [];
 
 VGDLSprite.prototype = {
 	update : function (game) {
+		// console.log('updating');
 		this.x = this.rect.x;
 		this.y = this.rect.y;
-		this.lastrect = this.rect;
+
+		this.lastrect = this.rect.clone();
+		
 
 		this.lastmove += 1;
 		if (!(this.is_static && !(this.only_active)))
 			this.physics.passiveMovement(this);
+		// console.log('update', this.rect, this.lastrect);
 	},
 
 	_updatePos : function (orientation, speed = null) {
 		if (speed == null)
 			speed = this.speed;
-
+		
 		if (!(this.cooldown > this.lastmove) || Math.abs(orientation[0]) + Math.abs(orientation[1]) == 0) {
 			// this.rect = this.rect.move(orientation[0] * speed, orientation[1] * speed);
 			this.rect.moveIp(orientation[0] * speed, orientation[1] * speed);
@@ -92,7 +96,7 @@ VGDLSprite.prototype = {
 	},
 
 	_draw : function (game) {
-		// import lightgreen;
+
 		// console.log(this.rect);
 		this.gamejs.graphics.rect(game.screen, this.color, this.rect);
 
@@ -143,16 +147,20 @@ VGDLSprite.prototype = {
 
 	_clear : function (screen, background, double=null) {
 		var r = screen.blit(background, this.rect, this.rect);
-		VGDLSprite.prototype.dirtyrects.push(r);
+		VGDLSprite.dirtyrects.push(r);
 		if (double) {
 			r = screen.blit(background, this.lastrect, this.lastrect);
-			VGDLSprite.prototype.dirtyrects.push(r);
+			VGDLSprite.dirtyrects.push(r);
 		}
 	},
 
 	inspect : function () {
-		return `${this.name} at (${this.rect.left}, ${this.rect.top})`; // tick marks are cool
-	}
+		return `${this.name} at (${this.rect.left}, ${this.rect.top})`; 
+	},
+
+	toString : function () {
+		return `${this.name} at (${this.rect.left}, ${this.rect.top})`; 
+	} 
 }
 
 function Immovable (gamejs, pos, size = [10, 10], args) {

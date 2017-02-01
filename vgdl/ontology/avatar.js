@@ -11,7 +11,6 @@ var Avatar = function (gamejs) {
 var MovingAvatar = function (gamejs, pos, size = [10, 10], color = null, speed = null, cooldown = null, physicstype = null, kwargs) {
 	Avatar.call(this, gamejs);
 	VGDLSprite.call(this, gamejs, pos, size, color, speed, cooldown, physicstype, kwargs);
-	console.log('this has been created');
 	this.gamejs = gamejs;
 	this.color = WHITE;
 	this.speed = 1;

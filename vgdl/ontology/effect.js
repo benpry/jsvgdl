@@ -1,8 +1,18 @@
-function stepBack () {
-	console.log('effect called');
+function stepBack (sprite, partner, game) {
+	// console.log('stepBack');
+	// console.log(sprite.rect);
+	// console.log(sprite, partner);
+	// console.log('stepback', sprite.rect, sprite.lastrect);
+	// console.log(sprite.rect == sprite.lastrect);
+	sprite.rect = sprite.lastrect.clone();
+	// return ['stepBack', sprite.ID, partner.ID];
 }
 
-function killSprite () {
+function killSprite (sprite, partner, game) {
+	console.log('killing sprite', sprite, 'colliding with', partner);
+
+	game.kill_list.push(sprite);
+	// console.log(sprite.toString());
 
 }
 

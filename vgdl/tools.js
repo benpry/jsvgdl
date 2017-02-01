@@ -1,3 +1,11 @@
+
+Array.prototype.remove = function (element) {
+	// console.log(this);
+	var index = this.indexOf(element);
+	if (index > -1) 
+		this.splice(index, 1);
+}
+
 var new_id = (function () {
 
 	var id_number = 0;

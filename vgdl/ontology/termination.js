@@ -1,6 +1,4 @@
 var Termination = function () {
-	var that = Object.create(Termination);
-	return that;
 }
 
 Termination.prototype = {
@@ -10,15 +8,11 @@ Termination.prototype = {
 	}
 }
 
-var Timeout = function (limit=0, win=true) {
-	var that = Object.create(Timeout.prototype);
-
-	that.limit = limit;
-	that.win = win;
-
-	return that;
+var Timeout = function (args) {
+	this.limit = args.limit;
+	this.win = args.win;
 }
-Timeout.prototype = new Termination();
+Timeout.prototype = Object.create(Termination.prototype);
 
 Timeout.prototype.isDone = function (game) {
 	if (game.time >= this.limit) 
@@ -27,16 +21,12 @@ Timeout.prototype.isDone = function (game) {
 		return [false, null];
 }
 
-var SpriteCounter = function (limit=0, stype=null, win=false) {
-	var that = Object.create(SpriteCounter.prototype);
-
-	that.limit = limit;
-	that.stype = stype;
-	that.win = win;
-
-	return that;
+var SpriteCounter = function (args) {
+	this.limit = args.limit || 0;
+	this.stype = args.stype;
+	this.win = args.win;
 }
-SpriteCounter.prototype = new Termination();
+SpriteCounter.prototype = Object.create(Termination.prototype);
 
 SpriteCounter.prototype.isDone = function (game) {
 	if (game.numSprites(this.stype) <= this.limit)

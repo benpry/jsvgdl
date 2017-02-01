@@ -239,6 +239,12 @@ var Rect = exports.Rect = function() {
     */
    this.height = args.height;
 
+   /**    
+    * Size of rectangle   
+    * @type Array   
+    */    
+   this.size = [args.width, args.height];
+
    return this;
 };
 
@@ -520,8 +526,28 @@ Rect.prototype.collidePoint = function() {
  * @returns {Boolean} true if the given Rect collides with this Rect
  */
 Rect.prototype.collideRect = function(rect) {
-   return !(this.left > rect.right || this.right < rect.left ||
-      this.top > rect.bottom || this.bottom < rect.top);
+   return !(this.left >= rect.right || this.right <= rect.left ||
+      this.top >= rect.bottom || this.bottom <= rect.top);
+};
+
+/**
+ * test if all rectangles in a list intersect
+ * @param {Array [gamejs.Rect]} Array of rects the Rect to test check for collision
+ * @returns {Integer} Returns a list of all the indices that contain rectangles that collide with the Rect. 
+ *            If no intersecting rectangles are found, an empty list is returned.
+ */
+Rect.prototype.collidelistall = function(rect_array) {
+  var indeces = rect_array.reduce(function (indeces, rect, index) {
+    
+    if (this.collideRect(rect)) {
+      // console.log(this, 'collision with', rect);
+      indeces.push(index);
+    }
+    return indeces;
+  }, []);
+  if (indeces.length)
+    return indeces;
+  return -1
 };
 
 /**

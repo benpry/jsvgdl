@@ -8,8 +8,6 @@ var draw = require('gamejs/graphics');
 var font = require('gamejs/font');
 var $v = require('gamejs/math/vectors');
 
-var VGDLParser = VGDLParser();
-console.log(VGDLParser);
 
 function main() {
    // set resolution & title
@@ -17,6 +15,7 @@ function main() {
    gamejs.display.setCaption("Example Draw");
 
    var square = new gamejs.Rect([10, 10], [10, 10]);
+   var other_square = new gamejs.Rect([20, 20], [10, 10]);
    square.velocity = [0, 0];
 
    // gamejs.graphics.rect(display, '#000000', square);
@@ -38,17 +37,21 @@ function main() {
 
    gamejs.event.onKeyDown(function (event) {
       var delta = direction[event.key];
-      console.log('key pressed');
       if (delta) square.velocity = $v.add(square.velocity, delta);
    });
 
+   var collision_color = '#ff0000';
 
    gamejs.onTick(function () {
       display.clear();
       gamejs.graphics.rect(display, '#000000', square);
+      gamejs.graphics.rect(display, collision_color, other_square);  
+      if (square.collideRect(other_square)) 
+         collision_color = "#00ff00";
+      else
+         collision_color = '#ff0000';
 
       square.center = $v.add(square.velocity, square.center);
-      console.log(square.velocity);
 
       // console.log(gamejs.event.get());
    });  

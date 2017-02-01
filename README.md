@@ -18,7 +18,7 @@ running the server
 
     $ npm start
 
-running tests
+running tests (note: tests no longer work)
 
     $ npm test
 
