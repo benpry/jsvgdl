@@ -537,12 +537,11 @@ Rect.prototype.collideRect = function(rect) {
  *            If no intersecting rectangles are found, an empty list is returned.
  */
 Rect.prototype.collidelistall = function(rect_array) {
+  var that = this;
   var indeces = rect_array.reduce(function (indeces, rect, index) {
-    
-    if (this.collideRect(rect)) {
-      // console.log(this, 'collision with', rect);
+    if (that.collideRect(rect)) 
       indeces.push(index);
-    }
+  
     return indeces;
   }, []);
   if (indeces.length)

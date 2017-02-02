@@ -632,21 +632,17 @@ var BasicGame = function (gamejs, args) {
 		})
 
 		// Main Game Loop
-		var date_obj = new Date();
 		var pre_time = new Date().getTime();
-		console.log(pre_time);
 		var new_time = 0;
-		var frames = 0;
-		var ms = 0;
+		var fps = 20;
+		var mpf = 1000/fps;
 
-		console.log(that._iterAll());
-		console.log(that.sprite_order);
 		gamejs.onTick(function () {
 			new_time = new Date().getTime();
 			ms = (new_time - pre_time);
 
-			if (ms < 66) return;
-			frames ++;
+			if (ms < mpf) return;
+
 			pre_time = new_time;
 
 			that._terminationHandling();

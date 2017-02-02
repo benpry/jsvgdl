@@ -21,8 +21,30 @@ var UP = [0, -1]
 var DOWN = [0, 1]
 var LEFT = [-1, 0]
 var RIGHT = [1, 0]
+
 var BASEDIRS = [this.UP, this.LEFT, this.DOWN, this.RIGHT]
-var colorDict = {}
+
+var colorDict = {
+'#0000c8' : 'BLUE',
+'#5a5a5a' : 'GRAY',
+'#fad400' : 'GOLD',
+'#8c7864' : 'BROWN',
+'#141464' : 'DARKBLUE',
+'#1e1e1e' : 'DARKGRAY',
+'#969696' : 'LIGHTGRAY',
+'#fafa00' : 'YELLOW',
+'#32fa32' : 'LIGHTGREEN',
+'#fac864' : 'LIGHTORANGE',
+'#8c148c' : 'PURPLE',
+'#00c800' : 'GREEN',
+'#fac8c8' : 'PINK',
+'#fa3232' : 'LIGHTRED',
+'#faa000' : 'ORANGE',
+'#000000' : 'BLACK',
+'#fafafa' : 'WHITE',
+'#3264fa' : 'LIGHTBLUE',
+'#c80000' : 'RED'
+}
 
 try {
 	module.exports = Constants;

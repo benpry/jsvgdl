@@ -1,11 +1,7 @@
 var Resource = function () {
-	var that = Object.create(Resource.prototype);
-
-	that.value = 1;
-	that.limit = 2;
-	that.res_type = null;
-
-	return that;
+	this.value = 1;
+	this.limit = 2;
+	this.res_type = null;
 }
 
 Resource.prototype = {
@@ -17,21 +13,9 @@ Resource.prototype = {
 	}
 }
 
+
+
 function ResourcePack () {
-	var that = Object.create(Resource.prototype);
-
-	that.is_static = true;
-
-	return that;
+	this.is_static = true;
 }
-
-var ResourceModule = {
-	Resource : Resource,
-	ResourcePack : ResourcePack
-}
-
-try {
-	module.exports = ResourceModule;
-} catch (e) {
-	
-}
+ResourcePack.prototype = Object.create(Resource.prototype);

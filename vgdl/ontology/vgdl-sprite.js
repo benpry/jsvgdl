@@ -36,17 +36,18 @@ function VGDLSprite(gamejs, pos, size = [10, 10], args) {
 	this.color = args.color || this.color || '#8c148c';
 
 	// iterate over kwargs
-	if (args) {
-		Object.keys(args).forEach(function (name) {
-			var value = args[name];
-			try {
-				this[name] = value;
-			}
-			catch (e) {
-				console.log(e);
-			}
-		});
-	}
+	this.extend(args);
+	// if (args) {
+	// 	Object.keys(args).forEach(function (name) {
+	// 		var value = args[name];
+	// 		try {
+	// 			this[name] = value;
+	// 		}
+	// 		catch (e) {
+	// 			console.log(e);
+	// 		}
+	// 	});
+	// }
 
 	// how many timesteps ago was the last move
 	this.lastmove = 0;
@@ -163,6 +164,8 @@ VGDLSprite.prototype = {
 	} 
 }
 
+
+
 function Immovable (gamejs, pos, size = [10, 10], args) {
 	this.color = GRAY;
 	this.is_static = true;
@@ -171,17 +174,21 @@ function Immovable (gamejs, pos, size = [10, 10], args) {
 
 Immovable.prototype = Object.create(VGDLSprite.prototype);
 
-function Passive (gamejs) {
+
+
+function Passive (gamejs, pos, size = [10, 10], args) {
 	this.color = RED;
-	VGDLSprite.call(this, arguments);
+	VGDLSprite.call(this, gamejs, pos, size = [10, 10], args);
 }
 Passive.prototype = Object.create(VGDLSprite.prototype);
 
-function Flicker (gamejs, kwargs) {
-	VGDLSprite.call(this, arguments); // This needs to be redone so kwargs actually gets passed to the right spot
+
+
+function Flicker (gamejs, pos, size = [10, 10], args) {
 	this._age = 0;
 	this.color = RED;
 	this.limit = 1;
+	VGDLSprite.call(this, gamejs, pos, size, args)
 }
 Flicker.prototype = Object.create(Flicker.prototype);
 
@@ -193,15 +200,158 @@ Flicker.prototype.update = function (game) {
 	this._age ++;	
 }
 
-var VGDLSpriteModule = {
-	VGDLSprite : VGDLSprite,
-	Immovable : Immovable,
-	Passive : Passive,
-	Flicker : Flicker
-};
 
-try {
-	module.exports = VGDLSpriteModule;
-} catch (e) {
-	
+
+function SpriteProducer (gamejs, pos, size = [10, 10], args) {
+	this.stype = null;
+	VGDLSprite.call(this, gamejs, pos, size, args); 
+} 
+SpriteProducer.prototype = Object.create(VGDLSprite.prototype);
+
+
+
+function Portal (gamejs, pos, size = [10, 10], args) {
+	this.is_static = true;
+	this.color = BLUE;
+	SpriteProducer.call(this, gamejs, pos, size, args); 	
 }
+Portal.prototype = Object.create(SpriteProducer.prototype);
+
+
+
+function SpawnPoint (gamejs, pos, size = [10, 10], args) {
+	SpriteProducer.call(this, gamejs, pos, size, args);
+	this.color = BLACK
+	this.prob = args.prob || 1;	
+	this.cooldown = args.cooldown || 1;
+	this.total = args.total;
+	if (args.prob) this.is_stochastic = prob > 0 && prob < 1;
+}
+SpawnPoint.prototype = Object.create(SpawnPoint.prototype);
+
+SpawnPoint.update = function (game) {
+	if (game.time % this.cooldown ==0 && this.gamejs.random.random() < this.prob) {
+		game._createSprite([this.stype], [this.rect.left, this.rect.top]);
+		this.counter ++;
+	}
+
+	if (this.total && this.counter >= this.total) {
+		killSprite(this, undefined, game);
+	}
+}
+
+
+
+function RandomNPC(gamejs, pos, size = [10, 10], args) {
+	VGDLSprite.call(this, gamejs, pos, size, args);
+	this.speed = 1;
+	this.is_stochastic = true;
+}
+RandomNPC.prototype = Object.create(VGDLSprite.prototype);
+
+RandomNPC.prototype.update = function (game) {
+	VGDLSprite.prototype.update.call(this, game);
+	this.direction = this.gamejs.random.choice(BASEDIRS);
+	this.physics.activeMovement(this, this.direction);
+}
+
+
+
+function OrientedSprite(gamejs, pos, size = [10, 10], args) {
+	VGDLSprite.call(this, gamejs, pos, size, args);
+}	
+OrientedSprite.prototype = Object.create(VGDLSprite.prototype);
+
+
+
+function Conveyer(gamejs, pos, size = [10, 10], args) {
+	OrientedSprite.call(this, gamejs, pos, size, args);
+}
+Conveyer.prototype = Object.create(OrientedSprite.prototype);
+
+
+
+function Missile(gamejs, pos, size = [10, 10], args) {
+	OrientedSprite.call(this, gamejs, pos, size, args);
+}
+Missile.prototype = Object.create(OrientedSprite.prototype);
+
+
+
+function Switch(gamejs, pos, size = [10, 10], args) {
+	OrientedSprite.call(this, gamejs, pos, size, args);
+}
+Switch.prototype = Object.create(OrientedSprite.prototype);
+
+
+
+function OrientedFlicker(gamejs, pos, size = [10, 10], args) {
+	// These two functions called in sequence probably overwrite one another
+	OrientedSprite.call(this, gamejs, pos, size, args);
+	Flicker.call(this, gamejs, pos, size, args);
+}
+OrientedFlicker.prototype.extend(Object.create(OrientedSprite.prototype), Object.create(Flicker.prototype));
+
+
+
+function Walker(gamejs, pos, size = [10, 10], args) {
+	Missile.call(this, gamejs, pos, size, args);
+}
+Walker.prototype = Object.create(Missile.prototype);
+
+
+
+function WalkJumper(gamejs, pos, size = [10, 10], args) {
+	Walker.call(this, gamejs, pos, size, args);	
+}
+WalkJumper.prototype = Object.create(Walker.prototype);
+
+
+
+function RandomInertial(gamejs, pos, size = [10, 10], args) {
+	OrientedSprite.call(this, gamejs, pos, size, args);
+	RandomNPC.call(this, gamejs, pos, size, args);
+}
+RandomInertial.prototype.extend(Object.create(OrientedSprite.prototype), Object.create(RandomNPC.prototype));
+
+
+
+function RandomMissile(gamejs, pos, size = [10, 10], args) {
+	Missile.call(this, gamejs, pos, size, args);
+}
+RandomMissile.prototype = Object.create(Missile.prototype);
+
+
+
+function EraticMissile(gamejs, pos, size = [10, 10], args) {
+	Missile.call(this, gamejs, pos, size, args);
+}
+EraticMissile.prototype = Object.create(Missile.prototype);
+
+
+
+function Bomber(gamejs, pos, size = [10, 10], args) {
+	SpawnPoint.call(this, gamejs, pos, size, args);
+	Missile.call(this, gamejs, pos, size, args);
+}
+Bomber.prototype.extend(Object.create(Missile.prototype), Object.create(SpawnPoint.prototype));
+
+
+
+function Chaser(gamejs, pos, size = [10, 10], args) {
+	RandomNPC.call(this, gamejs, pos, size, args);
+}
+Chaser.prototype = Object.create(RandomNPC.prototype);
+
+
+function Fleeing(gamejs, pos, size = [10, 10], args) {
+	Chaser.call(this, gamejs, pos, size, args);
+}
+Fleeing.prototype = Object.create(Chaser.prototype);
+
+
+
+function AStarChaser(gamejs, pos, size = [10, 10], args) {
+	RandomNPC.call(this, gamejs, pos, size, args);
+}
+AStarChaser.prototype = Object.create(RandomNPC.prototype);
