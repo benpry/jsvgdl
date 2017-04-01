@@ -271,6 +271,7 @@ var BasicGame = function (gamejs, args) {
 			var ss = {};
 			var obs = {};
 			that.getSprites(key).forEach(function (s) {
+				console.log(s);
 				var pos = [s.rect.left, s.rect.top];
 				var attrs = {};
 				while (ss[pos])
@@ -370,7 +371,11 @@ var BasicGame = function (gamejs, args) {
 	that._drawAll = function () {
 
 		that._iterAll().forEach(s => {
-			if (s) s._draw(that);
+			try {
+				if (s) s._draw(that);
+			} catch (err) {
+				console.log('cannot draw', );
+			}
 		})
 	}
 

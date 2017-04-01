@@ -5,10 +5,6 @@
  */
 
 var gamejs = require('gamejs');
-// var draw = require('gamejs/graphics');
-// var font = require('gamejs/font');
-// var $v = require('gamejs/math/vectors');
-
 var vgdl_parser = VGDLParser(gamejs);
 
 var game_txt = `
@@ -43,7 +39,8 @@ w  ww  G           G w
 wA    wwwwww         w
 wwwwwwwwwwwwwwwwwwwwww`;
 
-gamejs.ready(vgdl_parser.playGame(game_txt, level_txt));
+gamejs.ready(vgdl_parser.playGame(examples.predictions1.game, 
+   examples.predictions1.level));
 
 // function main() {
 //    console.log('hello');

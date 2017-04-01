@@ -1,8 +1,10 @@
-var Resource = function () {
+var Resource = function (gamejs, pos, size, args) {
+	VGDLSprite.call(this, gamejs, pos, size, args);
 	this.value = 1;
 	this.limit = 2;
 	this.res_type = null;
 }
+Resource.prototype = Object.create(VGDLSprite.prototype);
 
 Resource.prototype = {
 	resourceType : function () {
@@ -15,7 +17,10 @@ Resource.prototype = {
 
 
 
-function ResourcePack () {
+function ResourcePack (gamejs, pos, size, args) {
+	Resource.call(this, gamejs, pos, size, args);
 	this.is_static = true;
 }
+ResourcePack.prototype = Object.create(ResourcePack.prototype);
+
 ResourcePack.prototype = Object.create(Resource.prototype);

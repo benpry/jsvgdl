@@ -4,13 +4,12 @@ var tools_module = Tools || require('../tools.js');
 var Avatar = function (gamejs) {
 	this.gamejs = gamejs;
 	this.actions = this.declare_possible_actions();
-	
 	this.shrinkfactor = 0.15;
 }
 
-var MovingAvatar = function (gamejs, pos, size = [10, 10], color = null, speed = null, cooldown = null, physicstype = null, kwargs) {
+var MovingAvatar = function (gamejs, pos, size, args) {
 	Avatar.call(this, gamejs);
-	VGDLSprite.call(this, gamejs, pos, size, color, speed, cooldown, physicstype, kwargs);
+	VGDLSprite.call(this, gamejs, pos, size, args);
 	this.gamejs = gamejs;
 	this.color = WHITE;
 	this.speed = 1;
@@ -18,7 +17,8 @@ var MovingAvatar = function (gamejs, pos, size = [10, 10], color = null, speed =
 	this.alternate_keys = false;
 
 }
-MovingAvatar.prototype.extend(Object.create(Avatar.prototype), Object.create(VGDLSprite.prototype));
+
+MovingAvatar.prototype = Object.create(VGDLSprite.prototype);
 
 MovingAvatar.prototype.declare_possible_actions = function () {
 	var event = this.gamejs.event;
@@ -69,8 +69,8 @@ MovingAvatar.prototype.update = function (game) {
 }
 
 
-var HorizontalAvatar = function (gamejs) {
-	MovingAvatar.call(this, gamejs);
+var HorizontalAvatar = function (gamejs, pos, size, args) {
+	MovingAvatar.call(this, gamejs, pos, size, args);
 }
 HorizontalAvatar.prototype = Object.create(MovingAvatar.prototype);
 
@@ -108,6 +108,39 @@ VerticalAvatar.prototype.update = function () {
 	if (action in [UP, DOWN])
 		this.physics.activeMovement(this, action)
 }
+/**
+ *
+ *
+ *
+ **/
+var FlakAvatar = function (gamejs, pos, size, args) {
+	HorizontalAvatar.call(this, gamejs, pos, size, args);
+	SpriteProducer.call(this, gamejs);
+	this.color = GREEN;
+}
+FlakAvatar.prototype = Object.create(HorizontalAvatar.prototype);
+
+
+FlakAvatar.prototype.declare_possible_actions = function () {
+	var actions = HorizontalAvatar.prototype.declare_possible_actions.call(this);
+	actions['SPACE'] = this.gamejs.event.K_SPACE;
+	return actions;
+}
+
+FlakAvatar.prototype.update = function (game) {
+	HorizontalAvatar.prototype.update.call(this, game);
+	this._shoot(game);
+}
+
+FlakAvatar.prototype._shoot = function (game) {
+	if (this.stype && game.keystate[this.gamejs.event.K_SPACE]) 
+		var spawn = game._createSprite([this.stype], [this.rect.left, this.rect.top]);
+}
+
+
+
+
+
 
 var AvatarModule = {Avatar : Avatar,
 				  	   MovingAvatar : MovingAvatar};
