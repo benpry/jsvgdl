@@ -9,8 +9,9 @@ GridPhysics.prototype = {
 			var speed = 1;
 		else 
 			var speed = sprite.speed;
-		if (speed != 0 && 'orientation' in sprite)
-			sprite._udpatePos(sprit.orientation, speed * this.gridsize[0]);
+		if (speed != 0 && 'orientation' in sprite) {
+			sprite._updatePos(sprite.orientation, speed * this.gridsize[0]);
+		}
 	},
 	calculatePassiveMovement : function (sprite) {
 		if (sprite.speed == null) 
@@ -55,7 +56,7 @@ function ContinuousPhysics () {
 }
 ContinuousPhysics.prototype = Object.create(GridPhysics.prototype);
 
-ContinuousPhysics.prototype.extend({
+ContinuousPhysics.prototype = {
 	passiveMovement : function (sprite) {
 
 	},
@@ -75,7 +76,7 @@ ContinuousPhysics.prototype.extend({
 	distance : function (r1, r2) {
 		return (Math.pow(Math.sqrt((r1.top - r2.top), 2)) + Math.pow(Math.sqrt(r1.left - r2.left), 2));
 	}
-});
+};
 
 
 function NoFrictionPhysics () {

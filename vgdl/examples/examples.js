@@ -2,6 +2,54 @@
 Simple interactions: get/lose points, can't pass through walls, object gets pushed.
 **/
 var examples = {
+    aliens : {
+level : `
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+w                              w
+w1                             w
+w000                           w
+w000                           w
+w                              w
+w                              w
+w                              w
+w                              w
+w    000      000000     000   w
+w   00000    00000000   00000  w
+w   0   0    00    00   00000  w
+w                A             w
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+`,
+game : `
+BasicGame
+    SpriteSet
+        base    > Immovable    color=WHITE
+        avatar  > FlakAvatar stype=sam
+        missile > Missile
+            sam  > orientation=UP    color=BLUE singleton=True
+            bomb > orientation=DOWN  color=RED  speed=0.5
+        alien   > Bomber       stype=bomb   prob=0  cooldown=3 speed=0.75
+        portal  > SpawnPoint   stype=alien  cooldown=1   total=3
+    
+    LevelMapping
+        0 > base
+        1 > portal
+
+    TerminationSet
+        SpriteCounter      stype=avatar               limit=0 win=False
+        MultiSpriteCounter stype1=portal stype2=alien limit=0 win=True
+        
+    InteractionSet
+        avatar  EOS  > stepBack
+        alien   EOS  > turnAround        
+        missile EOS  > killSprite
+        missile base > killSprite
+        base missile > killSprite
+        base   alien > killSprite
+        avatar alien > killSprite
+        avatar bomb  > killSprite
+        alien  sam   > killSprite     
+`
+    },
     predictions1 : {
 level :`
 wwwwwwwwwwwwwwwwwwwwwwwww
@@ -52,7 +100,41 @@ BasicGame frame_rate=30
         SpriteCounter stype=avatar  limit=0 win=False          
         SpriteCounter stype=goal limit=0 win=True
 `
-}}
+    },
+    simpleGame : {
+level : `
+wwwwwwwwwwwwwwwwwwwwww
+w        w    w      w
+w           www      w
+w             w     ww
+w           G        w
+w   w                w
+w    www          w  w
+w      wwwwwww  www  w
+w              ww    w
+w  G            w    w
+w  ww  G           G w
+wA    wwwwww         w
+wwwwwwwwwwwwwwwwwwwwww
+`,
+game : `
+BasicGame
+   SpriteSet    
+      pad > Immovable color=BLUE 
+      avatar > MovingAvatar
+            
+   TerminationSet
+      SpriteCounter stype=pad win=True      
+           
+   InteractionSet
+      avatar EOS > stepBack
+      avatar wall > stepBack
+      pad avatar > killSprite
+
+   LevelMapping
+      G > pad`
+    }
+}
 /**
 show agent killing a moving item.
 same prediction should be highest for other moving items of same speed, then for non-moving items.

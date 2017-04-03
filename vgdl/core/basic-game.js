@@ -137,7 +137,6 @@ var BasicGame = function (gamejs, args) {
 				return;
 			}
 			var [sclass, args, stypes] = that.sprite_constr[key];
-
 			var anyother = false;
 
 			for (var pk in stypes.reverse()) {
@@ -247,6 +246,8 @@ var BasicGame = function (gamejs, args) {
 		var obs = fs['objects'];
 
 		for (obj_type in obs) {
+			console.log(obj_type);
+			console.log(that.getSprites(obj_type));
 			that.getSprites(obj_type).forEach(function (obj) {
 				var features = {'color': colorDict[obj.color.toString()],
 				                'row': [obj.rect.top]};
@@ -271,7 +272,6 @@ var BasicGame = function (gamejs, args) {
 			var ss = {};
 			var obs = {};
 			that.getSprites(key).forEach(function (s) {
-				console.log(s);
 				var pos = [s.rect.left, s.rect.top];
 				var attrs = {};
 				while (ss[pos])
@@ -374,7 +374,7 @@ var BasicGame = function (gamejs, args) {
 			try {
 				if (s) s._draw(that);
 			} catch (err) {
-				console.log('cannot draw', );
+				console.log('cannot draw', s);
 			}
 		})
 	}
@@ -408,139 +408,6 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that._eventHandling = function () {
-		that.lastcollisions = {};
-		var ss = that.lastcollisions;
-		that.effectList = [];
-		that.collision_eff.forEach(function (eff) {
-			var [g1, g2, effect, kwargs] = eff;
-			// console.log(eff);	
-			[g1, g2].forEach(function (g) {
-				if (!(g in ss)) {
-					if (g in that.sprite_groups) {
-						var tmp = that.sprite_groups[g];
-					} else {
-						var tmp = [];
-						for (key in that.sprite_groups) {
-							var v = that.sprite_groups[key];
-							// console.log(v);	
-							if (v instanceof Array && v.length) {
-								if (v && g in v[0].stypes && v instanceof Array) {
-									// console.log(v);
-									tmp.concat(v);
-								}
-							}
-						}
-					}
-
-					ss[g] = [tmp, tmp.length];
-				}
-			})
-
-			if (g2 == 'EOS') {
-				var [ss1, l1] = ss[g1];
-				ss1.forEach(function (s1) {
-					if (!(new gamejs.Rect([0, 0], that.screensize).collideRect(s1.rect))) {
-						var e = effect(s1, null, that, kwargs);
-						if (e != null) {
-							that.effectList.push(e);
-						}
-					}
-				});
-
-				return;
-			}
-
-			// console.log(ss);
-			var [ss1, l1] = ss[g1];
-			var [ss2, l2] = ss[g2];
-
-			if (l1 < l2)
-				var [shortss, longss, switch_vars] = [ss1, ss2, false];
-			else
-				var [shortss, longss, switch_vars] = [ss2, ss1, true];
-
-			var score = 0;
-			if ('scoreChange' in kwargs) {
-				kwargs = kwargs.copy();
-				score = kwargs['scoreChange'];
-				delete kwargs['scoreChange'];
-			}
-
-			var dim = null;
-			if ('dim' in kwargs) {
-				kwargs = kwargs.copy();
-				dim = kwargs['dim'];
-				delete kwargs['dim'];
-			}
-
-			// console.log(longss);
-			shortss.forEach(function (s1) {
-				var rects = longss.map(os => {return os.rect});
-				if (s1.rect.collidelistall(rects) == -1) return ;
-				s1.rect.collidelistall(rects).forEach(function (ci) {
-					var s2 = longss[ci];
-					if (s1 == s2)
-						return;
-
-					if (score > 0) 
-						that.score += score;
-
-					if ('applyto' in kwargs) {
-						var stype = kwargs['applyto'];
-
-						var kwargs_use = deepcopy(kwargs);
-						delete kwargs_use['applyto'];
-						that.getSprites(stype).forEach(function (sC) {
-							var e = effect(sC, s1, self, kwargs_use);
-						});
-						that.effectList.push(e);
-						return;
-					}
-				
-
-					if (dim) {
-						var sprites = that.getSprites(g1);
-						var spritesFiltered = sprites.filter(function (sprite) {
-							return sprite[dim] == s2[dim];
-						});
-
-						spritesFiltered.forEach(function (sC) {
-							if (!(s1 in that.kill_list)) {
-								if (switch_vars) 
-									var e = effect(sC, s1, that, kwargs);
-								else
-									var e = effect(s1, sC, that, kwargs);
-							}
-							// console.log(e);
-							that.effectList.push(e);
-							return;
-						});
-					}
-
-					if (switch_vars)
-						[s1, s2] = [s2, s1];
-
-					if (!(s1 in that.kill_list)) {
-						// console.log(s1);
-						if (effect.__name__ == 'changeResource') {
-							var resource = kwargs['resource'];
-							var [sclass, args, stypes] = that.sprite_constr[resource];
-							var resource_color = args['color'];
-							var e = effect(s1, s2, resource_color, that, kwargs);
-						} else {
-							// console.log('apply effect', effect); 	  	
-							// why are all the effects happeening
-							var e = effect(s1, s2, that, kwargs);
-						}
-						if (e != null) {
-							that.effectList.push(e);
-						}
-					}
-				});
-			});
-		});
-		// console.log(that.effectList);
-		return that.effectList;
 	}
 
 	that.startGame = function () {
@@ -661,6 +528,7 @@ var BasicGame = function (gamejs, args) {
 			that._drawAll();
 
 			that._iterAll().forEach(sprite => {
+				// console.log(sprite);
 				if(sprite) sprite.update(that);
 			})
 

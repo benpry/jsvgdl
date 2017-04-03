@@ -15,9 +15,7 @@ var MovingAvatar = function (gamejs, pos, size, args) {
 	this.speed = 1;
 	this.is_avatar = true;
 	this.alternate_keys = false;
-
 }
-
 MovingAvatar.prototype = Object.create(VGDLSprite.prototype);
 
 MovingAvatar.prototype.declare_possible_actions = function () {
@@ -85,8 +83,10 @@ HorizontalAvatar.prototype.declare_possible_actions = function () {
 HorizontalAvatar.prototype.update = function (game) {
 	VGDLSprite.prototype.update.call(this, game);
 	var action = this._readAction(game);
-	if (action in [RIGHT, LEFT])
+	// console.log(this.physics.activeMovement);
+	if (action == RIGHT || action == LEFT) {
 		this.physics.activeMovement(this, action);
+	}
 }
 
 var VerticalAvatar = function (gamejs) {
@@ -105,7 +105,7 @@ VerticalAvatar.prototype.declare_possible_actions = function () {
 VerticalAvatar.prototype.update = function () {
 	VGDLSprite.prototype.update.call(this, game);
 	var action = this._readAction(game);
-	if (action in [UP, DOWN])
+	if (action == UP || action == DOWN)
 		this.physics.activeMovement(this, action)
 }
 /**
@@ -115,7 +115,8 @@ VerticalAvatar.prototype.update = function () {
  **/
 var FlakAvatar = function (gamejs, pos, size, args) {
 	HorizontalAvatar.call(this, gamejs, pos, size, args);
-	SpriteProducer.call(this, gamejs);
+	SpriteProducer.call(this, gamejs, pos, size, args);
+	console.log(this.stype);
 	this.color = GREEN;
 }
 FlakAvatar.prototype = Object.create(HorizontalAvatar.prototype);
@@ -133,14 +134,59 @@ FlakAvatar.prototype.update = function (game) {
 }
 
 FlakAvatar.prototype._shoot = function (game) {
-	if (this.stype && game.keystate[this.gamejs.event.K_SPACE]) 
+	if (this.stype && game.keystate[this.gamejs.event.K_SPACE]) {
 		var spawn = game._createSprite([this.stype], [this.rect.left, this.rect.top]);
+	}
 }
 
 
+function OrientedAvatar (gamejs, pos, size, args) {
+	this.draw_arrow = true;
+	OrientedSprite.call(this, gamejs, pos, size, args);
+	MovingAvatar.call(this, gamejs);
+}
+OrientedAvatar.prototype = Object.create(MovingAvatar.prototype);
+OrientedFlicker.prototype._draw = OrientedSprite.prototype._draw;
 
+OrientedAvatar.prototype.update = function () {
+	var tmp = this.orientation;
+	this.orientation = [0, 0];
+	VGDLSprite.prototype.update.call(this, game);
+	var action = this._readAction(game);
+	if (action) 
+		this.physics.activeMovement(this, action);
+	var d = this.lastdirection;
+	if (Math.sum(d.map(v => {return Math.abs(v)})) > 0)
+		this.orientation = d;
+	else
+		this.orientation = tmp;
+}
 
+function RotatingAvatar (gamejs, pos, size, args) {
+	this.draw_arrow = true;
+	this.speed = 0;
+	OrientedSprite.call(this, gamejs, pos, size, args);
+	MovingAvatar.call(this, gamejs);
+}
+RotatingAvatar.prototype = Object.create(MovingAvatar.prototype);
+RotatingAvatar.prototype._draw = OrientedSprite.prototype._draw;
 
+RotatingAvatar.prototype.update = function (game) {
+	var actions = this._readMultiActions(game);
+	if (UP in actions) 
+		this.speed = 1;
+	else if (DOWN in actions) 
+		this.speed = -1;
+	if (LEFT in actions){
+		var i = BASEDIRS.indexOf(this.orientation);
+		this.oriientation = BASEDIRS[(i + 1) % BASEDIRS.length];
+	} else if (RIGHT in actions) {
+		var i = BASEDIRS.indexOf(this.orientation);
+		this.orientation = BASEDIRS[(i - 1) % BASEDIRS.length];
+	}
+	VGDLSprite.prototype.update.call(this, game);
+	this.speed = 0;
+}
 
 var AvatarModule = {Avatar : Avatar,
 				  	   MovingAvatar : MovingAvatar};

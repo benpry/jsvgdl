@@ -36,19 +36,18 @@ function VGDLSprite(gamejs, pos, size, args) {
 	this.color = args.color || this.color || '#8c148c';
 
 	// iterate over kwargs
-	this.extend(args);
-	// if (args) {
-	// 	Object.keys(args).forEach(function (name) {
-	// 		var value = args[name];
-	// 		try {
-	// 			this[name] = value;
-	// 		}
-	// 		catch (e) {
-	// 			console.log(e);
-	// 		}
-	// 	});
-	// }
-
+	// this.extend(args);
+	if (args) {
+		var that = this;
+		Object.keys(args).forEach(function (name) {
+			var value = args[name];
+			try {
+				that[name] = value;
+			}
+			catch (e) {
+			}
+		});
+	}
 	// how many timesteps ago was the last move
 	this.lastmove = 0;
 
@@ -60,7 +59,6 @@ VGDLSprite.dirtyrects = [];
 
 VGDLSprite.prototype = {
 	update : function (game) {
-		// console.log('updating');
 		this.x = this.rect.x;
 		this.y = this.rect.y;
 
@@ -70,7 +68,6 @@ VGDLSprite.prototype = {
 		this.lastmove += 1;
 		if (!(this.is_static && !(this.only_active)))
 			this.physics.passiveMovement(this);
-		// console.log('update', this.rect, this.lastrect);
 	},
 
 	_updatePos : function (orientation, speed = null) {
@@ -98,7 +95,6 @@ VGDLSprite.prototype = {
 
 	_draw : function (game) {
 
-		// console.log(this.rect);
 		this.gamejs.graphics.rect(game.screen, this.color, this.rect);
 
 		return;
@@ -171,7 +167,6 @@ function Immovable (gamejs, pos, size, args) {
 	this.is_static = true;
 	VGDLSprite.call(this, gamejs, pos, size, args);
 }
-
 Immovable.prototype = Object.create(VGDLSprite.prototype);
 
 
@@ -188,7 +183,7 @@ function Flicker (gamejs, pos, size, args) {
 	this._age = 0;
 	this.color = RED;
 	this.limit = 1;
-	VGDLSprite.call(this, gamejs, pos, size, args)
+	VGDLSprite.call(this, gamejs, pos, size, args);
 }
 Flicker.prototype = Object.create(Flicker.prototype);
 
@@ -211,9 +206,9 @@ SpriteProducer.prototype = Object.create(VGDLSprite.prototype);
 
 
 function Portal (gamejs, pos, size, args) {
+	SpriteProducer.call(this, gamejs, pos, size, args); 
 	this.is_static = true;
 	this.color = BLUE;
-	SpriteProducer.call(this, gamejs, pos, size, args); 	
 }
 Portal.prototype = Object.create(SpriteProducer.prototype);
 
@@ -227,7 +222,7 @@ function SpawnPoint (gamejs, pos, size, args) {
 	this.total = args.total;
 	if (args.prob) this.is_stochastic = prob > 0 && prob < 1;
 }
-SpawnPoint.prototype = Object.create(SpawnPoint.prototype);
+SpawnPoint.prototype = Object.create(SpriteProducer.prototype);
 
 SpawnPoint.update = function (game) {
 	if (game.time % this.cooldown ==0 && this.gamejs.random.random() < this.prob) {
@@ -258,9 +253,9 @@ RandomNPC.prototype.update = function (game) {
 
 
 function OrientedSprite(gamejs, pos, size, args) {
-	VGDLSprite.call(this, gamejs, pos, size, args);
 	this.draw_arrow = false;
 	this.orientation = RIGHT;
+	VGDLSprite.call(this, gamejs, pos, size, args);
 }	
 OrientedSprite.prototype = Object.create(VGDLSprite.prototype);
 
@@ -307,9 +302,8 @@ function OrientedFlicker(gamejs, pos, size, args) {
 	this.draw_arrow = true;
 	this.speed = 0;
 }
-OrientedFlicker.prototype.extend(Object.create(OrientedSprite.prototype), Object.create(Flicker.prototype));
-
-
+OrientedFlicker.prototype = Object.create(Flicker.prototype);
+OrientedFlicker.prototype._draw = OrientedSprite.prototype._draw;
 
 function Walker(gamejs, pos, size, args) {
 	Missile.call(this, gamejs, pos, size, args);
@@ -355,8 +349,8 @@ function RandomInertial(gamejs, pos, size, args) {
 	RandomNPC.call(this, gamejs, pos, size, args);
 	this.physicstype = ContinuousPhysics;
 }
-RandomInertial.prototype.extend(Object.create(OrientedSprite.prototype), Object.create(RandomNPC.prototype));
-
+RandomInertial.prototype = Object.create(RandomNPC.prototype);
+RandomInertial.prototype._draw = OrientedSprite.prototype._draw;
 
 
 function RandomMissile(gamejs, pos, size, args) {
@@ -387,7 +381,7 @@ function Bomber(gamejs, pos, size, args) {
 	this.color = ORANGE;
 	this.is_static = false;
 }
-Bomber.prototype.extend(Object.create(Missile.prototype), Object.create(SpawnPoint.prototype));
+Bomber.prototype = Object.create(Missile.prototype);
 
 Bomber.prototype.update = function (game) {
 	Missile.prototype.update.call(this, game);

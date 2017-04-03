@@ -16,7 +16,7 @@ function getColor(sprite) {
 function killSprite (sprite, partner, game, kwargs) {
 
 	game.kill_list.push(sprite);
-
+	console.log('kill sprite', sprite);
 	return ['killSprite', sprite.ID, partner.ID];
 }
 
@@ -43,9 +43,9 @@ function stepBack (sprite, partner, game, kwargs) {
 	return ['stepBack', sprite.ID, partner.ID];
 }
 
-function undoAll(sprite, partner, game, kwargs) {
+// function undoAll(sprite, partner, game, kwargs) {
 
-}
+// }
 
 function bounceForward(sprite, partner, game, kwargs) {
 
