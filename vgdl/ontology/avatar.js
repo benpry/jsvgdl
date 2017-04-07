@@ -8,13 +8,12 @@ var Avatar = function (gamejs) {
 }
 
 var MovingAvatar = function (gamejs, pos, size, args) {
-	Avatar.call(this, gamejs);
-	VGDLSprite.call(this, gamejs, pos, size, args);
-	this.gamejs = gamejs;
 	this.color = WHITE;
 	this.speed = 1;
 	this.is_avatar = true;
 	this.alternate_keys = false;
+	VGDLSprite.call(this, gamejs, pos, size, args);
+	Avatar.call(this, gamejs);
 }
 MovingAvatar.prototype = Object.create(VGDLSprite.prototype);
 
@@ -114,10 +113,10 @@ VerticalAvatar.prototype.update = function () {
  *
  **/
 var FlakAvatar = function (gamejs, pos, size, args) {
-	HorizontalAvatar.call(this, gamejs, pos, size, args);
-	SpriteProducer.call(this, gamejs, pos, size, args);
-	console.log(this.stype);
 	this.color = GREEN;
+	SpriteProducer.call(this, gamejs, pos, size, args);
+	HorizontalAvatar.call(this, gamejs, pos, size, args);
+	
 }
 FlakAvatar.prototype = Object.create(HorizontalAvatar.prototype);
 

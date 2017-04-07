@@ -66,6 +66,8 @@ var BasicGame = function (gamejs, args) {
 	that.movement_options = {};
 	that.all_objects = null;
 
+	that.lastcollisions = {};
+
 	that.reset();
 
 	that.buildLevel = function (lstr) {
@@ -132,6 +134,7 @@ var BasicGame = function (gamejs, args) {
 	that._createSprite = function (keys, pos) {
 		var res = [];
 		keys.forEach(function (key) {
+			// console.log(key);
 			if (that.num_sprites > MAX_SPRITES) {
 				console.log('Sprite limit reached.');
 				return;
@@ -147,6 +150,7 @@ var BasicGame = function (gamejs, args) {
 					}
 				}					
 			}
+			if (anyother) return;
 			args.key = key;
 			var s = new sclass(gamejs, pos, [that.block_size, that.block_size], args);
 			s.stypes = stypes;
@@ -166,7 +170,12 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that._createSprite_cheap = function (key, pos) {
-
+		var [sclass, args, stypes] = that.sprite_constr[key];
+		var s = sclass(gamejs, pos, [that.block_size, that.block_size], args);
+		s.stypes = stypes;
+		that.sprite_groups[key].push(s);
+		that.num_sprites += 1;
+		return s;
 	}
 
 	that._initScreen = function (size) {
@@ -178,6 +187,8 @@ var BasicGame = function (gamejs, args) {
 
 	that._iterAll = function () {
 		return that.sprite_order.reduce((base, key) => {
+			if (that.sprite_groups[key] == undefined)
+				return base;
 			return base.concat(that.sprite_groups[key]);
 		}, []);
 	}
@@ -408,6 +419,164 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that._eventHandling = function () {
+		// console.log(that.lastcollisions)
+		that.effectList = [];
+		that.lastcollisions = {};
+
+		var push_effect = 'bounceForward';
+		var back_effect = 'stepBack';
+
+		var force_collisions = [];
+		var dead = that.kill_list.slice();
+
+
+		var collision_set = new Set([]);
+		var spritesActedOn = new Set([]);
+		var new_collisions = {place_holder: true};
+		var new_effects = [];
+		while (Object.keys(new_collisions).length) {
+			new_collisions = {};
+			new_effects = [];
+
+			// Build the current sprite list (if not yet availale)
+			that.collision_eff.forEach(col_eff => {
+				var [class1, class2, effect, kwargs] = col_eff;
+				// console.log(class1, class2, effect, kwargs)
+				[class1, class2].forEach(sprite_class => {
+					var sprites = [];
+					if (!(sprite_class in that.lastcollisions)) {
+						// console.log(that.sprite_groups);
+						if (sprite_class in that.sprite_groups) {
+							sprites = that.sprite_groups[sprite_class];
+
+						} else {
+							sprites = [];
+							Object.keys(that.sprite_groups).forEach(key => {
+								// console.log(key);
+								var sprite_array = that.sprite_groups[key];
+								// console.log(sprite_array);
+								// console.log(sprite_array[0].stypes);
+								if (sprite_array.length && sprite_array[0].stypes.contains(sprite_class)) {
+									// console.log(sprite_class, sprite_array);
+									sprites = sprites.concat(sprite_array);
+									// console.log('updated', sprites);
+								}
+							})
+						}
+					}
+					// console.log(that.lastcollisions)
+					that.lastcollisions[sprite_class] = sprites;
+				})
+				// console.log(that.lastcollisions)
+			
+				// end build
+				if (class2 == 'EOS') {
+					var sprites1 = that.lastcollisions[class1];
+					sprites1.forEach(sprite1 => {
+						if (!(new gamejs.Rect([0, 0], that.screensize).contains(sprite1.rect))) {
+							new_collisions[sprite1] = 'EOS';
+							var e = effect(sprite1, null, that, kwargs);
+							if (e) that.effectList.push(e);
+							spritesActedOn.add(sprite1);
+						}
+					})
+					return;
+				}
+
+				var score = 0;
+				if (kwargs.scoreChange) {
+					kwargs = Object.copy(kwargs);
+					score = kwargs.scoreChange;
+					delete kwargs.scoreChange;
+				}
+
+				var dim = null;
+				if (kwargs.dim) {
+					kwargs = Object.copy(kwargs);
+					dim = kwargs.dim;
+					delete kwargs.dim
+				}
+
+				var sprites1 = that.lastcollisions[class1];
+				var sprites2 = that.lastcollisions[class2];
+				sprites1.forEach(sprite1 => {
+					// console.log('collide list', sprite1.rect.collidelistall(sprites2));
+					sprite1.rect.collidelistall(sprites2).forEach(collision_index => {
+						var sprite2 = sprites2[collision_index];
+
+						if (sprite1 == sprite2 ||
+							collision_set.sprite1 == sprite2 ||
+							dead.contains(sprite1) ||
+							dead.contains(sprite2))
+							return
+
+						new_collisions[sprite1] = sprite2;
+
+						if (score) that.score += score;
+
+						if ('applyto' in kwargs) {
+							// deal with later
+							// var stype = kwargs['applyto'];
+						}
+
+						if (dim) {
+							// deal with later
+						}
+
+						if (effect.name == 'changeResource') {
+							var resource = kwargs['resource'];
+							var [sclass, args, stypes] = that.sprite_constr[resource];
+							var resource_color = args['color'];
+							new_effects.push(effect(sprite1, sprite2, resource_color, that, kwargs));
+						}
+
+						else if (effect.name == push_effect) {
+							var sprite_in_collision = false;
+							force_collisions.forEach(collision => {
+								if (collision.has(sprite2)) {
+									collision.add(sprite1);
+									sprite_in_collision = true;
+								}
+							})
+
+							if (!(sprite_in_collision))
+								force_collisions.push(new Set([sprite1, sprite2]));
+
+							new_effects.push(effect(sprite1, sprite2, that, kwargs));
+						}
+
+						else if (effect.name == back_effect) {
+							var sprite_in_collision = false;
+							force_collisions.forEach(collision => {
+								if (collision.has(sprite1)) {
+									collision.forEach(sprite => {
+										new_effects.push(effect(sprite, sprite2, that, kwargs));
+									})
+								}
+							})
+
+							if (!(sprite_in_collision)) 
+								new_effects.push(effect(sprite1, sprite2, that, kwargs))
+						}
+
+						else {
+							new_effects.push(effect(sprite1, sprite2, that, kwargs));
+						}
+					}) 
+				})
+
+			})
+
+			that.effectList.concat(new_effects.filter(new_effect => {
+				return new_effect != null;
+			}));
+
+		}
+
+		// console.log(that.effectList);
+		// if (that.effectList.length) 
+		// 	console.log('effectList', that.effectList);
+		return that.effectList;
 	}
 
 	that.startGame = function () {
@@ -515,6 +684,8 @@ var BasicGame = function (gamejs, args) {
 
 			if (ms < mpf) return;
 
+			// disable continuous key press
+
 			pre_time = new_time;
 
 			that._terminationHandling();
@@ -524,13 +695,14 @@ var BasicGame = function (gamejs, args) {
 			that.background.fill(LIGHTGRAY);
 			that.screen.blit(that.background, [0, 0]);
 			that._clearAll();
-			// console.log(VGDLSprite.dirtyrects);
 			that._drawAll();
 
+
 			that._iterAll().forEach(sprite => {
-				// console.log(sprite);
-				if(sprite) sprite.update(that);
+				sprite.update(that);
 			})
+
+			that.time ++;
 
 		})
 

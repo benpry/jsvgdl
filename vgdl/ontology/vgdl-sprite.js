@@ -206,26 +206,38 @@ SpriteProducer.prototype = Object.create(VGDLSprite.prototype);
 
 
 function Portal (gamejs, pos, size, args) {
-	SpriteProducer.call(this, gamejs, pos, size, args); 
 	this.is_static = true;
 	this.color = BLUE;
+	SpriteProducer.call(this, gamejs, pos, size, args); 
 }
 Portal.prototype = Object.create(SpriteProducer.prototype);
 
 
 
 function SpawnPoint (gamejs, pos, size, args) {
-	SpriteProducer.call(this, gamejs, pos, size, args);
 	this.color = BLACK
-	this.prob = args.prob || 1;	
-	this.cooldown = args.cooldown || 1;
-	this.total = args.total;
-	if (args.prob) this.is_stochastic = prob > 0 && prob < 1;
+	if (args.prob != undefined) {
+		this.prob = args.prob
+	} else {
+		this.prob = 1
+	}
+
+	this.is_stochastic = this.prob > 0 && this.prob < 1;
+
+	if (args.cooldown != undefined) {
+		this.cooldown = args.cooldown;
+	} else {
+		this.cooldown = 1;
+	}
+	if (args.total != undefined) this.total = args.total;
+	this.counter = 0;
+	SpriteProducer.call(this, gamejs, pos, size, args);
 }
 SpawnPoint.prototype = Object.create(SpriteProducer.prototype);
 
-SpawnPoint.update = function (game) {
-	if (game.time % this.cooldown ==0 && this.gamejs.random.random() < this.prob) {
+SpawnPoint.prototype.update = function (game) {
+	var random = this.gamejs.math.random
+	if (game.time % this.cooldown == 0 && random.random() < this.prob) {
 		game._createSprite([this.stype], [this.rect.left, this.rect.top]);
 		this.counter ++;
 	}
@@ -238,15 +250,15 @@ SpawnPoint.update = function (game) {
 
 
 function RandomNPC(gamejs, pos, size, args) {
-	VGDLSprite.call(this, gamejs, pos, size, args);
 	this.speed = 1;
 	this.is_stochastic = true;
+	VGDLSprite.call(this, gamejs, pos, size, args);
 }
 RandomNPC.prototype = Object.create(VGDLSprite.prototype);
 
 RandomNPC.prototype.update = function (game) {
 	VGDLSprite.prototype.update.call(this, game);
-	this.direction = this.gamejs.random.choice(BASEDIRS);
+	this.direction = this.gamejs.random.choose(BASEDIRS);
 	this.physics.activeMovement(this, this.direction);
 }
 
@@ -255,7 +267,7 @@ RandomNPC.prototype.update = function (game) {
 function OrientedSprite(gamejs, pos, size, args) {
 	this.draw_arrow = false;
 	this.orientation = RIGHT;
-	VGDLSprite.call(this, gamejs, pos, size, args);
+	VGDLSprite.call(this, gamejs, pos, size, args);	
 }	
 OrientedSprite.prototype = Object.create(VGDLSprite.prototype);
 
@@ -269,20 +281,20 @@ OrientedSprite.prototype._draw = function (game) {
 
 
 function Conveyer(gamejs, pos, size, args) {
-	OrientedSprite.call(this, gamejs, pos, size, args);
 	this.is_static = true;
 	this.color = BLUE;
 	this.strength = 1;
 	this.draw_arrow = true;
+	OrientedSprite.call(this, gamejs, pos, size, args);
 }
 Conveyer.prototype = Object.create(OrientedSprite.prototype);
 
 
 
 function Missile(gamejs, pos, size, args) {
-	OrientedSprite.call(this, gamejs, pos, size, args);
 	this.speed = 1;
 	this.color = PURPLE;
+	OrientedSprite.call(this, gamejs, pos, size, args);
 }
 Missile.prototype = Object.create(OrientedSprite.prototype);
 
@@ -297,10 +309,10 @@ Switch.prototype = Object.create(OrientedSprite.prototype);
 
 function OrientedFlicker(gamejs, pos, size, args) {
 	// These two functions called in sequence probably overwrite one another
-	OrientedSprite.call(this, gamejs, pos, size, args);
-	Flicker.call(this, gamejs, pos, size, args);
 	this.draw_arrow = true;
 	this.speed = 0;
+	OrientedSprite.call(this, gamejs, pos, size, args);
+	Flicker.call(this, gamejs, pos, size, args);
 }
 OrientedFlicker.prototype = Object.create(Flicker.prototype);
 OrientedFlicker.prototype._draw = OrientedSprite.prototype._draw;
@@ -328,9 +340,9 @@ Walker.prototype.update = function (game) {
 
 
 function WalkJumper(gamejs, pos, size, args) {
+	this.prob = 0.1;
+	this.strength = 10;	
 	Walker.call(this, gamejs, pos, size, args);
-	var prob = 0.1;
-	var strength = 10;	
 }
 WalkJumper.prototype = Object.create(Walker.prototype);
 
@@ -345,9 +357,9 @@ WalkJumper.prototype.update = function (game) {
 
 
 function RandomInertial(gamejs, pos, size, args) {
+	this.physicstype = ContinuousPhysics;
 	OrientedSprite.call(this, gamejs, pos, size, args);
 	RandomNPC.call(this, gamejs, pos, size, args);
-	this.physicstype = ContinuousPhysics;
 }
 RandomInertial.prototype = Object.create(RandomNPC.prototype);
 RandomInertial.prototype._draw = OrientedSprite.prototype._draw;
@@ -361,9 +373,9 @@ RandomMissile.prototype = Object.create(Missile.prototype);
 
 
 function EraticMissile(gamejs, pos, size, args) {
-	Missile.call(this, gamejs, pos, size, args);
 	this.prob = prob;
 	this.is_stochastic = (prob > 0 && prob < 1);
+	Missile.call(this, gamejs, pos, size, args);
 }
 EraticMissile.prototype = Object.create(Missile.prototype);
 
@@ -376,10 +388,10 @@ EraticMissile.prototype.update = function (game) {
 
 
 function Bomber(gamejs, pos, size, args) {
-	SpawnPoint.call(this, gamejs, pos, size, args);
-	Missile.call(this, gamejs, pos, size, args);
 	this.color = ORANGE;
 	this.is_static = false;
+	SpawnPoint.call(this, gamejs, pos, size, args);
+	Missile.call(this, gamejs, pos, size, args);
 }
 Bomber.prototype = Object.create(Missile.prototype);
 
@@ -389,9 +401,9 @@ Bomber.prototype.update = function (game) {
 }
 
 function Chaser(gamejs, pos, size, args) {
-	RandomNPC.call(this, gamejs, pos, size, args);
 	this.stype = null;
 	this.fleeing = false;
+	RandomNPC.call(this, gamejs, pos, size, args);
 }
 Chaser.prototype = Object.create(RandomNPC.prototype);
 
@@ -441,20 +453,20 @@ Chaser.prototype.update = function (game) {
 }
 
 function Fleeing(gamejs, pos, size, args) {
-	Chaser.call(this, gamejs, pos, size, args);
 	this.fleeing = true;
+	Chaser.call(this, gamejs, pos, size, args);
 }
 Fleeing.prototype = Object.create(Chaser.prototype);
 
 
 
 function AStarChaser(gamejs, pos, size, args) {
-	RandomNPC.call(this, gamejs, pos, size, args);
 	this.stype = null;
 	this.fleeing = false;
 	this.drawpath = null;
 	this.walableTiles = null;
 	this.neighborNodes =null;
+	RandomNPC.call(this, gamejs, pos, size, args);
 }
 AStarChaser.prototype = Object.create(RandomNPC.prototype);
 

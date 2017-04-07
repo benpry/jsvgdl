@@ -6,6 +6,11 @@ Array.prototype.remove = function (element) {
 		this.splice(index, 1);
 }
 
+Array.prototype.contains = function (element) {
+	var index = this.indexOf(element); 
+	return (index > -1);
+}
+
 var new_id = (function () {
 
 	var id_number = 0;
@@ -27,6 +32,10 @@ function defaultDict(base) {
             return base;
         }
     }
+}
+
+Object.copy = function (obj) {
+	return Object.assign({}, obj);
 }
 
 // Object.prototype.extend = function () {

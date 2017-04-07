@@ -15,9 +15,11 @@ function getColor(sprite) {
 
 function killSprite (sprite, partner, game, kwargs) {
 
+
 	game.kill_list.push(sprite);
-	console.log('kill sprite', sprite);
-	return ['killSprite', sprite.ID, partner.ID];
+
+	// console.log('kill sprite', sprite);
+	return ['killSprite'];
 }
 
 function cloneSprite (sprite, partner, game, kwargs) {

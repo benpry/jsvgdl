@@ -506,6 +506,11 @@ Rect.prototype.inflateIp = function(x, y) {
     this.height += y;
 };
 
+Rect.prototype.contains = function (rect) {
+  return (this.left <= rect.left && this.right >= rect.right &&
+            this.top <= rect.top && this.bottom >= rect.bottom);
+}
+
 /**
  * Check for collision with a point.
  *
@@ -526,8 +531,9 @@ Rect.prototype.collidePoint = function() {
  * @returns {Boolean} true if the given Rect collides with this Rect
  */
 Rect.prototype.collideRect = function(rect) {
-   return !(this.left >= rect.right || this.right <= rect.left ||
-      this.top >= rect.bottom || this.bottom <= rect.top);
+   console.log('collideRect', this, rect);
+   return (this.left <= rect.right || this.right >= rect.left ||
+      this.top <= rect.bottom || this.bottom >= rect.top);
 };
 
 /**
@@ -541,12 +547,11 @@ Rect.prototype.collidelistall = function(rect_array) {
   var indeces = rect_array.reduce(function (indeces, rect, index) {
     if (that.collideRect(rect)) 
       indeces.push(index);
-  
     return indeces;
   }, []);
   if (indeces.length)
     return indeces;
-  return -1
+  return [];
 };
 
 /**
