@@ -4,7 +4,7 @@
  * Render text in a certain font to the screen.
  */
 
-// var gamejs = require('gamejs');
+var gamejs = require('gamejs');
 var vgdl_parser = VGDLParser(gamejs);
 var vgdl_game = examples.aliens;
 
