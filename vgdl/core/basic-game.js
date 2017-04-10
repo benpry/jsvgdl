@@ -10,6 +10,7 @@ var BasicGame = function (gamejs, args) {
 	var block_size = 10;
 	var frame_rate = 20;
 	var load_save_enabled = true;
+	var disableContinuousKeyPress = true;
 
 	that.reset = function () {
 		that.score = 0;
@@ -471,6 +472,7 @@ var BasicGame = function (gamejs, args) {
 			
 				// end build
 				if (class2 == 'EOS') {
+					// console.log(effect, 'effect with eos as arg');
 					var sprites1 = that.lastcollisions[class1];
 					sprites1.forEach(sprite1 => {
 						if (!(new gamejs.Rect([0, 0], that.screensize).contains(sprite1.rect))) {
@@ -499,6 +501,7 @@ var BasicGame = function (gamejs, args) {
 
 				var sprites1 = that.lastcollisions[class1];
 				var sprites2 = that.lastcollisions[class2];
+
 				sprites1.forEach(sprite1 => {
 					// console.log('collide list', sprite1.rect.collidelistall(sprites2));
 					sprite1.rect.collidelistall(sprites2).forEach(collision_index => {
@@ -678,6 +681,10 @@ var BasicGame = function (gamejs, args) {
 		var fps = 20;
 		var mpf = 1000/fps;
 
+		that.collision_eff.forEach(col_eff => {
+			console.log(col_eff);
+		})
+
 		gamejs.onTick(function () {
 			new_time = new Date().getTime();
 			ms = (new_time - pre_time);
@@ -703,6 +710,15 @@ var BasicGame = function (gamejs, args) {
 			})
 
 			that.time ++;
+
+			// Discontinuous key press
+			if (disableContinuousKeyPress) {
+				Object.keys(that.keystate).forEach(key => {
+					if (that.keystate[key]) {
+						that.keystate[key] = false;
+					}
+				});
+			}
 
 		})
 

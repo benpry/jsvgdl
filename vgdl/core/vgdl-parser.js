@@ -39,9 +39,9 @@ var VGDLParser = function (gamejs) {
 					});
 					var [eclass, args] = _parseArgs(edef);
 					parser.game.collision_eff.push(
-						pair.split(' ').map(function (s) {
+						pair.split(' ').map(s => {
 							return s.trim();
-						}).concat([eclass, args])
+						}).filter(s => {return s}).concat([eclass, args])
 					);
 					if (verbose) {
 						console.log('Collision', pair, 'has effect:', edef);
@@ -127,10 +127,10 @@ var VGDLParser = function (gamejs) {
 	}
 
 	var _parseArgs = function (string, sclass={}, args={}) {
-		var sparts = string.split(' ').map(function (s) {
+		var sparts = string.split(' ').map(s => {
 			return s.trim();
 		});
-		
+
 		if (sparts.length == 0)
 			return [sclass, args];	
 
