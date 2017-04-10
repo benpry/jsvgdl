@@ -15,7 +15,7 @@ function getColor(sprite) {
 
 function killSprite (sprite, partner, game, kwargs) {
 
-	console.log(sprite.name, 'killed');
+	// console.log(sprite.name, 'killed');
 	game.kill_list.push(sprite);
 
 	// console.log('kill sprite', sprite);
@@ -40,7 +40,6 @@ function triggerOnLading (sprite, partner, game, kwargs) {
 }
 
 function stepBack (sprite, partner, game, kwargs) {
-	console.log(sprite, partner);
 	sprite.rect = sprite.lastrect.clone();
 	// return ['stepBack', sprite.ID, partner.ID];
 }
@@ -82,7 +81,7 @@ function turnAround(sprite, partner, game, kwargs) {
 
 function reverseDirection(sprite, partner, game, kwargs) {
 	sprite.orientation = [-sprite.orientation[0], -sprite.orientation[1]];
-	
+
 }
 
 function reverseFlowIfActivated(sprite, partner, game, kwargs) {

@@ -431,18 +431,19 @@ var BasicGame = function (gamejs, args) {
 		var dead = that.kill_list.slice();
 
 
-		var collision_set = new Set([]);
+		var collision_set = {}
 		var spritesActedOn = new Set([]);
 		var new_collisions = {place_holder: true};
 		var new_effects = [];
-		while (Object.keys(new_collisions).length) {
+		var iterations = 0;
+		while (Object.keys(new_collisions).length > 0 && iterations < 5) {
 			new_collisions = {};
 			new_effects = [];
+			iterations ++;
 
 			// Build the current sprite list (if not yet availale)
 			that.collision_eff.forEach(col_eff => {
 				var [class1, class2, effect, kwargs] = col_eff;
-				// console.log(class1, class2, effect, kwargs)
 				[class1, class2].forEach(sprite_class => {
 					var sprites = [];
 					if (!(sprite_class in that.lastcollisions)) {
@@ -455,28 +456,37 @@ var BasicGame = function (gamejs, args) {
 							Object.keys(that.sprite_groups).forEach(key => {
 								// console.log(key);
 								var sprite_array = that.sprite_groups[key];
-								// console.log(sprite_array);
-								// console.log(sprite_array[0].stypes);
+								
 								if (sprite_array.length && sprite_array[0].stypes.contains(sprite_class)) {
-									// console.log(sprite_class, sprite_array);
 									sprites = sprites.concat(sprite_array);
 									// console.log('updated', sprites);
 								}
 							})
 						}
+						// console.log(that.lastcollisions)
+						that.lastcollisions[sprite_class] = sprites;
 					}
-					// console.log(that.lastcollisions)
-					that.lastcollisions[sprite_class] = sprites;
+					
 				})
-				// console.log(that.lastcollisions)
+				// console.log(Object.keys(that.lastcollisions));
+			})
+
+			// console.log(that.lastcollisions);
+
+			that.collision_eff.forEach(col_eff => {
+				var [class1, class2, effect, kwargs] = col_eff;
 			
 				// end build
 				if (class2 == 'EOS') {
 					// console.log(effect, 'effect with eos as arg');
 					var sprites1 = that.lastcollisions[class1];
 					sprites1.forEach(sprite1 => {
-						if (!(new gamejs.Rect([0, 0], that.screensize).contains(sprite1.rect))) {
-							new_collisions[sprite1] = 'EOS';
+						if (!(new gamejs.Rect([0, 0], that.screensize).contains(sprite1.rect)) &&
+							!(collision_set[sprite1] && collision_set[sprite1].contains('EOS'))) {
+
+							if (new_collisions[sprite1]) new_collisions[sprite1].push['EOS'];
+							else new_collisions[sprite1] = ['EOS'];
+							
 							var e = effect(sprite1, null, that, kwargs);
 							if (e) that.effectList.push(e);
 							spritesActedOn.add(sprite1);
@@ -502,18 +512,24 @@ var BasicGame = function (gamejs, args) {
 				var sprites1 = that.lastcollisions[class1];
 				var sprites2 = that.lastcollisions[class2];
 
+
 				sprites1.forEach(sprite1 => {
-					// console.log('collide list', sprite1.rect.collidelistall(sprites2));
+
 					sprite1.rect.collidelistall(sprites2).forEach(collision_index => {
 						var sprite2 = sprites2[collision_index];
 
 						if (sprite1 == sprite2 ||
-							collision_set.sprite1 == sprite2 ||
+							(collision_set[sprite1] && 
+							 collision_set[sprite1].contains(sprite2)) ||
 							dead.contains(sprite1) ||
 							dead.contains(sprite2))
 							return
-
-						new_collisions[sprite1] = sprite2;
+						if (new_collisions[sprite1] instanceof Array) {
+							new_collisions[sprite1].push(sprite2);
+						}
+						else {
+							new_collisions[sprite1] = [sprite2];	
+						}
 
 						if (score) that.score += score;
 
@@ -573,9 +589,10 @@ var BasicGame = function (gamejs, args) {
 			that.effectList.concat(new_effects.filter(new_effect => {
 				return new_effect != null;
 			}));
+			Object.assign(collision_set, new_collisions);
 
 		}
-
+		// console.log(iterations);
 		// console.log(that.effectList);
 		// if (that.effectList.length) 
 		// 	console.log('effectList', that.effectList);
@@ -666,13 +683,17 @@ var BasicGame = function (gamejs, args) {
 		});
 
 		that.keystate = {};
+		that.keywait = {};
+		// disableContinuousKeyPress = false;
 
 		gamejs.event.onKeyDown (event => {
-			that.keystate[event.key] = true;
+			if (!(that.keywait[event.key]))
+				that.keystate[event.key] = true;
 		});
 
 		gamejs.event.onKeyUp (event => {
 			that.keystate[event.key] = false;
+			that.keywait[event.key] = false;
 		})
 
 		// Main Game Loop
@@ -681,11 +702,8 @@ var BasicGame = function (gamejs, args) {
 		var fps = 20;
 		var mpf = 1000/fps;
 
-		that.collision_eff.forEach(col_eff => {
-			console.log(col_eff);
-		})
-
 		gamejs.onTick(function () {
+
 			new_time = new Date().getTime();
 			ms = (new_time - pre_time);
 
@@ -716,6 +734,7 @@ var BasicGame = function (gamejs, args) {
 				Object.keys(that.keystate).forEach(key => {
 					if (that.keystate[key]) {
 						that.keystate[key] = false;
+						that.keywait[key] = true;
 					}
 				});
 			}
