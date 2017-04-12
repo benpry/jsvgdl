@@ -384,7 +384,9 @@ var BasicGame = function (gamejs, args) {
 
 		that._iterAll().forEach(s => {
 			try {
-				if (s) s._draw(that);
+				if (s) {
+					s._draw(that);
+				}
 			} catch (err) {
 				console.log('cannot draw', s);
 			}
@@ -419,7 +421,129 @@ var BasicGame = function (gamejs, args) {
 		});
 	}
 
+
+
 	that._eventHandling = function () {
+		// return;
+		// console.log(that.lastcollisions)
+		that.effectList = [];
+		that.lastcollisions = {};
+
+
+		var force_collisions = [];
+		var dead = that.kill_list.slice();
+
+
+		var new_effects = [];
+
+
+		// Build the current sprite list (if not yet availale)
+		that.collision_eff.forEach(col_eff => {
+			var [class1, class2, effect, kwargs] = col_eff;
+
+			[class1, class2].forEach(sprite_class => {
+				var sprites = [];
+				if (!(sprite_class in that.lastcollisions)) {
+					// console.log(that.sprite_groups);
+					if (sprite_class in that.sprite_groups) {
+						sprites = that.sprite_groups[sprite_class].slice();
+
+					} else {
+						sprites = [];
+						Object.keys(that.sprite_groups).forEach(key => {
+							// console.log(key);
+							var sprite_array = that.sprite_groups[key].slice();
+							
+							if (sprite_array.length && sprite_array[0].stypes.contains(sprite_class)) {
+								sprites = sprites.concat(sprite_array.slice());
+								// console.log('updated', sprites);
+							}
+						})
+					}
+					// console.log(that.lastcollisions)
+					that.lastcollisions[sprite_class] = sprites.slice();
+				}
+				
+			})
+		
+			// end build
+			if (class2 == 'EOS') {
+				// console.log(effect, 'effect with eos as arg');
+				var sprites1 = that.lastcollisions[class1];
+				sprites1.forEach(sprite1 => {
+					if (!(new gamejs.Rect([0, 0], that.screensize).contains(sprite1.rect))) {
+
+						var e = effect(sprite1, null, that, kwargs);
+						if (e) that.effectList.push(e);
+						// spritesActedOn.add(sprite1);
+					}
+				})
+			}
+			
+
+			var score = 0;
+			if (kwargs.scoreChange) {
+				kwargs = Object.copy(kwargs);
+				score = kwargs.scoreChange;
+				delete kwargs.scoreChange;
+			}
+
+			var dim = null;
+			if (kwargs.dim) {
+				kwargs = Object.copy(kwargs);
+				dim = kwargs.dim;
+				delete kwargs.dim
+			}
+
+			var sprites1 = that.lastcollisions[class1].slice();
+			var sprites2 = that.lastcollisions[class2].slice();
+
+
+			sprites1.forEach(sprite1 => {
+
+				sprite1.rect.collidelistall(sprites2).forEach(collision_index => {
+					var sprite2 = sprites2[collision_index];
+
+					if (sprite1 == sprite2) return;
+
+					if (score) that.score += score;
+
+					if ('applyto' in kwargs) {
+						// deal with later
+						// var stype = kwargs['applyto'];
+					}
+
+					if (dim) {
+						// deal with later
+					}
+
+					if (effect.name == 'changeResource') {
+						var resource = kwargs['resource'];
+						var [sclass, args, stypes] = that.sprite_constr[resource];
+						var resource_color = args['color'];
+						new_effects.push(effect(sprite1, sprite2, resource_color, that, kwargs));
+					} else {
+						new_effects.push(effect(sprite1, sprite2, that, kwargs));
+					}
+
+				}) 
+			})
+
+		})
+
+		// that.effectList.concat(new_effects.filter(new_effect => {
+		// 	return new_effect != null;
+		// }));
+		// Object.assign(collision_set, new_collisions);
+
+		// console.log(iterations);
+		// console.log(that.effectList);
+		// if (that.effectList.length) 
+		// 	console.log('effectList', that.effectList);
+		return that.effectList;
+	}
+
+	that._eventHandlingWorking = function () {
 		// console.log(that.lastcollisions)
 		that.effectList = [];
 		that.lastcollisions = {};
@@ -486,7 +610,7 @@ var BasicGame = function (gamejs, args) {
 
 							if (new_collisions[sprite1]) new_collisions[sprite1].push['EOS'];
 							else new_collisions[sprite1] = ['EOS'];
-							
+
 							var e = effect(sprite1, null, that, kwargs);
 							if (e) that.effectList.push(e);
 							spritesActedOn.add(sprite1);
@@ -702,7 +826,12 @@ var BasicGame = function (gamejs, args) {
 		var fps = 20;
 		var mpf = 1000/fps;
 
+
 		gamejs.onTick(function () {
+
+
+
+			// console.log(that.kill_list);
 
 			new_time = new Date().getTime();
 			ms = (new_time - pre_time);
