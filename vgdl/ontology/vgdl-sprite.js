@@ -90,7 +90,7 @@ VGDLSprite.prototype = {
 	},
 
 	lastdirection : function () {
-		return [this.rect[0]-this.lastrect[0], this.rect[1]-this.lastrect[1]];
+		return [this.rect.x-this.lastrect.x, this.rect.y-this.lastrect.y];
 	},
 
 	_draw : function (game) {

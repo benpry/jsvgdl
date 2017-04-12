@@ -196,8 +196,8 @@ var BasicGame = function (gamejs, args) {
 
 	that.numSprites = function (key) {
 		var deleted = that.kill_list.filter(function (s) {return s.stypes[key]}).length;
-		if (that.sprite_groups[key]) 
-			return that.sprite_groups[key].length-deleted;
+		if (that._getAllSpriteGroups()[key] != undefined) 
+			return that._getAllSpriteGroups()[key].length-deleted;
 		else
 			return 0; // Should be __iter__ - deleted
 
@@ -422,14 +422,13 @@ var BasicGame = function (gamejs, args) {
 	}
 
 
-	that._eventHandling = function () {
-		that.lastcollisions = {};
-		that.effectList = [];
+	that._getAllSpriteGroups = function () {
+		var lastcollisions = {};
 		that.collision_eff.forEach(function (eff) {
 			var [class1, class2, effect, kwargs] = eff;
 			// console.log(eff);	
 			[class1, class2].forEach(function (sprite_class) {
-				if (!(sprite_class in that.lastcollisions)) {
+				if (!(sprite_class in lastcollisions)) {
 					var sprite_array = [];
 					if (sprite_class in that.sprite_groups) {
 						var sprite_array = that.sprite_groups[sprite_class].slice();
@@ -447,10 +446,42 @@ var BasicGame = function (gamejs, args) {
 							
 						})
 					}
-					that.lastcollisions[sprite_class] = sprite_array;
+					lastcollisions[sprite_class] = sprite_array;
 				}
 			})
-		})
+		})	
+		return lastcollisions;
+	}
+
+	that._eventHandling = function () {
+		that.lastcollisions = that._getAllSpriteGroups();
+		that.effectList = [];
+		// that.collision_eff.forEach(function (eff) {
+		// 	var [class1, class2, effect, kwargs] = eff;
+		// 	// console.log(eff);	
+		// 	[class1, class2].forEach(function (sprite_class) {
+		// 		if (!(sprite_class in that.lastcollisions)) {
+		// 			var sprite_array = [];
+		// 			if (sprite_class in that.sprite_groups) {
+		// 				var sprite_array = that.sprite_groups[sprite_class].slice();
+		// 			} else {
+
+		// 				var sprites_array = [];;
+		// 				Object.keys(that.sprite_groups).forEach(key => {
+		// 					// console.log('key', key);
+
+		// 					var sprites = that.sprite_groups[key].slice();	
+		// 					if (sprites.length && sprites[0].stypes.contains(sprite_class)) {
+		// 						// console.log('concat', sprite_array.concat(sprites))
+		// 						sprite_array = sprite_array.concat(sprites);
+		// 					}
+							
+		// 				})
+		// 			}
+		// 			that.lastcollisions[sprite_class] = sprite_array;
+		// 		}
+		// 	})
+		// })
 
 
 		that.collision_eff.forEach(function (eff) {

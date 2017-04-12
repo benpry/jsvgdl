@@ -61,7 +61,7 @@ function stepBack (sprite, partner, game, kwargs) {
 // }
 
 function bounceForward(sprite, partner, game, kwargs) {
-	ssprite.physics.activeMovement(sprite, unitVector(parter.lastdirection));
+	sprite.physics.activeMovement(sprite, tools.unitVector(partner.lastdirection()));
 	game._updateCollisionDict(sprite);
 
 }

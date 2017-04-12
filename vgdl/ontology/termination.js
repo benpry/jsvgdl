@@ -22,16 +22,17 @@ Timeout.prototype.isDone = function (game) {
 }
 
 var SpriteCounter = function (args) {
+	Termination.call(this, args);	
 	this.limit = args.limit || 0;
 	this.stype = args.stype;
 	this.win = args.win;
-	Termination.call(this, args);
+	console.log('sprite counter', this.stype);
 }
 SpriteCounter.prototype = Object.create(Termination.prototype);
 
 SpriteCounter.prototype.isDone = function (game) {
 	if (game.numSprites(this.stype) <= this.limit) {
-		console.log('game ended', this.win);
+		console.log('game ended: count', this.stype, game.numSprites(this.stype), '<=', this.limit, this.win);
 		return [true, this.win];
 	}
 	else
@@ -40,11 +41,12 @@ SpriteCounter.prototype.isDone = function (game) {
 
 
 var MultiSpriteCounter = function (args) {
+	Termination.call(this, args);
 	this.limit = args.limit;
 	this.win = args.win;
 	array_args = Array.from(args);
 	this.stypes = array_args.filter(arg => {return arg.includes('stype')}).map(stype => {return args[stype]});
-	Termination.call(this, args);
+	
 }
 MultiSpriteCounter.prototype = Object.create(Termination.prototype);
 
