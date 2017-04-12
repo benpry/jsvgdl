@@ -59,7 +59,6 @@ var VGDLParser = function (gamejs) {
 				});
 				var [sclass, args] = _parseArgs(sdef, parentClass, Object.assign({}, parentargs));
 				var stypes = parenttypes.concat(key);
-
 				if ('singleton' in args) {
 					if (args['singleton'] == true) 
 						parser.game.singletons.push(key);

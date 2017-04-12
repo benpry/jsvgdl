@@ -88,9 +88,7 @@ var BasicGame = function (gamejs, args) {
 		//Set up resources
 		for (var res_type in that.sprite_constr) {
 		    if (!(that.sprite_constr.hasOwnProperty(res_type))) continue;
-		    console.log(res_type, that.sprite_constr[res_type]);
 			var [sclass, args, _] = that.sprite_constr[res_type];
-			console.log(sclass);
 			if (sclass.prototype instanceof Resource) {
 				console.log('resource');
 				if (args['res_type']) 
@@ -426,37 +424,39 @@ var BasicGame = function (gamejs, args) {
 
 	that._eventHandling = function () {
 		that.lastcollisions = {};
-		var ss = that.lastcollisions;
 		that.effectList = [];
 		that.collision_eff.forEach(function (eff) {
-			var [g1, g2, effect, kwargs] = eff;
+			var [class1, class2, effect, kwargs] = eff;
 			// console.log(eff);	
-			[g1, g2].forEach(function (g) {
-				if (!(g in ss)) {
-					if (g in that.sprite_groups) {
-						var tmp = that.sprite_groups[g];
+			[class1, class2].forEach(function (sprite_class) {
+				if (!(sprite_class in that.lastcollisions)) {
+					var sprite_array = [];
+					if (sprite_class in that.sprite_groups) {
+						var sprite_array = that.sprite_groups[sprite_class].slice();
 					} else {
-						var tmp = [];
-						for (key in that.sprite_groups) {
-							var v = that.sprite_groups[key];
-							// console.log(v);	
-							if (v instanceof Array && v.length) {
-								if (v.length && v[0].stypes.contains(g)) {
-									// console.log(v);
-									tmp.concat(v);
-								}
-							}
-						}
-					}
 
-					ss[g] = tmp;
+						var sprites_array = [];;
+						Object.keys(that.sprite_groups).forEach(key => {
+							// console.log('key', key);
+
+							var sprites = that.sprite_groups[key].slice();	
+							if (sprites.length && sprites[0].stypes.contains(sprite_class)) {
+								// console.log('concat', sprite_array.concat(sprites))
+								sprite_array = sprite_array.concat(sprites);
+							}
+							
+						})
+					}
+					that.lastcollisions[sprite_class] = sprite_array;
 				}
 			})
+		})
 
 
-
-			if (g2 == 'EOS') {
-				var ss1 = ss[g1];
+		that.collision_eff.forEach(function (eff) {
+			var [class1, class2, effect, kwargs] = eff;
+			if (class2 == 'EOS') {
+				var ss1 = that.lastcollisions[class1];
 				ss1.forEach(function (s1) {
 					if (!(new gamejs.Rect([0, 0], that.screensize).collideRect(s1.rect))) {
 						var e = effect(s1, null, that, kwargs);
@@ -470,10 +470,8 @@ var BasicGame = function (gamejs, args) {
 			}
 
 			// console.log(ss);
-			var ss1 = ss[g1];
-			var ss2 = ss[g2];
-
-			var [shortss, longss, switch_vars] = [ss1, ss2];
+			var sprite_array1 = that.lastcollisions[class1];
+			var sprite_array2 = that.lastcollisions[class2];
 
 
 			var score = 0;
@@ -490,18 +488,18 @@ var BasicGame = function (gamejs, args) {
 				delete kwargs['dim'];
 			}
 
-			// console.log(longss);
-			shortss.forEach(function (s1) {
-				var rects = longss.map(os => {return os.rect});
-				// if (longss.length)
-				// 	console.log(s1.name, longss[0].name);
+			// console.log(sprite_array2);
+			sprite_array1.forEach(function (s1) {
+				var rects = sprite_array2.map(os => {return os.rect});
+				// if (sprite_array2.length)
+				// 	console.log(s1.name, sprite_array2[0].name);
 				if (s1.rect.collidelistall(rects) == -1) return ;
 				s1.rect.collidelistall(rects).forEach(function (ci) {
-					var s2 = longss[ci];
+					var s2 = sprite_array2[ci];
 					if (s1 == s2)
 						return;
 
-					console.log(s1.name, s2.name);
+					console.log('collision', s1.name, s2.name);
 
 					if (score > 0) 
 						that.score += score;
@@ -520,7 +518,7 @@ var BasicGame = function (gamejs, args) {
 				
 
 					if (dim) {
-						var sprites = that.getSprites(g1);
+						var sprites = that.getSprites(class1);
 						var spritesFiltered = sprites.filter(function (sprite) {
 							return sprite[dim] == s2[dim];
 						});
@@ -850,6 +848,8 @@ var BasicGame = function (gamejs, args) {
 		that.collision_eff.forEach(eff=> {
 			console.log(eff);
 		})
+
+		console.log(that.sprite_groups);
 		gamejs.onTick(function () {
 
 
