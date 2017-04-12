@@ -3,16 +3,15 @@ var Resource = function (gamejs, pos, size, args) {
 	this.value = 1;
 	this.limit = 2;
 	this.res_type = null;
+	// console.log(this.rect);
 }
 Resource.prototype = Object.create(VGDLSprite.prototype);
 
-Resource.prototype = {
-	resourceType : function () {
+Resource.prototype.resourceType = function () {
 		if (this.res_typ == null)
 			return this.name;
 		else
 			return this.res_type;
-	}
 }
 
 

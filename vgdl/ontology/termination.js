@@ -30,8 +30,10 @@ var SpriteCounter = function (args) {
 SpriteCounter.prototype = Object.create(Termination.prototype);
 
 SpriteCounter.prototype.isDone = function (game) {
-	if (game.numSprites(this.stype) <= this.limit)
+	if (game.numSprites(this.stype) <= this.limit) {
+		console.log('game ended', this.win);
 		return [true, this.win];
+	}
 	else
 		return [false, null];
 }
