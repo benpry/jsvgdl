@@ -258,7 +258,7 @@ RandomNPC.prototype = Object.create(VGDLSprite.prototype);
 
 RandomNPC.prototype.update = function (game) {
 	VGDLSprite.prototype.update.call(this, game);
-	this.direction = this.gamejs.random.choose(BASEDIRS);
+	this.direction = this.gamejs.math.random.choose(BASEDIRS);
 	this.physics.activeMovement(this, this.direction);
 }
 

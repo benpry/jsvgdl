@@ -191,7 +191,17 @@ function killIfOtherHasLess(sprite, partner, game, kwargs) {
 }
 
 function wrapAround(sprite, partner, game, kwargs) {
+	var offset = kwargs.offset || 0;
 
+    if (sprite.orientation[0] > 0)
+        sprite.rect.left = offset * sprite.rect.size[1]
+    else if (sprite.orientation[0] < 0)
+        sprite.rect.left = game.screensize[0] - sprite.rect.size[0] * (1 + offset)
+    if (sprite.orientation[1] > 0)
+        sprite.rect.top = offset * sprite.rect.size[1]
+    else if (sprite.orientation[1] < 0)
+        sprite.rect.top = game.screensize[1] - sprite.rect.size[1] * (1 + offset)
+    sprite.lastmove = 0
 }
 
 function pullWithIt(sprite, partner, game, kwargs) {

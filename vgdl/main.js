@@ -6,7 +6,7 @@
 
 var gamejs = require('gamejs');
 var vgdl_parser = VGDLParser(gamejs);
-var vgdl_game = examples.aliens;
+var vgdl_game = examples.dodge;
 
 gamejs.ready(vgdl_parser.playGame(vgdl_game.game, vgdl_game.level));
 

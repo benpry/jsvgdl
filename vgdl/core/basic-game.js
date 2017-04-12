@@ -38,7 +38,7 @@ var BasicGame = function (gamejs, args) {
 						  'avatar': [MovingAvatar, {}, ['avatar']]};
 
 	// z-level of sprite types (in case of overlap)
-	that.sprite_order = ['wall'];
+	that.sprite_order = ['wall', 'avatar'];
 
 	// contains instance lists
 	that.sprite_groups = {};
