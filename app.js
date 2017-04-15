@@ -2,13 +2,8 @@ var express = require('express');
 
 var app = express();
 
-app.use(express.static('examples'));
-
-var VGDLParser = require('./vgdl/core/vgdl-parser');
-console.log(VGDLParser());
-
-app.get('/', function (req, res) {
-	res.send(VGDLParser);
+app.get('/admin', function (req, res) {
+	res.send('hello');
 });
 
 app.listen(3000, function () {

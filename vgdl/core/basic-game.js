@@ -180,7 +180,7 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that._initScreen = function (size) {
-		that.screen = gamejs.display.getSurface();
+		that.screen = gamejs.display.setMode(size);
 		that.background = new gamejs.graphics.Surface(size);
 		that.background.fill(LIGHTGRAY);
 		that.screen.blit(that.background, [0, 0]);
