@@ -1,0 +1,35 @@
+	
+All the things to do
+	Inheritence
+
+	proper event handler
+
+	all of the effects
+
+	game inteface
+
+Question?
+
+Adding images to sprites
+
+Specificy vgdl to find images in image dir
+
+Physics
+
+	Air steering causes infinite motion
+
+	Continious physics doesn't work, basically.
+
+	Use physics
+
+
+The interface
+
+	Main screen - this link is sent to anyone
+		[start experiment]
+		[login as admin, at bottom of screen?]
+
+	Each test has the game, and needs to 
+
+
+Database

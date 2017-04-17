@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="/css/styles.css">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="/gamejs-2.0.3-pre.js"></script>
+
+    <script src="/tools.js"></script>
+    <script src="/ontology/constants.js"></script>
+    
+    <script src="/ontology/physics.js"></script>
+    <script src="/ontology/termination.js"></script>
+    <script src="/ontology/conditional.js"></script>
+    <script src="/ontology/effect.js"></script>
+    <script src="/ontology/sprite-induction.js"></script>
+
+    <script src="/ontology/vgdl-sprite.js"></script>
+    <script src="/ontology/avatar.js"></script>
+    <script src="/ontology/resource.js"></script>
+
+    <script src="/core/basic-game.js"></script>
+    <script src="/core/vgdl-parser.js"></script>
+
+
+    <script type='text/javascript'>
+
+        var vgdl_game = {level: `<%-level%>`,
+                         game : `<%-game%>`};
+
+        require.setModuleRoot('/');
+        require.run('play_game');
+    </script>
+</head>
+<body>
+    <div class="Flex-Container">
+        <div>
+          <h1>Game 1 - Round 1</h1>
+        </div> 
+        <div>
+            <div id="gjs-loader">
+             <progress max=1 min=0 steps=0.1></progress>
+             <br/>Loading...
+            </div>
+            <canvas id="gjs-canvas"></canvas>
+
+        </div>
+    </div>
+
+  <!-- The Modal -->
+  <div id="start-modal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+      <div class="Flex-Container">
+        <p>Begin game</p>
+        <button id="start">start</button>
+      </div> 
+    </div>
+
+  </div>
+
+  <div id="end-modal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+      <div class="Flex-Container">
+        <p id='status'></p>
+        <button id="continue">continue</button>
+      </div> 
+    </div>
+
+  </div>
+</body>
+</html>
