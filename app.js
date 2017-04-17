@@ -43,8 +43,8 @@ app.get('/experiment/:exp_id', function (req, res) {
 
 
 app.post('/experiment/new', function (req, res) {
-	console.log('creating new experiment');
-	res.send({exp_id: exp_id});
+
+	res.send({success: true});
 });
 
 app.post('/admin/login', function (req, res) {
