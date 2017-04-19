@@ -43,16 +43,16 @@ app.get('/admin/login', function (req, res) {
 // Sends the current game to be played for the given experiment id
 app.get('/experiment/:exp_id', function (req, res) {	
 	var data = {};
-	data.game_obj = experiments[exp_id].current_game_obj();
 	data.exp_id = req.params.exp_id;
-	if (current_game) 
+	data.game_obj = experiments[data.exp_id].current_game_obj();
+	if (data.game_obj) 
 		res.render('game', data);
 	else
 		res.render('home');
 })
 
 app.put('/experiment/:exp_id', function (req, res) {
-	// store req.body.data;
+	console.log(req.body);
 	var exp_id = req.params.exp_id;
 	experiments[req.params.exp_id].next();
 	res.send({exp_id: exp_id});

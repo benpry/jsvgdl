@@ -862,7 +862,9 @@ var experiments = {
             var experiment = Object.create(Experiment.prototype);
 
             var games_ordered = [];
+            var game_number = 0;
             experiments[exp_name].forEach(settings => {
+                game_number ++;
                 var next_games = [];
                 var game_name = settings[0];
                 var game_levels = settings[1];
@@ -872,13 +874,12 @@ var experiments = {
 
                 game_levels.forEach(game_level => {
                     for (var i = 0; i < level_rounds ; i++) {
-                        next_games.push([game_name, game_level])
+                        next_games.push([game_name, game_level, game_number, i+1])
                     }
                 })
                 games_ordered = games_ordered.concat(next_games);
             })
 
-            console.log(games_ordered);
 
             var current_trial = 0;
             var max_trials = games_ordered.length
@@ -887,7 +888,10 @@ var experiments = {
                 if (current_trial == max_trials)
                     return false;
                 var current_game = games_ordered[current_trial]
-                return that.get_game(current_game[0], current_game[1]);
+                var game_obj = that.get_game(current_game[0], current_game[1]);
+                game_obj.name = current_game[2];
+                game_obj.round = current_game[3];
+                return game_obj;
             }
 
             experiment.next = function () {
@@ -898,10 +902,7 @@ var experiments = {
             return experiment;
         }
 
-
-        var expexp = Experiment();
-        console.log(expexp);
-        return expexp;
+        return Experiment();
     }
 
     // Allows user to add a game to be able to play
