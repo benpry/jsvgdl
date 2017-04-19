@@ -1,5 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser')
+var shortid = require('shortid');
 
 
 var app = express();
@@ -22,8 +23,10 @@ app.use(bodyParser.urlencoded({
  */
 app.use(bodyParser.json());
 
+
 var games = require('./experiments/games.js')();
-var experiments = require('./experiments/experiments.js')();
+var experiments = {};
+var new_exp = games.new_experiment('exp1');
 
 app.get('/', function (req, res) {
 	res.render('home');
@@ -37,14 +40,28 @@ app.get('/admin/login', function (req, res) {
 	res.render('login');
 });
 
+// Sends the current game to be played for the given experiment id
 app.get('/experiment/:exp_id', function (req, res) {	
-	res.render('game', games.get_game('dodge'));
+	var data = {};
+	data.game_obj = experiments[exp_id].current_game_obj();
+	data.exp_id = req.params.exp_id;
+	if (current_game) 
+		res.render('game', data);
+	else
+		res.render('home');
 })
 
+app.put('/experiment/:exp_id', function (req, res) {
+	// store req.body.data;
+	var exp_id = req.params.exp_id;
+	experiments[req.params.exp_id].next();
+	res.send({exp_id: exp_id});
+})
 
-app.post('/experiment/new', function (req, res) {
-
-	res.send({success: true});
+app.post('/experiment/', function (req, res) {
+	var new_exp_id = shortid.generate();
+	experiments[new_exp_id] = games.new_experiment('exp1');
+	res.send({exp_id: new_exp_id});
 });
 
 app.post('/admin/login', function (req, res) {

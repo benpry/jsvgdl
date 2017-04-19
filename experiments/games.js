@@ -1,8 +1,32 @@
+//http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+function shuffle(array) {
+  var currentIndex = array.length
+  var temporaryValue = 0
+  var randomIndex = 0;
+  var array = array.slice();
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
 /**
 Simple interactions: get/lose points, can't pass through walls, object gets pushed.
 **/
 function Games () {
     that = Object.create(Games.prototype);
+
     var games = {
 dodge : {
     levels : [`
@@ -541,7 +565,29 @@ w  1    w
 w    p  w
 w 2  wAww
 w g  w ww
-wwwwwwwww`],
+wwwwwwwww`,
+`
+wwwwwwwww
+w  1    w
+w    2  w
+wAp  wgww
+w    w ww
+wwwwwwwww`,
+`
+wwwwwwwww
+wA 1    w
+w    2  w
+w p  w ww
+w   gw ww
+wwwwwwwww`,
+`
+wwwwwwwww
+w       w
+w   A   w
+w      ww
+w g  w ww
+wwwwwwwww`
+],
     game : `
 BasicGame frame_rate=30
     SpriteSet        
@@ -788,6 +834,20 @@ BasicGame
     }
 }
 
+var experiments = {
+    exp1 : [
+        ['dodge', [0], 3, true], 
+        ['simpleGame1', [0], 1, true]
+    ], 
+
+    exp2 : [
+        ['aliens', [0], 2, false],
+        ['simpleGame4', [0, 2, 3], 2, true]
+    ]
+}
+
+    // Returns the game rules and the level mapping of level number (if given);
+    // if game name does not exist, game and map are undefined TODO - make exception
     that.get_game = function (name, level) {
         if (!(level)) level = 0;
 
@@ -797,13 +857,64 @@ BasicGame
         return return_game;
     }
 
-    that.add_game = function (name, game, level) {
+    that.new_experiment = function (exp_name) {
+        var Experiment = function () {
+            var experiment = Object.create(Experiment.prototype);
 
+            var games_ordered = [];
+            experiments[exp_name].forEach(settings => {
+                var next_games = [];
+                var game_name = settings[0];
+                var game_levels = settings[1];
+                var level_rounds = settings[2];
+                if (settings[3])
+                    game_levels = shuffle(game_levels);
+
+                game_levels.forEach(game_level => {
+                    for (var i = 0; i < level_rounds ; i++) {
+                        next_games.push([game_name, game_level])
+                    }
+                })
+                games_ordered = games_ordered.concat(next_games);
+            })
+
+            console.log(games_ordered);
+
+            var current_trial = 0;
+            var max_trials = games_ordered.length
+
+            experiment.current_game_obj = function () {
+                if (current_trial == max_trials)
+                    return false;
+                var current_game = games_ordered[current_trial]
+                return that.get_game(current_game[0], current_game[1]);
+            }
+
+            experiment.next = function () {
+                current_trial += 1;
+            }
+
+            Object.freeze(experiment);
+            return experiment;
+        }
+
+
+        var expexp = Experiment();
+        console.log(expexp);
+        return expexp;
+    }
+
+    // Allows user to add a game to be able to play
+    // all are string fields
+    that.add_game = function (name, game, level) {
+        games[game].game = game;
+        games[game].levels = [level];
     }
 
     Object.freeze(that);
     return that;
 }
+
 
 module.exports = Games;
 /**
