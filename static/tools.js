@@ -1,4 +1,8 @@
 
+Array.prototype.randomElement = function () {
+    return this[Math.floor(Math.random() * this.length)]
+}
+
 Array.prototype.remove = function (element) {
 	// console.log(this);
 	var index = this.indexOf(element);
@@ -256,8 +260,4 @@ var Tools = function () {
 	return that;
 }
 
-try {
-	module.exports = Tools;
-} catch (e) {
-	
-}
+var tools = Tools();

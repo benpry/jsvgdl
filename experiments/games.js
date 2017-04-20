@@ -812,7 +812,7 @@ w      wwwwwww  www  w
 w              ww    w
 w  G            w    w
 w  ww  G           G w
-wA    wwwwww         w
+wA    wwwwww         wwwwww
 wwwwwwwwwwwwwwwwwwwwww
 `],
 game : `
@@ -854,6 +854,8 @@ var experiments = {
         var return_game = {};
         return_game.game = games[name].game;
         return_game.level = games[name].levels[level];
+        return_game.name = name;
+        return_game.round = 0;
         return return_game;
     }
 

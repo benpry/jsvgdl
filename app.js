@@ -26,14 +26,17 @@ app.use(bodyParser.json());
 
 var games = require('./experiments/games.js')();
 var experiments = {};
-var new_exp = games.new_experiment('exp1');
+var new_exp = games.new_experiment('exp2');
 
 app.get('/', function (req, res) {
 	res.render('home');
 });
 
 app.get('/play/:game_name', function (req, res) {
-	res.render('game', games.get_game(req.params.game_name));
+	var data = {};
+	data.exp_id = 0;
+	data.game_obj = games.get_game(req.params.game_name);
+	res.render('game', data);
 });
 
 app.get('/admin/login', function (req, res) {
