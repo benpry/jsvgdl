@@ -812,7 +812,7 @@ w      wwwwwww  www  w
 w              ww    w
 w  G            w    w
 w  ww  G           G w
-wA    wwwwww         wwwwww
+wA    wwwwww         w
 wwwwwwwwwwwwwwwwwwwwww
 `],
 game : `
@@ -831,7 +831,657 @@ BasicGame
 
    LevelMapping
       G > pad`
+    },
+
+    simpleGame_big : {
+levels : [`
+wwwwwwwwwwwwwwwwwwwwwwwwwww
+w                    1   ww
+w     p1                1 w
+w    p p               wgww
+w    pAmp              w ww
+w     ppp         1    w ww
+w         1            w ww
+w                      w ww
+w                      w ww
+w                      w ww
+w                      w ww
+w                      w ww
+w                      w ww
+w                      w ww
+w                      w ww
+w                      w ww
+w                      w ww
+wwwwwwwwwwwwwwwwwwwwwwwwwww`], 
+game : `
+BasicGame frame_rate=30
+    SpriteSet        
+        avatar > MovingAvatar color=DARKBLUE #cooldown=4 
+        goal > Passive color=GOLD
+        poison > Resource limit=3 color=BROWN
+        box  > ResourcePack color=ORANGE
+        wall > Immovable color=BLACK      
+        score > Resource color=PINK limit=10 
+        medicine > Resource limit=3 color=WHITE        
+    LevelMapping
+        p > poison
+        1 > box
+        w > wall   
+        g > goal 
+        h > hole
+        m > medicine
+    InteractionSet
+        avatar wall > stepBack
+        avatar medicine > changeResource resource=medicine value=1
+        medicine avatar > killSprite  
+        poison avatar > killSprite
+        avatar poison > changeResource resource=medicine value=-1
+        avatar poison > killIfHasLess resource=medicine limit=-1
+        goal avatar > killSprite
+        box avatar  > bounceForward
+        goal box > bounceForward
+        goal wall > undoAll
+        box wall    > undoAll
+        box box     > bounceForward
+        box treasure > undoAll
+        box poison > undoAll
+    TerminationSet
+        SpriteCounter stype=goal    limit=0 win=True
+        SpriteCounter stype=avatar  limit=0 win=False`},
+
+    simpleGame_boxes : {
+levels : [`
+wwwwwwwwwwwww
+wA    w     w
+w     w     w
+w x x w     G
+w     w     w
+wb          w
+wwwwwwwwwwwww`],
+game : `
+BasicGame
+  SpriteSet         
+    goal > Immovable color=GREEN
+    wall > Immovable color=BLACK
+    bullet > Missile speed=.6 orientation=RIGHT color=RED
+    box1 > ResourcePack color=GREEN
+
+    avatar > MovingAvatar color=DARKBLUE
+  LevelMapping
+    w > wall       
+    G > goal
+    b > bullet
+    x > box1
+
+  InteractionSet
+    goal avatar > killSprite
+
+    box1 avatar > bounceForward
+    box1 wall > stepBack
+    box1 box1 > stepBack
+    avatar box1 > stepBack
+    bullet wall > reverseDirection
+    bullet box1 > reverseDirection
+    avatar bullet > killSprite
+    avatar EOS > stepBack
+    avatar wall > stepBack
+
+  TerminationSet
+    SpriteCounter stype=goal win=True
+    SpriteCounter stype=avatar win=False`},
+
+    simpleGame_many_poisions : {
+levels : [`
+wwwwwwwwwwwwwwwwww
+w  1    p        w
+w    2    p      w
+wA  q     2  w  ww
+w    w1      w  ww
+ww         q     w
+w   p    q     1 w
+w    2       g   w
+w        2       w
+wwwwwwwwwwwwwwwwww`,
+`
+wwwwwwwwwwwwwwwwww
+w  1    w       2w
+w    2  w        w
+w         2     ww
+w     1         ww
+ww         q A   w
+w        q     p w
+w     wwwww      w
+w  g          q  w
+wwwwwwwwwwwwwwwwww`,
+`
+wwwwwwwwwwwwwwwwww
+wp      w    A  2w
+w  g 2  w        w
+w         2     ww
+w     1         ww
+ww     w   q     w
+w   q  w       p w
+w    2 w         w
+w        2    1  w
+wwwwwwwwwwwwwwwwww`,
+`
+wwwwwwwwwwwwwwwwww
+wp     Aw    g  2w
+w    2  w        w
+w          1    ww
+w  1  1  1      ww
+ww   www   q     w
+w              p w
+w                w
+w    1   2    1  w
+wwwwwwwwwwwwwwwwww`,
+`
+wwwwwwwwwwwwwwwwww
+wp     Aw       2w
+w    1 11        w
+w  2    1   www ww
+w  2  2  1      ww
+ww   www   q w   w
+w            w g w
+w            w   w
+w    1   2    1  w
+wwwwwwwwwwwwwwwwww`,
+`
+wwwwwwwwwwwwwwwwww
+wp      w       2w
+w       1    11  w
+w   g      1    ww
+w  1  12 1      ww
+ww         q     w
+w              A w
+w  ww     q      w
+w    1   2    1  w
+wwwwwwwwwwwwwwwwww`],
+
+game : `
+BasicGame frame_rate=30
+    SpriteSet        
+        avatar > MovingAvatar color=DARKBLUE #cooldown=4 
+        goal > ResourcePack color=GOLD
+        poison1 > ResourcePack color=BROWN
+        poison2 > ResourcePack color=PINK
+        box1 > ResourcePack color=GREEN
+        box2 > ResourcePack color=LIGHTBLUE
+        wall > Immovable color=BLACK      
+        score > Resource color=PINK limit=10  
+        missile > Missile color=RED speed=.2      
+    LevelMapping
+        p > poison1
+        q > poison2
+        1 > box1
+        2 > box2
+        w > wall   
+        g > goal 
+        m > missile
+    InteractionSet
+        avatar wall > stepBack  
+        missile wall > reverseDirection
+        poison1 avatar > killSprite
+        poison2 avatar > killSprite
+        avatar poison1 > killSprite
+        avatar poison2 > killSprite
+        goal avatar > killSprite
+        box1 avatar > bounceForward
+        box2 avatar  > killSprite
+        goal box1 > bounceForward
+        goal box2 > bounceForward
+        goal wall > undoAll
+        goal poison1 > undoAll
+        goal poison2 > undoAll
+        box1 wall    > undoAll    
+        box2 wall    > undoAll    
+        box1 poison1 > undoAll
+        box2 poison1 > undoAll
+        box1 poison2 > undoAll
+        box2 poison2 > undoAll
+    TerminationSet
+        SpriteCounter stype=goal    limit=0 win=True
+        SpriteCounter stype=avatar  limit=0 win=False` 
+    },
+
+    simpleGame_missile : {
+levels : [
+`
+wwwwwwwwwwwww
+w     w     w
+w     w     w
+A     w     G
+w     w     w
+w     w     w
+wwwwwwwwwwwww`,
+`
+wwwwwwwwwwwww
+wA    w     w
+w  b  w     w
+wwwpwww     G
+w     w     w
+w           w
+wwwwwwwwwwwww`],
+game : `
+BasicGame
+  SpriteSet         
+    goal > Immovable color=GREEN
+    wall > Immovable color=BLACK
+    bullet > Missile speed=1 singleton=True color=RED
+    avatar  > ShootAvatar stype=bullet
+
+  LevelMapping
+    w > wall       
+    G > goal
+    b > bullet
+
+  InteractionSet
+    wall bullet > killSprite 
+    bullet wall > killSprite    
+    goal avatar > killSprite
+
+    bullet EOS > killSprite
+
+    avatar EOS > stepBack
+    avatar wall > stepBack
+
+  TerminationSet
+    SpriteCounter stype=goal win=True`
+    },
+
+    simpleGame_multiroom : {
+levels : [`
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+w      w          w                 w
+w      w       b  w         w       w
+w   a  w          w    z    w  y    w
+w      w                    w       w
+w      w          w         w       w
+w      w          w         w       w
+w                 w         w       w
+w      wwww wwwwwwwwwwwwwww wwwwwwwww
+w wwwwww               w            w
+w      w         2     w            w
+w  A   w               w      y     w
+w      w               w            w
+w      w               w            g
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww`],
+
+game : `
+BasicGame frame_rate=30
+    SpriteSet
+        avatar > MovingAvatar color=DARKBLUE #cooldown=4 
+        box > Passive
+            box1 > color=ORANGE
+            box2 > color=ORANGE
+        mover > VGDLSprite
+            rand > RandomNPC cooldown=10
+                rand1 > color=PURPLE
+                rand2 > color=PURPLE
+        wall > ResourcePack color=BLACK  
+        missile > Missile
+            missile1 > color=PINK speed=0.05 orientation=UP
+            missile2 > color=PINK   speed=0.05 orientation=RIGHT
+        goal > Immovable color=GOLD
+    LevelMapping
+        w > wall   
+        a > box1
+        b > box2
+        x > chaser
+        y > rand1
+        z > rand2
+        1 > missile1
+        2 > missile2
+        g > goal
+    InteractionSet
+        avatar wall > stepBack 
+        mover wall > stepBack
+        box avatar > killSprite  
+        missile wall > reverseDirection
+        avatar missile > killSprite
+        missile missile > reverseDirection
+        avatar mover > killSprite
+        mover mover > stepBack
+        mover missile > stepBack
+        mover box > stepBack
+        goal avatar > killSprite
+    TerminationSet
+        SpriteCounter stype=avatar  limit=0 win=False          
+        SpriteCounter stype=goal limit=0 win=True`
+    },
+
+    simpleGame_preconditions : {
+levels : [`
+wwwwwwwwwwwww
+w m         w
+w           w
+w     cpppppw
+w A     p  gw
+wwwwwwwwwwwww`],
+
+game : `
+BasicGame frame_rate=30
+    SpriteSet        
+        avatar > MovingAvatar color=DARKBLUE #cooldown=4              
+        goal > Passive color=GOLD
+        cloud > Passive 
+            blue > color=BLUE
+        medicine > Resource limit=10 color=WHITE
+        poison > Resource limit=3 color=BROWN
+        wall > Immovable color=BLACK      
+    LevelMapping
+        0 > hole
+        c > blue 
+        m > medicine
+        p > poison
+        w > wall   
+        g > goal 
+    InteractionSet
+        avatar wall > stepBack  
+        avatar medicine > changeResource resource=medicine value=2
+        medicine avatar > killSprite
+        avatar poison > changeResource resource=medicine value=-1
+        avatar poison > killIfHasLess resource=medicine limit=-1
+        poison avatar > killSprite
+        cloud avatar  > bounceForward
+        goal avatar > killSprite
+    TerminationSet
+        SpriteCounter stype=avatar  limit=0 win=False   
+        SpriteCounter stype=goal limit=0 win=True    `
+    },
+
+    simpleGame_push_boulders : {
+levels : [`
+wwwwwwwwwwwwwwwwww
+w    w  p        w
+w  1 w    p      w
+wA  q     2  w  ww
+wwwwww1  g   w  ww
+ww         q     w
+w   p    q     1 w
+w    2           w
+w        2       w
+wwwwwwwwwwwwwwwwww`],
+
+game : `
+BasicGame frame_rate=30
+    SpriteSet        
+        avatar > MovingAvatar color=DARKBLUE #cooldown=4 
+        goal > ResourcePack color=GOLD
+        poison >
+            poison1 > ResourcePack color=BROWN
+            poison2 > ResourcePack color=PINK
+        box >
+            box1 > ResourcePack color=GREEN
+            box2 > ResourcePack color=LIGHTBLUE
+        wall > Immovable color=BLACK      
+        score > Resource color=PINK limit=10  
+        missile > Missile color=RED speed=.2      
+    LevelMapping
+        p > poison1
+        q > poison2
+        1 > box1
+        2 > box2
+        w > wall   
+        g > goal 
+        m > missile
+    InteractionSet
+        avatar wall > stepBack
+        missile wall > reverseDirection
+        poison avatar > killSprite
+        avatar poison > killSprite
+        
+        goal avatar > killSprite
+
+        
+        box box > bounceForward
+        box wall > stepBack
+
+        box avatar > bounceForward
+        
+
+        goal box > stepBack
+        goal box > bounceForward
+
+        goal poison > stepBack
+        goal wall > stepBack
+
+        poison box1 > killSprite
+        box2 poison > killSprite
+    TerminationSet
+        SpriteCounter stype=goal    limit=0 win=True
+        SpriteCounter stype=avatar  limit=0 win=False`
+    },
+
+    simpleGame_teleport : {
+levels : [
+`
+wwwwwwwwwwwwwwwwww
+wA w    p        w
+w  w 2    ip     w
+w      w  2  w  ww
+w    w1      w  ww
+wwwww q    q     w
+w   p    q     1 w
+w    2       o   w
+w        2     g w
+wwwwwwwwwwwwwwwwww`],
+
+game : `
+BasicGame frame_rate=30
+    SpriteSet        
+        avatar > MovingAvatar color=DARKBLUE #cooldown=4 
+        goal > ResourcePack color=GOLD
+        poison1 > ResourcePack color=BROWN
+        poison2 > ResourcePack color=PINK
+        box1 > ResourcePack color=GREEN
+        box2 > ResourcePack color=LIGHTBLUE
+        entry > Portal stype=exit1 color=GRAY 
+        exit > Portal 
+            exit1 > color=PURPLE
+        wall > Immovable color=BLACK      
+        score > Resource color=PINK limit=10  
+        missile > Missile color=RED speed=.2      
+    LevelMapping
+        p > poison1
+        q > poison2
+        1 > box1
+        2 > box2
+        i > entry
+        o > exit1
+        w > wall   
+        g > goal 
+        m > missile
+    InteractionSet
+        avatar wall > stepBack  
+        missile wall > reverseDirection
+        poison1 avatar > killSprite
+        poison2 avatar > killSprite
+        avatar poison1 > killSprite
+        avatar poison2 > killSprite
+        avatar entry > teleportToExit
+        goal avatar > killSprite
+        box1 avatar > bounceForward
+        box2 avatar  > killSprite
+        goal box1 > bounceForward
+        goal box2 > bounceForward
+        goal wall > undoAll
+        goal poison1 > undoAll
+        goal poison2 > undoAll
+        box1 wall    > undoAll    
+        box2 wall    > undoAll    
+        box1 poison1 > undoAll
+        box2 poison1 > undoAll
+        box1 poison2 > undoAll
+        box2 poison2 > undoAll
+    TerminationSet
+        SpriteCounter stype=goal    limit=0 win=True
+        SpriteCounter stype=avatar  limit=0 win=False`
+    },
+
+    spriteInduction : {
+levels : [
+`
+wwwwwwwwwwwwwwwwwwwwwwww
+ww          ww        ww
+w                     ww
+w         h    A       w
+w                    www
+w                      w
+w                a c   w
+w                      w
+wwwwwwwwwwwwwwwwwwwwwwww`],
+
+game : `
+BasicGame
+    SpriteSet
+        carcass > Immovable color=BROWN
+        goat > stype=avatar cooldown=3
+            angry  > Chaser speed=0.5 color=ORANGE
+        hay > Passive color=YELLOW
+
+
+    InteractionSet
+        goat    wall   > stepBack
+        avatar  wall   > stepBack
+        angry   wall   > stepBack
+        avatar  angry  > killSprite
+        carcass avatar > killSprite
+        hay     avatar  > killSprite
+
+    LevelMapping
+        a > angry
+        c > carcass
+        h > hay
+
+    TerminationSet
+        SpriteCounter stype=hay win=True
+        SpriteCounter stype=avatar win=False`
+    },
+
+    spriteInduction2 : {
+levels : [
+`
+wwwwwwwwwwwwwwwwwwwwwwww
+wwww        ww        ww
+w                     ww
+w         h    A       w
+w                    www
+www              a c   w
+w                      w
+wwwwwwwwwwwwwwwwwwwwwwww`],
+
+game : `
+BasicGame
+    SpriteSet
+        carcass > ResourcePack color=BROWN
+        goat > stype=avatar cooldown=3
+            angry  > RandomNPC speed=.2 color=ORANGE
+        hay > Resource color=YELLOW
+
+
+    InteractionSet
+        goat    wall   > stepBack
+        avatar  wall   > stepBack
+        angry   wall   > stepBack
+        avatar  angry  > killSprite
+        carcass avatar > killSprite
+        hay     avatar  > killSprite
+
+    LevelMapping
+        a > angry
+        c > carcass
+        h > hay
+
+    TerminationSet
+        SpriteCounter stype=hay win=True
+        SpriteCounter stype=avatar win=False`
+    },
+
+    spriteInduction3 : {
+levels : [
+`
+wwwwwwwwwwwwwwwwwwwwwwww
+wwww        ww        ww
+w                     ww
+w         h    A       w
+w wwww               www
+w                     ww
+ww                     w
+ww                     w
+www                    w
+www              a c   w
+w                      w
+wwwwwwwwwwwwwwwwwwwwwwww`],
+
+game : `
+BasicGame
+    SpriteSet
+        carcass > Immovable color=BROWN
+        goat > stype=avatar cooldown=3
+            angry  > AStarChaser color=ORANGE stype=avatar cooldown=3 singleton=True
+        hay > Passive color=YELLOW
+
+
+    InteractionSet
+        goat    wall   > stepBack
+        avatar  wall   > stepBack
+        angry   wall   > stepBack
+        avatar  angry  > killSprite
+        carcass avatar > killSprite
+        hay     avatar  > killSprite
+
+    LevelMapping
+        a > angry
+        c > carcass
+        h > hay
+
+    TerminationSet
+        SpriteCounter stype=hay win=True
+        SpriteCounter stype=avatar win=False`
+    },
+
+    spriteInduction4 : {
+levels : [
+`
+wwwwwwwwwwwwwwwwwwwwwwww
+wwww        ww        ww
+w                     ww
+w         h    A       w
+w wwww               www
+w                     ww
+ww                     w
+ww                     w
+www                    w
+www              a c   w
+w                      w
+wwwwwwwwwwwwwwwwwwwwwwww`],
+
+game : `
+BasicGame
+    SpriteSet
+        carcass > Immovable color=BROWN
+        angry  > Missile color=ORANGE speed=0.5
+        hay > Passive color=YELLOW
+
+
+    InteractionSet
+        avatar  wall   > stepBack
+        angry   wall   > stepBack
+        avatar  angry  > killSprite
+        carcass avatar > killSprite
+        hay     avatar  > killSprite
+
+    LevelMapping
+        a > angry
+        c > carcass
+        h > hay
+
+    TerminationSet
+        SpriteCounter stype=hay win=True
+        SpriteCounter stype=avatar win=False`
     }
+
 }
 
 var experiments = {
@@ -921,6 +1571,7 @@ var experiments = {
     Object.freeze(that);
     return that;
 }
+
 
 module.exports = Games;
 /**
