@@ -35,6 +35,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }))
+var login_password = 'cocosciiscool';
 
 function require_login (req, res, next) {
 	if (req.session.logged_in) 
@@ -99,7 +100,7 @@ app.post('/experiment/', function (req, res) {
 });
 
 app.post('/admin/login', function (req, res) {
-	if (req.body.password == 'password'){
+	if (req.body.password == login_password){
 		console.log('user logged in');
 		req.session.logged_in = true;
 		req.session.save();
