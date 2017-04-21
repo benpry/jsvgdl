@@ -1,7 +1,11 @@
 var exp_id = exp_id || undefined;
 
 var load_experiment = function (data) {
-	window.location.replace('/experiment/'+data.exp_id);
+	if (data.exp_id) {
+		window.location.replace('/experiment/'+data.exp_id);
+	} else {
+		window.location.replace('/admin');
+	}
 }
 
 var create_new_experiment = function () {

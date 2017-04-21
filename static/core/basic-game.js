@@ -459,33 +459,6 @@ var BasicGame = function (gamejs, args) {
 	that._eventHandling = function () {
 		that.lastcollisions = that._getAllSpriteGroups();
 		that.effectList = [];
-		// that.collision_eff.forEach(function (eff) {
-		// 	var [class1, class2, effect, kwargs] = eff;
-		// 	// console.log(eff);	
-		// 	[class1, class2].forEach(function (sprite_class) {
-		// 		if (!(sprite_class in that.lastcollisions)) {
-		// 			var sprite_array = [];
-		// 			if (sprite_class in that.sprite_groups) {
-		// 				var sprite_array = that.sprite_groups[sprite_class].slice();
-		// 			} else {
-
-		// 				var sprites_array = [];;
-		// 				Object.keys(that.sprite_groups).forEach(key => {
-		// 					// console.log('key', key);
-
-		// 					var sprites = that.sprite_groups[key].slice();	
-		// 					if (sprites.length && sprites[0].stypes.contains(sprite_class)) {
-		// 						// console.log('concat', sprite_array.concat(sprites))
-		// 						sprite_array = sprite_array.concat(sprites);
-		// 					}
-							
-		// 				})
-		// 			}
-		// 			that.lastcollisions[sprite_class] = sprite_array;
-		// 		}
-		// 	})
-		// })
-
 
 		that.collision_eff.forEach(function (eff) {
 			var [class1, class2, effect, kwargs] = eff;
@@ -509,11 +482,6 @@ var BasicGame = function (gamejs, args) {
 
 
 			var score = 0;
-			if ('scoreChange' in kwargs) {
-				kwargs = kwargs.copy();
-				score = kwargs['scoreChange'];
-				delete kwargs['scoreChange'];
-			}
 
 			var dim = null;
 			if ('dim' in kwargs) {
@@ -570,7 +538,8 @@ var BasicGame = function (gamejs, args) {
 
 					if (!(s1 in that.kill_list)) {
 						// console.log(s1);
-						if (effect.__name__ == 'changeResource') {
+						console.log(effect.name);
+						if (effect.name == 'changeResource') {
 							var resource = kwargs['resource'];
 							var [sclass, args, stypes] = that.sprite_constr[resource];
 							var resource_color = args['color'];

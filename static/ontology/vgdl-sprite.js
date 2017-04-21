@@ -32,7 +32,6 @@ function VGDLSprite(gamejs, pos, size, args) {
 	this.cooldown = args.cooldown || this.cooldown;
 	this.ID = new_id();
 	this.direction = null;
-
 	this.color = args.color || this.color || '#8c148c';
 
 	// iterate over kwargs
@@ -163,8 +162,8 @@ VGDLSprite.prototype = {
 
 
 function Immovable (gamejs, pos, size, args) {
-	this.color = GRAY;
-	this.is_static = true;
+	args.color = args.color || GRAY;
+	this.is_static = args.is_static || true;
 	VGDLSprite.call(this, gamejs, pos, size, args);
 }
 Immovable.prototype = Object.create(VGDLSprite.prototype);
@@ -172,7 +171,7 @@ Immovable.prototype = Object.create(VGDLSprite.prototype);
 
 
 function Passive (gamejs, pos, size, args) {
-	this.color = RED;
+	args.color = args.color || RED;
 	VGDLSprite.call(this, gamejs, pos, size, args);
 }
 Passive.prototype = Object.create(VGDLSprite.prototype);
@@ -181,7 +180,7 @@ Passive.prototype = Object.create(VGDLSprite.prototype);
 
 function Flicker (gamejs, pos, size, args) {
 	this._age = 0;
-	this.color = RED;
+	args.color = args.color || RED;
 	this.limit = 1;
 	VGDLSprite.call(this, gamejs, pos, size, args);
 }
@@ -198,7 +197,6 @@ Flicker.prototype.update = function (game) {
 
 
 function SpriteProducer (gamejs, pos, size, args) {
-	this.stype = null;
 	VGDLSprite.call(this, gamejs, pos, size, args); 
 } 
 SpriteProducer.prototype = Object.create(VGDLSprite.prototype);
@@ -215,7 +213,7 @@ Portal.prototype = Object.create(SpriteProducer.prototype);
 
 
 function SpawnPoint (gamejs, pos, size, args) {
-	this.color = BLACK
+	args.color = args.color || BLACK
 	if (args.prob != undefined) {
 		this.prob = args.prob
 	} else {
@@ -250,8 +248,8 @@ SpawnPoint.prototype.update = function (game) {
 
 
 function RandomNPC(gamejs, pos, size, args) {
-	this.speed = 1;
-	this.is_stochastic = true;
+	args.speed = args.speed || 1;
+	args.is_stochastic = args.is_stochastic || true;
 	VGDLSprite.call(this, gamejs, pos, size, args);
 }
 RandomNPC.prototype = Object.create(VGDLSprite.prototype);
@@ -388,14 +386,15 @@ EraticMissile.prototype.update = function (game) {
 
 
 function Bomber(gamejs, pos, size, args) {
-	this.color = ORANGE;
-	this.is_static = false;
+	args.color = args.color || ORANGE;
+	args.is_static = args.is_static || false;
 	SpawnPoint.call(this, gamejs, pos, size, args);
 	Missile.call(this, gamejs, pos, size, args);
 }
 Bomber.prototype = Object.create(Missile.prototype);
 
 Bomber.prototype.update = function (game) {
+
 	Missile.prototype.update.call(this, game);
 	SpawnPoint.prototype.update.call(this, game);
 }

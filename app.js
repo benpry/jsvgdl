@@ -1,6 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser')
 var shortid = require('shortid');
+var session = require('express-session');
+var bcrypt = require('bcrypt-nodejs')
 
 
 var app = express();
@@ -24,6 +26,24 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 
+/**
+ * Middle ware for session data
+ */
+app.set('trust proxy', 1) // trust first proxy 
+app.use(session({
+  secret: 'cocosciiscool',
+  resave: true,
+  saveUninitialized: true
+}))
+
+function require_login (req, res, next) {
+	if (req.session.logged_in) 
+		next();
+	else
+		res.redirect('/admin/login');
+}
+
+// DB, sort of.
 var games = require('./experiments/games.js')();
 var experiments = {};
 var new_exp = games.new_experiment('exp2');
@@ -32,14 +52,21 @@ app.get('/', function (req, res) {
 	res.render('home');
 });
 
-app.get('/play/:game_name', function (req, res) {
+app.get('/play/:game_name', require_login, function (req, res) {
 	var data = {};
 	data.exp_id = 0;
 	data.game_obj = games.get_game(req.params.game_name);
 	res.render('game', data);
 });
 
+app.get('/admin', require_login, function (req, res) {
+	var data = {};
+	data.games = games.get_games_list();
+	res.render('dashboard', data);
+});
+
 app.get('/admin/login', function (req, res) {
+	console.log(req.query);
 	res.render('login');
 });
 
@@ -57,8 +84,12 @@ app.get('/experiment/:exp_id', function (req, res) {
 app.put('/experiment/:exp_id', function (req, res) {
 	console.log(req.body);
 	var exp_id = req.params.exp_id;
-	experiments[req.params.exp_id].next();
-	res.send({exp_id: exp_id});
+	if (exp_id == 0) {
+		res.send();
+	} else {
+		experiments[req.params.exp_id].next();
+		res.send({exp_id: exp_id});
+	}	
 })
 
 app.post('/experiment/', function (req, res) {
@@ -68,7 +99,16 @@ app.post('/experiment/', function (req, res) {
 });
 
 app.post('/admin/login', function (req, res) {
-	console.log(req.body.password);
+	if (req.body.password == 'password'){
+		console.log('user logged in');
+		req.session.logged_in = true;
+		req.session.save();
+
+		res.redirect('/admin');
+	} else {
+		res.redirect('/admin/login');
+	}
+
 });
 
 

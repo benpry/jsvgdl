@@ -103,7 +103,7 @@ BasicGame
         missile > Missile
             sam  > orientation=UP    color=BLUE singleton=True
             bomb > orientation=DOWN  color=RED  speed=0.5
-        alien   > Bomber       stype=bomb   prob=0  cooldown=3 speed=0.75
+        alien   > Bomber       stype=bomb   prob=0.3  cooldown=3 speed=0.75
         portal  > SpawnPoint   stype=alien  cooldown=1   total=3
     
     LevelMapping
@@ -115,9 +115,9 @@ BasicGame
         MultiSpriteCounter stype1=portal stype2=alien limit=0 win=True
         
     InteractionSet
-        avatar  EOS  > stepBack
-        alien   EOS  > turnAround        
-        missile EOS  > killSprite
+        avatar  wall  > stepBack
+        alien   wall  > turnAround        
+        missile wall  > killSprite
         missile base > killSprite
         base missile > killSprite
         base   alien > killSprite
@@ -846,6 +846,10 @@ var experiments = {
     ]
 }
 
+    that.get_games_list = function () {
+        return Object.keys(games);
+    }
+
     // Returns the game rules and the level mapping of level number (if given);
     // if game name does not exist, game and map are undefined TODO - make exception
     that.get_game = function (name, level) {
@@ -917,7 +921,6 @@ var experiments = {
     Object.freeze(that);
     return that;
 }
-
 
 module.exports = Games;
 /**

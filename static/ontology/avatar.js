@@ -8,7 +8,7 @@ var Avatar = function (gamejs) {
 }
 
 var MovingAvatar = function (gamejs, pos, size, args) {
-	this.color = WHITE;
+	args.color = args.color || WHITE;
 	this.speed = 1;
 	this.is_avatar = true;
 	this.alternate_keys = false;
@@ -113,10 +113,9 @@ VerticalAvatar.prototype.update = function () {
  *
  **/
 var FlakAvatar = function (gamejs, pos, size, args) {
-	this.color = GREEN;
+	args.color = args.color || GREEN;
 	SpriteProducer.call(this, gamejs, pos, size, args);
 	HorizontalAvatar.call(this, gamejs, pos, size, args);
-	
 }
 FlakAvatar.prototype = Object.create(HorizontalAvatar.prototype);
 
@@ -140,9 +139,9 @@ FlakAvatar.prototype._shoot = function (game) {
 
 
 function OrientedAvatar (gamejs, pos, size, args) {
-	this.draw_arrow = true;
+	args.draw_arrow = args.draw_arrow || true;
 	OrientedSprite.call(this, gamejs, pos, size, args);
-	MovingAvatar.call(this, gamejs);
+	MovingAvatar.call(this, gamejs, pos, size, args);
 }
 OrientedAvatar.prototype = Object.create(MovingAvatar.prototype);
 OrientedFlicker.prototype._draw = OrientedSprite.prototype._draw;
@@ -162,10 +161,10 @@ OrientedAvatar.prototype.update = function () {
 }
 
 function RotatingAvatar (gamejs, pos, size, args) {
-	this.draw_arrow = true;
+	args.draw_arrow = args.draw_arrow || true;
 	this.speed = 0;
 	OrientedSprite.call(this, gamejs, pos, size, args);
-	MovingAvatar.call(this, gamejs);
+	MovingAvatar.call(this, gamejs, pos, size, args);
 }
 RotatingAvatar.prototype = Object.create(MovingAvatar.prototype);
 RotatingAvatar.prototype._draw = OrientedSprite.prototype._draw;

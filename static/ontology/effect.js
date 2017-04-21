@@ -213,8 +213,10 @@ function collectResource(sprite, partner, game, kwargs) {
 function changeResource(sprite, partner, resourceColor, game, kwargs) {
 	var resource = kwargs.resource;
 	var value = kwargs.value || 1;
-	sprite.resource[resource] = Math.max(-1, 
-		Math.min(sprite.resources[resource] + value, game.resources_limits[resource]))
+	var sprite_resource = sprite.resources[resource] || 0;
+	var resource_limit = game.resources_limits[resource] || Infinity;
+	sprite.resources[resource] = Math.max(-1, Math.min(sprite_resource + value, resource_limit))
+	console.log(sprite.resources);
 }
 
 function spawnIfHasMore(sprite, partner, game, kwargs) {
