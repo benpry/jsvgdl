@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="/client/experiment.js"></script>
+</head>
+<body>
+
+<div class="Flex-Container">
+
+<div class="Flex-Container" id="info-box">
+  <h1>Dashboard</h1>
+  <p style="text-align: center;">Play games here or something</p>
+  <ul>
+  <% for(var i=0; i<games.length; i++) {%>
+     <li><a href='/play/<%= games[i]%>'><%= games[i] %></a></li>
+  <% } %>
+</ul>
+</div>
+
+</div>
+
+</body>
+</html>
