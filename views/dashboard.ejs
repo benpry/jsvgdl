@@ -12,7 +12,7 @@
 
 <div class="Flex-Container" id="info-box">
   <h1>Dashboard</h1>
-  <p style="text-align: center;">Play games here or something</p>
+  <p class="centered">Play games here or something</p>
   <ul>
     <% for(var i=0; i<games.length; i++) {%>
        <li><a href='/play/<%= games[i]%>'><%= games[i] %></a></li>
@@ -21,8 +21,9 @@
 </div>
 
 <footer class="footer">
-  <a href="/">home</a>
+  <p><a href="/">home</a></p>
 </footer>
+
 
 </div>
 

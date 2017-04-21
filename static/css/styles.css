@@ -5,9 +5,17 @@
     justify-content: center;
 }
 
+p.centered {
+    text-align: center;
+}
+
 .footer {
-    position:absolute;
-    top: calc(100% - 50px);
+
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding : 1rem;
+    text-align: center;
 }
 
 #info-box {
