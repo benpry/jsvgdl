@@ -33,6 +33,7 @@ var BasicGame = function (gamejs, args) {
 			console.log(`WARNING: undefined parameters ${arg} for game!`);
 	}
 
+	that.use_images = [];
 	// contains mappings to constructor (just a few defaults are known)
 	that.sprite_constr = {'wall': [Immovable, {'color': DARKGRAY}, ['wall']],
 						  'avatar': [MovingAvatar, {}, ['avatar']]};
@@ -389,7 +390,7 @@ var BasicGame = function (gamejs, args) {
 					s._draw(that);
 				}
 			} catch (err) {
-				console.log('cannot draw', s);
+				console.log('cannot draw', s.name);
 			}
 		})
 	}

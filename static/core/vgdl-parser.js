@@ -1,5 +1,7 @@
 
 var VGDLParser = function (gamejs) {
+	gamejs.preload(['../images/apple.png', '../images/Apple.jpg']);
+	var images = [];
 	var tools_module = Tools; //|| require('../../vgdl/tools.js');
 	var basic_game = BasicGame; //|| require('./basic-game.js');
 	var gamejs = gamejs;
@@ -155,6 +157,7 @@ var VGDLParser = function (gamejs) {
 
 	parser.playGame = function (game_str, map_str) {
 
+		
 		var game = parseGame(game_str);
 
 		game.buildLevel(map_str);

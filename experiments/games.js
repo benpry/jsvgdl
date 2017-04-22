@@ -1481,6 +1481,34 @@ BasicGame
     TerminationSet
         SpriteCounter stype=hay win=True
         SpriteCounter stype=avatar win=False`
+    },
+
+    test_images : {
+levels : [`
+wwwwwwwwwwwwww
+w            w
+w            w
+w   A        w
+w            w
+w            w
+w            w
+w            w
+w            w
+wwwwwwwwwwwwww`],
+
+game : `
+BasicGame
+    SpriteSet
+        avatar > MovingAvatar image=Apple.jpg
+
+
+    InteractionSet
+        avatar  wall   > stepBack
+
+    LevelMapping
+
+    TerminationSet
+        SpriteCounter stype=avatar win=False`
     }
 
 }

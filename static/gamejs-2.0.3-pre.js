@@ -840,6 +840,11 @@ var Rect = exports.Rect = function() {
     */    
    this.size = [args.width, args.height];
 
+   /**
+    * Position of rectangle
+    * @type Array
+    */
+   this.position = [args.left, args.top];
    return this;
 };
 
