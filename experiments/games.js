@@ -1270,7 +1270,7 @@ wwwwwwwwwwwwwwwwww`],
 game : `
 BasicGame frame_rate=30
     SpriteSet        
-        avatar > MovingAvatar color=DARKBLUE #cooldown=4 
+        
         goal > ResourcePack color=GOLD
         poison1 > ResourcePack color=BROWN
         poison2 > ResourcePack color=PINK
@@ -1281,7 +1281,8 @@ BasicGame frame_rate=30
             exit1 > color=PURPLE
         wall > Immovable color=BLACK      
         score > Resource color=PINK limit=10  
-        missile > Missile color=RED speed=.2      
+        missile > Missile color=RED speed=.2    
+        avatar > MovingAvatar color=DARKBLUE #cooldown=4   
     LevelMapping
         p > poison1
         q > poison2

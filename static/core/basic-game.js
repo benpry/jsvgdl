@@ -383,7 +383,6 @@ var BasicGame = function (gamejs, args) {
 
 
 	that._drawAll = function () {
-
 		that._iterAll().forEach(s => {
 			try {
 				if (s) {
@@ -393,6 +392,13 @@ var BasicGame = function (gamejs, args) {
 				console.log('cannot draw', s);
 			}
 		})
+	}
+
+	that._updateAll = function () {
+		that._iterAll().forEach(sprite => {
+				sprite.update(that);
+			})
+
 	}
 
 	that._updateCollisionDict = function (changedsprite) {
@@ -538,7 +544,6 @@ var BasicGame = function (gamejs, args) {
 
 					if (!(s1 in that.kill_list)) {
 						// console.log(s1);
-						console.log(effect.name);
 						if (effect.name == 'changeResource') {
 							var resource = kwargs['resource'];
 							var [sclass, args, stypes] = that.sprite_constr[resource];
@@ -854,6 +859,8 @@ var BasicGame = function (gamejs, args) {
 		that.screen.blit(that.background, [0, 0]);
 		that._drawAll();
 
+		console.log(that.sprite_order);
+
 		gamejs.onTick(function () {
 
 			if (that.paused) return;
@@ -863,7 +870,6 @@ var BasicGame = function (gamejs, args) {
 				that.paused = true;
 				return
 			};
-
 
 			// console.log(that.kill_list);
 
@@ -882,11 +888,7 @@ var BasicGame = function (gamejs, args) {
 			that.screen.blit(that.background, [0, 0]);
 			that._clearAll();
 			that._drawAll();
-
-
-			that._iterAll().forEach(sprite => {
-				sprite.update(that);
-			})
+			that._updateAll();
 
 			that.time ++;
 
