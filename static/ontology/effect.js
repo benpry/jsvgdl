@@ -294,7 +294,7 @@ function teleportToExit(sprite, partner, game, kwargs) {
 		var rand_sprite = game.sprite_groups['goal'].randomElement();
 	}
 
-	sprite.rect = rand_sprite.rect;
+	sprite.rect = rand_sprite.rect.copy();
 	sprite.lastmove = 0;
 }
 

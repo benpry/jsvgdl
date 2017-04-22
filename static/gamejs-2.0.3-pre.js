@@ -1106,6 +1106,10 @@ Rect.prototype.contains = function (rect) {
             this.top <= rect.top && this.bottom >= rect.bottom);
 }
 
+Rect.prototype.copy = function () {
+	return new Rect(this.x, this.y, this.width, this.height);
+}
+
 /**
  * Check for collision with a point.
  *
