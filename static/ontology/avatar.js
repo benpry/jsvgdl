@@ -186,11 +186,84 @@ RotatingAvatar.prototype.update = function (game) {
 	this.speed = 0;
 }
 
-var AvatarModule = {Avatar : Avatar,
-				  	   MovingAvatar : MovingAvatar};
-try {
-	module.exports = AvatarModule;
-}
-catch (e) {
 
+function RotatingFlippingAvatar (gamejs, pos, size, args) {
+	this.noiseLevel = args.noiseLevel || 0;
+	RotatingAvatar.call(this, gamejs, pos, size, args);
+}
+RotatingFlippingAvatar.prototype = Object.create(RotatingAvatar.prototype);
+
+RotatingFlippingAvatar.prototype.update = function (game) {
+	    var actions = this._readMultiActions(game)
+        if (actions.length > 0 && this.noiseLevel > 0) {
+            // pick a random one instead
+            if (Math.random() < this.noiseLevel*4)
+                actions = [[UP, LEFT, DOWN, RIGHT].randomElement()]
+           }
+        if (actions.contains(UP))
+            this.speed = 1
+        else if (actions.contains(DOWN)) {
+            var i = BASEDIRS.indexOf(this.orientation)
+            this.orientation = BASEDIRS[(i + 2) % BASEDIRS.length]
+        }
+        else if (actions.contains(LEFT)) {
+            var i = BASEDIRS.index(this.orientation)
+            this.orientation = BASEDIRS[(i + 1) % BASEDIRS.length]
+        }
+        else if (actoins.contains(RIGHT)) {
+            var i = BASEDIRS.index(this.orientation)
+            this.orientation = BASEDIRS[(i - 1) % BASEDIRS.length]
+        }
+        VGDLSprite.update.call(this, game)
+        this.speed = 0	
+}
+
+RotatingFlippingAvatar.prototype.is_stochastic = function () {
+	return this.noiseLevel > 0;
+}
+
+function NoisyRotatingFlippingAvatar (gamejs, pos, size, args) {
+	this.noiseLevel = args.noiseLevel || 0.1;
+	RotatingFlippingAvatar.call(this, gamejs, pos, size, args);
+}
+
+function ShootAvatar (gamejs, pos, size, args) {
+	console.log('created shoot avatar');
+	this.ammo = args.ammo;
+	this.stype = args.stype;
+	OrientedAvatar.call(this, gamejs, pos, size, args);
+	SpriteProducer.call(this, gamejs, pos, size, args);
+}
+ShootAvatar.prototype = Object.create(OrientedAvatar.prototype);
+
+ShootAvatar.prototype.update = function (game) {
+	OrientedAvatar.update.call(this, game);
+	console.log('update oriented avatar');
+	if (this._hasAmmo()) {
+		console.log('shoot avatar update');
+		this._shoot(game);
+	}
+}
+
+ShootAvatar.prototype._hasAmmo = function (game) {
+	if (this.ammo in this.resources)
+		return this.resources[this.ammo] > 0;
+	return false;
+}
+
+ShootAvatar.prototype._reduceAmmo = function () {
+	if (this.ammo && this.ammo in this.resources)
+		this.resources[this.ammo] --;
+}
+
+ShootAvatar.prototype._shoot = function () {
+	var K_SPACE = this.gamejs.event.K_SPACE;
+	if (this.stype && game.keystate[K_SPACE]) {
+		var u = tools.unitVector(this.orientation);
+		var newones = game._createSprite([this.stype], [self.lastrect.left + u[0] * self.lastrect.size[0],
+                                                       self.lastrect.top + u[1] * self.lastrect.size[1]]);
+		if (neones.length > 0 && newones[0] instanceof OrientedSprite)
+			newones[0].orientation = tools.unitVector(this.orientation);
+		this._reduceAmmo();
+	}
 }

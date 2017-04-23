@@ -188,6 +188,10 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that._iterAll = function () {
+		if (that.sprite_order[that.sprite_order.length-1] != 'avatar') {
+			that.sprite_order.remove('avatar');
+			that.sprite_order.push('avatar');
+		}
 		return that.sprite_order.reduce((base, key) => {
 			if (that.sprite_groups[key] == undefined)
 				return base;
@@ -384,6 +388,7 @@ var BasicGame = function (gamejs, args) {
 
 
 	that._drawAll = function () {
+
 		that._iterAll().forEach(s => {
 			try {
 				if (s) {
@@ -397,7 +402,12 @@ var BasicGame = function (gamejs, args) {
 
 	that._updateAll = function () {
 		that._iterAll().forEach(sprite => {
+			try {
+				// console.log(sprite);
 				sprite.update(that);
+			} catch (err) {
+				// console.log('could not update', sprite.name);
+			}
 			})
 
 	}
@@ -859,8 +869,6 @@ var BasicGame = function (gamejs, args) {
 		that.background.fill(LIGHTGRAY);
 		that.screen.blit(that.background, [0, 0]);
 		that._drawAll();
-
-		console.log(that.sprite_order);
 
 		gamejs.onTick(function () {
 

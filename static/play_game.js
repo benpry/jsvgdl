@@ -37,6 +37,7 @@ $(document).ready(function () {
 	})
 	$('#continue').click(continue_experiment(exp_id, game));
 
+	// start_modal.style.display = 'none';
 	game.paused = true;
 	gamejs.ready(game.run(on_game_end));
 });

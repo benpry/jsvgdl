@@ -132,12 +132,12 @@ var VGDLParser = function (gamejs) {
 	}
 
 	var _parseArgs = function (string, sclass={}, args={}) {
+		if (string.length == 0)
+			return [sclass, args];	
+
 		var sparts = string.split(' ').map(s => {
 			return s.trim();
 		});
-
-		if (sparts.length == 0)
-			return [sclass, args];	
 
 		if (sparts[0].indexOf('=') == -1) {
 			sclass = _eval(sparts[0]);
