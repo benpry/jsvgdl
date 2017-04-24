@@ -56,18 +56,17 @@ function stepBack (sprite, partner, game, kwargs) {
 	// return ['stepBack', sprite.ID, partner.ID];
 }
 
-// function undoAll(sprite, partner, game, kwargs) {
-
-// }
+function undoAll(sprite, partner, game, kwargs) {
+	console.log('undo all');
+	game._iterAll().forEach(sprite => {
+		sprite.rect = sprite.lastrect.copy();
+	})	
+}
 
 function bounceForward(sprite, partner, game, kwargs) {
 	sprite.physics.activeMovement(sprite, tools.unitVector(partner.lastdirection()));
 	game._updateCollisionDict(sprite);
 
-}
-
-function undoAll(sprite, partner, game, kwargs) {
-	
 }
 
 function conveySprite(sprite, partner, game, kwargs) {

@@ -298,6 +298,7 @@ BasicGame frame_rate=30
         box box > undoAll
         box wall > undoAll
         converter box > bounceForward
+        converter converter > undoAll
         probe avatar > killSprite
         converter avatar > transformTo stype=box6
         avatar converter > undoAll

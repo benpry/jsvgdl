@@ -518,6 +518,7 @@ var BasicGame = function (gamejs, args) {
 					if (s1 == s2)
 						return;
 
+					console.log(class1, s1.name, class2, s2.name);
 
 					if (score > 0) 
 						that.score += score;
@@ -869,6 +870,10 @@ var BasicGame = function (gamejs, args) {
 		that.background.fill(LIGHTGRAY);
 		that.screen.blit(that.background, [0, 0]);
 		that._drawAll();
+
+		that.collision_eff.forEach(eff => {
+			console.log(eff);
+		})
 
 		gamejs.onTick(function () {
 
