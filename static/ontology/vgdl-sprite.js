@@ -33,7 +33,7 @@ function VGDLSprite(gamejs, pos, size, args) {
 	this.ID = new_id();
 	this.direction = null;
 	this.color = args.color || this.color || '#8c148c';
-	this.image_file = args.image;
+	this.image = args.image;
 	console.log('image', this.image);
 
 	// iterate over kwargs
@@ -98,21 +98,20 @@ VGDLSprite.prototype = {
 	},
 
 	_draw : function (game) {
-		if (this.image_file){
-			this.image = this.gamejs.image.load('../images/'+this.image_file);
-			this.image_file = undefined;
-		}
+
 		if (this.image) {
-			console.log(this.image);
-			console.log(game.screen);
-			game.screen.blit(image, [0, 0]);
+			// console.log(this.image);
+			// console.log(game.screen);
+
+			game.screen.blit(game.image_dict[this.image], this.rect);
 		}
-		else
+		else {
 			this.gamejs.graphics.rect(game.screen, this.color, this.rect);
+		}
 
-		if (this.resources) 
+		if (this.resources) { 
 			this._drawResources(game, game.screen, this.rect);
-
+		}
 		return;
 		// var screen = game.screen;
 		// if (this.shrinkfactor != 0)
@@ -148,7 +147,7 @@ VGDLSprite.prototype = {
 		var offset = rect.top + 2*rect.height/3;
 		var that = this;
 		Object.keys(this.resources).sort().forEach(function (r) {
-			console.log(game.resources_colors)
+			// console.log(game.resources_colors)
 			var wiggle = rect.width/10;
 			var prop = Math.max(0, Math.min(1, that.resources[r] / game.resources_limits[r]));
 			var filled = that.gamejs.Rect(rect.left+wiggle/2, offset, prop*(rect.width-wiggle), barheight);
