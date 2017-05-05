@@ -101,6 +101,8 @@ var Tools = function () {
 	 */
 	that.unitVector = function (vector) {
 		var norm = that.vectNorm(vector);
+		console.log(vector)
+		console.log('norm', norm)
 		if (norm > 0)
 			return [vector[0]/norm, vector[1]/norm];
 		else

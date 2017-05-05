@@ -90,8 +90,10 @@ var BasicGame = function (gamejs, args) {
 		for (var res_type in that.sprite_constr) {
 		    if (!(that.sprite_constr.hasOwnProperty(res_type))) continue;
 			var [sclass, args, _] = that.sprite_constr[res_type];
-			if (sclass.prototype instanceof Resource) {
-				console.log('resource');
+			console.log(res_type, sclass.prototype instanceof Resource || sclass instanceof Resource)
+			if (sclass.prototype instanceof Resource || sclass instanceof Resource) {
+				// console.log('res_type', res_type)
+				// console.log('resource', args)
 				if (args['res_type']) 
 					res_type = args['res_type'];
 				if (args['color'])
@@ -173,7 +175,7 @@ var BasicGame = function (gamejs, args) {
 
 	that._createSprite_cheap = function (key, pos) {
 		var [sclass, args, stypes] = that.sprite_constr[key];
-		var s = sclass(gamejs, pos, [that.block_size, that.block_size], args);
+		var s = new sclass(gamejs, pos, [that.block_size, that.block_size], args);
 		s.stypes = stypes;
 		that.sprite_groups[key].push(s);
 		that.num_sprites += 1;
@@ -395,7 +397,11 @@ var BasicGame = function (gamejs, args) {
 					s._draw(that);
 				}
 			} catch (err) {
+				if ((!s.crashed)) {
 				console.log('cannot draw', s.name);
+				console.log(err)
+				s.crashed = true
+				}
 			}
 		})
 	}
@@ -403,10 +409,14 @@ var BasicGame = function (gamejs, args) {
 	that._updateAll = function () {
 		that._iterAll().forEach(sprite => {
 			try {
-				// console.log(sprite);
 				sprite.update(that);
 			} catch (err) {
-				// console.log('could not update', sprite.name);
+				if ((!sprite.crashed)) {
+					console.log('could not update', sprite.name)
+					console.log(err);
+					sprite.crashed = true;
+				}
+				
 			}
 			})
 

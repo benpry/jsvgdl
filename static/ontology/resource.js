@@ -1,9 +1,11 @@
 var Resource = function (gamejs, pos, size, args) {
+	var that = this;
 	VGDLSprite.call(this, gamejs, pos, size, args);
 	this.value = 1;
 	this.limit = 2;
 	this.res_type = null;
 	// console.log(this.rect);
+	// return that
 }
 Resource.prototype = Object.create(VGDLSprite.prototype);
 
@@ -23,3 +25,4 @@ function ResourcePack (gamejs, pos, size, args) {
 ResourcePack.prototype = Object.create(ResourcePack.prototype);
 
 ResourcePack.prototype = Object.create(Resource.prototype);
+

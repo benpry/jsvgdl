@@ -146,18 +146,23 @@ function OrientedAvatar (gamejs, pos, size, args) {
 OrientedAvatar.prototype = Object.create(MovingAvatar.prototype);
 OrientedFlicker.prototype._draw = OrientedSprite.prototype._draw;
 
-OrientedAvatar.prototype.update = function () {
-	var tmp = this.orientation;
+OrientedAvatar.prototype.update = function (game) {
+	
+
+	var tmp = this.orientation.slice();
+
 	this.orientation = [0, 0];
 	VGDLSprite.prototype.update.call(this, game);
 	var action = this._readAction(game);
 	if (action) 
 		this.physics.activeMovement(this, action);
-	var d = this.lastdirection;
-	if (Math.sum(d.map(v => {return Math.abs(v)})) > 0)
+	var d = this.lastdirection();
+	if (d[0] != 0 || d[1] != 0) {
 		this.orientation = d;
-	else
+	}
+	else {
 		this.orientation = tmp;
+	}
 }
 
 function RotatingAvatar (gamejs, pos, size, args) {
@@ -214,7 +219,7 @@ RotatingFlippingAvatar.prototype.update = function (game) {
             var i = BASEDIRS.index(this.orientation)
             this.orientation = BASEDIRS[(i - 1) % BASEDIRS.length]
         }
-        VGDLSprite.update.call(this, game)
+        VGDLSprite.prototype.update.call(this, game)
         this.speed = 0	
 }
 
@@ -228,24 +233,25 @@ function NoisyRotatingFlippingAvatar (gamejs, pos, size, args) {
 }
 
 function ShootAvatar (gamejs, pos, size, args) {
-	console.log('created shoot avatar');
 	this.ammo = args.ammo;
 	this.stype = args.stype;
-	OrientedAvatar.call(this, gamejs, pos, size, args);
 	SpriteProducer.call(this, gamejs, pos, size, args);
+	OrientedAvatar.call(this, gamejs, pos, size, args);	
+
 }
 ShootAvatar.prototype = Object.create(OrientedAvatar.prototype);
 
 ShootAvatar.prototype.update = function (game) {
-	OrientedAvatar.update.call(this, game);
-	console.log('update oriented avatar');
+	OrientedAvatar.prototype.update.call(this, game);
 	if (this._hasAmmo()) {
-		console.log('shoot avatar update');
 		this._shoot(game);
 	}
 }
 
 ShootAvatar.prototype._hasAmmo = function (game) {
+	// console.log('resources', this.resources)
+	if (!(this.ammo))
+		return true;
 	if (this.ammo in this.resources)
 		return this.resources[this.ammo] > 0;
 	return false;
@@ -256,13 +262,14 @@ ShootAvatar.prototype._reduceAmmo = function () {
 		this.resources[this.ammo] --;
 }
 
-ShootAvatar.prototype._shoot = function () {
+ShootAvatar.prototype._shoot = function (game) {
 	var K_SPACE = this.gamejs.event.K_SPACE;
 	if (this.stype && game.keystate[K_SPACE]) {
 		var u = tools.unitVector(this.orientation);
-		var newones = game._createSprite([this.stype], [self.lastrect.left + u[0] * self.lastrect.size[0],
-                                                       self.lastrect.top + u[1] * self.lastrect.size[1]]);
-		if (neones.length > 0 && newones[0] instanceof OrientedSprite)
+		// console.log(this.orientation)
+		var newones = game._createSprite([this.stype], [this.lastrect.left + u[0] * this.lastrect.size[0],
+                                                       this.lastrect.top + u[1] * this.lastrect.size[1]]);
+		if (newones.length > 0 && newones[0] instanceof OrientedSprite)
 			newones[0].orientation = tools.unitVector(this.orientation);
 		this._reduceAmmo();
 	}

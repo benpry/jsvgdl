@@ -60,6 +60,7 @@ VGDLSprite.dirtyrects = [];
 
 VGDLSprite.prototype = {
 	update : function (game) {
+
 		this.x = this.rect.x;
 		this.y = this.rect.y;
 
@@ -67,8 +68,10 @@ VGDLSprite.prototype = {
 		
 
 		this.lastmove += 1;
-		if (!(this.is_static && !(this.only_active)))
+		if (!(this.is_static) && !(this.only_active)) {
+			// console.log('trying to do passive movement')
 			this.physics.passiveMovement(this);
+		}
 	},
 
 	_updatePos : function (orientation, speed = null) {
@@ -107,47 +110,57 @@ VGDLSprite.prototype = {
 		else
 			this.gamejs.graphics.rect(game.screen, this.color, this.rect);
 
+		if (this.resources) 
+			this._drawResources(game, game.screen, this.rect);
+
 		return;
-		var screen = game.screen;
-		if (this.shrinkfactor != 0)
-			var shrunk = this.rect.inflate(-this.rect.width * this.shrinkfactor,
-											-this.rect.height * this.shrinkfactor);
-		else
-			var shrunk = this.rect;
+		// var screen = game.screen;
+		// if (this.shrinkfactor != 0)
+		// 	var shrunk = this.rect.inflate(-this.rect.width * this.shrinkfactor,
+		// 									-this.rect.height * this.shrinkfactor);
+		// else
+		// 	var shrunk = this.rect;
 
-		if (this.is_avatar) {
-			var rounded = tools.roundedPoints(shrunk);
-			this.gamejs.graphics.polygon(screen, this.color, rounded);
-			this.gamejs.graphics.lines(screen, '#32fa32', true, rounded, 2);
-			var r = this.rect.clone();
-		} 
-		else if (!(this.is_static)) {
-			var rounded = roundedPoints(shrunk);
-			this.gamejs.graphics.polygon(screen, this.color, rounded);
-			var r = this.rect.clone();
-		} 
-		else {
-			var r = screen.fill(this.color, shrunk);
-		}
-
-		// if (this.resources) 
-		// 	this._drawResources(game, screen, shrunk);
-		VGDLSprite.dirtyrects.push(r);
+		// if (this.is_avatar) {
+		// 	var rounded = tools.roundedPoints(shrunk);
+		// 	this.gamejs.graphics.polygon(screen, this.color, rounded);
+		// 	this.gamejs.graphics.lines(screen, '#32fa32', true, rounded, 2);
+		// 	var r = this.rect.clone();
+		// } 
+		// else if (!(this.is_static)) {
+		// 	var rounded = roundedPoints(shrunk);
+		// 	this.gamejs.graphics.polygon(screen, this.color, rounded);
+		// 	var r = this.rect.clone();
+		// } 
+		// else {
+		// 	var r = screen.fill(this.color, shrunk);
+		// }
+		
+		// VGDLSprite.dirtyrects.push(r);
 	},
 
 	_drawResources : function (game, screen, rect) {
 		// import BLACK
+		// console.log('drawing resource');
 		var BLACK = '#000000';
 		var tot = this.resources.length;
 		var barheight = rect.height /3.5/ tot;
 		var offset = rect.top + 2*rect.height/3;
-		this.resources.keys().sort().forEach(function (r) {
+		var that = this;
+		Object.keys(this.resources).sort().forEach(function (r) {
+			console.log(game.resources_colors)
 			var wiggle = rect.width/10;
-			var prop = Math.max(0, Math.min(1, this.resources[r] / game.resourses_limits[r]));
-			var filled = gamejs.Rect(rect.left+wiggle/2, offset, prop*(rect.width-wiggle), barheight);
-			var rest = gamejs.Rect(rect.left+wiggle/2+prop*(rect.width-wiggle), offset, (1-prop)*(rect.width-wiggle), barheight);
-			screen.fill(game.resources_colors[r], filled);
-			screen.fill(BLACK, rest);
+			var prop = Math.max(0, Math.min(1, that.resources[r] / game.resources_limits[r]));
+			var filled = that.gamejs.Rect(rect.left+wiggle/2, offset, prop*(rect.width-wiggle), barheight);
+			var rest = that.gamejs.Rect(rect.left+wiggle/2+prop*(rect.width-wiggle), offset, (1-prop)*(rect.width-wiggle), barheight);
+			
+			// console.log(filled)
+			// console.log(rest)
+			that.gamejs.graphics.rect(game.screen, BLACK, rest);
+			// console.log(game.resources_colors[r])
+			that.gamejs.graphics.rect(game.screen, game.resources_colors[r], filled);
+			// screen.fill(game.resources_colors[r], filled);
+			// screen.fill(BLACK, rest);
 			offset += barheight;
 		});
 	},

@@ -17,6 +17,7 @@ var BLACK = '#000000';
 var WHITE = '#fafafa';
 var LIGHTBLUE = '#3264fa';
 var RED = '#c80000';
+
 var UP = [0, -1]
 var DOWN = [0, 1]
 var LEFT = [-1, 0]

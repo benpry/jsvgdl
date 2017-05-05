@@ -11,14 +11,14 @@ var VGDLParser = function (gamejs) {
 
 
 	var parser = Object.create(VGDLParser.prototype);
-	var verbose = false;
+	var verbose = true;
 	var parseGame = function (tree) {
 
 		if (!(tree instanceof tools.Node))
 			tree = tools.indentTreeParser(tree).children[0];
 
 		var [sclass, args] = _parseArgs(tree.content);
-		parser.game = sclass(gamejs); //always start it with gamejs
+		parser.game = new sclass(gamejs); //always start it with gamejs
 
 		tree.children.forEach(function (child) {
 			parse[child.content](child.children);
