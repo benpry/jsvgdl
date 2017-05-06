@@ -34,7 +34,6 @@ function VGDLSprite(gamejs, pos, size, args) {
 	this.direction = null;
 	this.color = args.color || this.color || '#8c148c';
 	this.image = args.image;
-	console.log('image', this.image);
 
 	// iterate over kwargs
 	// this.extend(args);
@@ -109,7 +108,8 @@ VGDLSprite.prototype = {
 			this.gamejs.graphics.rect(game.screen, this.color, this.rect);
 		}
 
-		if (this.resources) { 
+		if (Object.keys(this.resources).length) {
+			console.log(this.resources) 
 			this._drawResources(game, game.screen, this.rect);
 		}
 		return;

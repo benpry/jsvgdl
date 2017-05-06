@@ -89,9 +89,9 @@ var BasicGame = function (gamejs, args) {
 
 		//Set up resources
 		for (var res_type in that.sprite_constr) {
-		    if (!(that.sprite_constr.hasOwnProperty(res_type))) continue;
+		   if (!(that.sprite_constr.hasOwnProperty(res_type))) continue;
 			var [sclass, args, _] = that.sprite_constr[res_type];
-			console.log(res_type, sclass.prototype instanceof Resource || sclass instanceof Resource)
+			console.log(res_type, )
 			if (sclass.prototype instanceof Resource || sclass instanceof Resource) {
 				// console.log('res_type', res_type)
 				// console.log('resource', args)
