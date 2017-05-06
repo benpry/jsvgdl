@@ -91,12 +91,11 @@ var BasicGame = function (gamejs, args) {
 		for (var res_type in that.sprite_constr) {
 		    if (!(that.sprite_constr.hasOwnProperty(res_type))) continue;
 			var [sclass, args, _] = that.sprite_constr[res_type];
-			console.log(sclass, res_type, new sclass(gamejs, 0, 0, args) instanceof Resource)
 			if (new sclass(gamejs, 0, 0, args) instanceof Resource) {
-				console.log(res_type)
+
 				if (args['res_type']) {
 					res_type = args['res_type'];
-					console.log(res_type)
+
 				}
 				if (args['color']) {
 					that.resources_colors[res_type] = args['color'];
