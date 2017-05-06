@@ -91,16 +91,22 @@ var BasicGame = function (gamejs, args) {
 		for (var res_type in that.sprite_constr) {
 		   if (!(that.sprite_constr.hasOwnProperty(res_type))) continue;
 			var [sclass, args, _] = that.sprite_constr[res_type];
-			console.log(res_type, )
-			if (sclass.prototype instanceof Resource || sclass instanceof Resource) {
-				// console.log('res_type', res_type)
-				// console.log('resource', args)
-				if (args['res_type']) 
+			console.log(sclass, res_type, new sclass(gamejs, 0, 0, args) instanceof Resource)
+			if (sclass instanceof Resource) {
+				console.log(res_type)
+				if (args['res_type']) {
 					res_type = args['res_type'];
-				if (args['color'])
+					console.log(res_type)
+				}
+				if (args['color']) {
 					that.resources_colors[res_type] = args['color'];
-				if (args['limit'])
+				}
+				if (args['limit']) {
 					that.resources_limits[res_type] = args['limit'];
+				}
+			}
+			else {
+				that.sprite_groups[res_type] = []
 			}
 		};
 
