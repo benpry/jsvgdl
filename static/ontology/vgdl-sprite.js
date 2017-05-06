@@ -35,6 +35,7 @@ function VGDLSprite(gamejs, pos, size, args) {
 	this.color = args.color || this.color || '#8c148c';
 	this.image_file = args.image;
 
+
 	// iterate over kwargs
 	// this.extend(args);
 	if (args) {
@@ -97,23 +98,28 @@ VGDLSprite.prototype = {
 	},
 
 	_draw : function (game) {
-		if (this.image_file){
-			this.image = this.gamejs.image.load('../images/'+this.image_file);
-			this.image_file = undefined;
-		}
-		if (this.image) {
-			console.log(this.image);
-			console.log(game.screen);
-			game.screen.blit(image, [0, 0]);
-		}
-		else
-			this.gamejs.graphics.rect(game.screen, this.color, this.rect);
 
+		if (this.image) {
+			// console.log(this.image);
+			// console.log(game.screen);
+
+			game.screen.blit(game.image_dict[this.image], this.rect);
+		}
+		else {
+			this.gamejs.graphics.rect(game.screen, this.color, this.rect);
+		}
+
+<<<<<<< HEAD
 		if (Object.keys(this.resources).length)  {
 			// console.log(this.resources)
 			this._drawResources(game, game.screen, this.rect);
 		}
 
+=======
+		if (this.resources) { 
+			this._drawResources(game, game.screen, this.rect);
+		}
+>>>>>>> 3ea3b015f1fcf345410f01e59017954c16e2a533
 		return;
 		// var screen = game.screen;
 		// if (this.shrinkfactor != 0)
@@ -150,7 +156,11 @@ VGDLSprite.prototype = {
 		var offset = rect.top + 2*rect.height/3;
 		var that = this;
 		Object.keys(this.resources).sort().forEach(function (r) {
+<<<<<<< HEAD
 			// console.log(game.resources_colors[r])
+=======
+			// console.log(game.resources_colors)
+>>>>>>> 3ea3b015f1fcf345410f01e59017954c16e2a533
 			var wiggle = rect.width/10;
 			console.log(that.resources[r], game.resources_limits[r])
 			var prop = Math.max(0, Math.min(1, that.resources[r] / game.resources_limits[r]));

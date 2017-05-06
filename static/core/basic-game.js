@@ -11,6 +11,7 @@ var BasicGame = function (gamejs, args) {
 	var frame_rate = 20;
 	var load_save_enabled = true;
 	var disableContinuousKeyPress = true;
+	var image_dir = '../images/'
 
 	that.reset = function () {
 		that.score = 0;
@@ -398,10 +399,9 @@ var BasicGame = function (gamejs, args) {
 	that._drawAll = function () {
 
 		that._iterAll().forEach(s => {
-			try {
-				if (s) {
+			try {	
+				if (!(s.crashed))
 					s._draw(that);
-				}
 			} catch (err) {
 				if ((!s.crashed)) {
 				console.log('cannot draw', s.name);
@@ -415,7 +415,8 @@ var BasicGame = function (gamejs, args) {
 	that._updateAll = function () {
 		that._iterAll().forEach(sprite => {
 			try {
-				sprite.update(that);
+				if (!(sprite.crashed))
+					sprite.update(that);
 			} catch (err) {
 				if ((!sprite.crashed)) {
 					console.log('could not update', sprite.name)
@@ -777,6 +778,9 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that.run = function (on_game_end) {
+		if (that.images) {
+			gamejs.preload(that.images.map(image => {return image_dir + image}))
+		}
 		that.on_game_end = on_game_end;
 		return that.startGame;
 	}
@@ -784,7 +788,17 @@ var BasicGame = function (gamejs, args) {
 	that.startGame = function () {
 		that._initScreen(that.screensize);
 		// gamejs.display.flip();
-		
+
+		if (that.images) {
+			that.image_dict = {}
+			that.images.forEach(image => {
+				that.image_dict[image] = gamejs.image.load(image_dir + image);
+			})
+		}
+
+		console.log(that.image_dict)
+
+
 		that.reset();
 		// var clock = gamejs.time.Clock();
 		// if (that.playback_actions)

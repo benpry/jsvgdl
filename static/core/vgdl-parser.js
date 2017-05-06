@@ -1,6 +1,5 @@
 
 var VGDLParser = function (gamejs) {
-	gamejs.preload(['../images/apple.png', '../images/Apple.jpg']);
 	var images = [];
 	var tools_module = Tools; //|| require('../../vgdl/tools.js');
 	var basic_game = BasicGame; //|| require('./basic-game.js');
@@ -11,7 +10,7 @@ var VGDLParser = function (gamejs) {
 
 
 	var parser = Object.create(VGDLParser.prototype);
-	var verbose = true;
+	var verbose = false;
 	var parseGame = function (tree) {
 
 		if (!(tree instanceof tools.Node))
@@ -24,6 +23,7 @@ var VGDLParser = function (gamejs) {
 			parse[child.content](child.children);
 		});
 
+		parser.game.images = images.slice();
 		return parser.game;
 	}
 
@@ -64,6 +64,10 @@ var VGDLParser = function (gamejs) {
 					return s.trim();
 				});
 				var [sclass, args] = _parseArgs(sdef, parentClass, Object.assign({}, parentargs));
+				
+				if ('image' in args) {
+					images.push(args.image)
+				}
 				var stypes = parenttypes.concat(key);
 				if ('singleton' in args) {
 					if (args['singleton'] == true) 
