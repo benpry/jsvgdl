@@ -108,22 +108,11 @@ VGDLSprite.prototype = {
 			this.gamejs.graphics.rect(game.screen, this.color, this.rect);
 		}
 
-<<<<<<< HEAD
-		if (Object.keys(this.resources).length) {
-			console.log(this.resources) 
-=======
-<<<<<<< HEAD
 		if (Object.keys(this.resources).length)  {
-			// console.log(this.resources)
 			this._drawResources(game, game.screen, this.rect);
 		}
 
-=======
-		if (this.resources) { 
->>>>>>> 30c4f222485ee537adff2825ecebbfba9d29b09a
-			this._drawResources(game, game.screen, this.rect);
-		}
->>>>>>> 3ea3b015f1fcf345410f01e59017954c16e2a533
+
 		return;
 		// var screen = game.screen;
 		// if (this.shrinkfactor != 0)
@@ -155,29 +144,20 @@ VGDLSprite.prototype = {
 		// console.log('drawing resource');
 		var BLACK = '#000';
 		var WHITE = '#FFF';
-		var tot = this.resources.length;
+		var tot = Object.keys(this.resources).length;
+		
 		var barheight = rect.height /3.5/ tot;
 		var offset = rect.top + 2*rect.height/3;
 		var that = this;
 		Object.keys(this.resources).sort().forEach(function (r) {
-<<<<<<< HEAD
-			// console.log(game.resources_colors[r])
-=======
-			// console.log(game.resources_colors)
->>>>>>> 3ea3b015f1fcf345410f01e59017954c16e2a533
 			var wiggle = rect.width/10;
-			console.log(that.resources[r], game.resources_limits[r])
 			var prop = Math.max(0, Math.min(1, that.resources[r] / game.resources_limits[r]));
-			console.log(wiggle, prop)
-			var filled = that.gamejs.Rect(rect.left+wiggle/2, offset, prop*(rect.width-wiggle), barheight);
-			var rest = that.gamejs.Rect(rect.left+wiggle/2+prop*(rect.width-wiggle), offset, (1-prop)*(rect.width-wiggle), barheight);
-			
-			console.log('filled', filled)
-			console.log('rest', rest)
-
-			that.gamejs.graphics.rect(game.screen, BLACK, rest);
+			var filled = new that.gamejs.Rect(rect.left+wiggle/2, offset, prop*(rect.width-wiggle), barheight);
+			var rest = new that.gamejs.Rect(rect.left+wiggle/2+prop*(rect.width-wiggle), offset, (1-prop)*(rect.width-wiggle), barheight);
+		
+			that.gamejs.graphics.rect(screen, BLACK, rest);
 			// console.log(game.resources_colors[r])
-			that.gamejs.graphics.rect(game.screen, WHITE, filled);
+			that.gamejs.graphics.rect(screen, WHITE, filled);
 			// screen.fill(game.resources_colors[r], filled);
 			// screen.fill(BLACK, rest);
 			offset += barheight;
