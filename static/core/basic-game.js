@@ -95,7 +95,6 @@ var BasicGame = function (gamejs, args) {
 
 				if (args['res_type']) {
 					res_type = args['res_type'];
-
 				}
 				if (args['color']) {
 					that.resources_colors[res_type] = args['color'];
