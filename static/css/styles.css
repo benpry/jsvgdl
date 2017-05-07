@@ -1,3 +1,12 @@
+body {
+    font-family: 'Lato';
+    font-size: 12pt;
+}
+
+h1 {
+    font-size: 30pt;
+}
+
 .Flex-Container {
     display: flex;
     flex-direction: column;
