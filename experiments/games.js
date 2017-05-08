@@ -227,7 +227,7 @@ BasicGame frame_rate=30
         missile wall > reverseDirection
         missile avatar > killSprite
         missile missile > reverseDirection
-        mover avatar > undoAll
+        mover avatar > stepBack
         mover mover > stepBack
         mover missile > stepBack
         mover box > stepBack
@@ -348,11 +348,11 @@ BasicGame
         box avatar > bounceForward
         avatar portalentry > teleportToExit
         box_a portalentry > teleportToExit
-        box_b portalentry > undoAll
+        box_b portalentry > stepBack
         box_a probe > killSprite
         probe box_b > bounceForward
-        box box > undoAll
-        box wall > undoAll
+        box box > stepBack
+        box wall > stepBack
     TerminationSet
         SpriteCounter stype=avatar limit=0 win=False
         SpriteCounter stype=goal limit=0 win=True
@@ -421,7 +421,7 @@ BasicGame frame_rate=30
         missile wall > reverseDirection
         missile avatar > killSprite
         missile missile > reverseDirection
-        mover avatar > undoAll
+        mover avatar > stepBack
         mover mover > stepBack
         mover missile > stepBack
         mover box > stepBack
@@ -545,8 +545,8 @@ BasicGame frame_rate=30
         cloud avatar > killSprite
         cloud box > killSprite
         box avatar  > bounceForward
-        box wall    > undoAll        
-        box box     > undoAll
+        box wall    > stepBack        
+        box box     > stepBack
         box breakbox    > killSprite
         goal avatar > killSprite  
         missile wall > reverseDirection
@@ -614,10 +614,10 @@ BasicGame frame_rate=30
         box1 avatar  > bounceForward
         box2 avatar > killSprite
         goal box1 > bounceForward
-        goal wall > undoAll
-        goal poison > undoAll
-        box1 wall    > undoAll    
-        box1 poison > undoAll
+        goal wall > stepBack
+        goal poison > stepBack
+        box1 wall    > stepBack    
+        box1 poison > stepBack
     TerminationSet
         SpriteCounter stype=goal    limit=0 win=True
         SpriteCounter stype=avatar  limit=0 win=False  ` 
@@ -659,12 +659,12 @@ BasicGame frame_rate=30
         box2 avatar  > killSprite
         goal box1 > bounceForward
         goal box2 > bounceForward
-        goal wall > undoAll
-        goal poison > undoAll
-        box1 wall    > undoAll    
-        box2 wall    > undoAll    
-        box1 poison > undoAll
-        box2 poison > undoAll
+        goal wall > stepBack
+        goal poison > stepBack
+        box1 wall    > stepBack    
+        box2 wall    > stepBack    
+        box1 poison > stepBack
+        box2 poison > stepBack
     TerminationSet
         SpriteCounter stype=goal    limit=0 win=True
         SpriteCounter stype=avatar  limit=0 win=False`
@@ -710,12 +710,12 @@ BasicGame frame_rate=30
         box2 avatar  > killSprite
         goal box1 > bounceForward
         goal box2 > bounceForward
-        goal wall > undoAll
-        goal poison > undoAll
-        box1 wall    > undoAll    
-        box2 wall    > undoAll    
-        box1 poison > undoAll
-        box2 poison > undoAll
+        goal wall > stepBack
+        goal poison > stepBack
+        box1 wall    > stepBack    
+        box2 wall    > stepBack    
+        box1 poison > stepBack
+        box2 poison > stepBack
     TerminationSet
         SpriteCounter stype=goal    limit=0 win=True
         SpriteCounter stype=avatar  limit=0 win=False       `
@@ -756,10 +756,10 @@ BasicGame frame_rate=30
         box1 avatar > bounceForward
         box2 avatar  > killSprite
         goal box > bounceForward
-        goal wall > undoAll
-        goal poison > undoAll
-        box wall    > undoAll    
-        box poison > undoAll
+        goal wall > stepBack
+        goal poison > stepBack
+        box wall    > stepBack    
+        box poison > stepBack
     TerminationSet
         SpriteCounter stype=goal    limit=0 win=True
         SpriteCounter stype=avatar  limit=0 win=False `
@@ -881,11 +881,11 @@ BasicGame frame_rate=30
         goal avatar > killSprite
         box avatar  > bounceForward
         goal box > bounceForward
-        goal wall > undoAll
-        box wall    > undoAll
+        goal wall > stepBack
+        box wall    > stepBack
         box box     > bounceForward
-        box treasure > undoAll
-        box poison > undoAll
+        box treasure > stepBack
+        box poison > stepBack
     TerminationSet
         SpriteCounter stype=goal    limit=0 win=True
         SpriteCounter stype=avatar  limit=0 win=False`},
@@ -1031,15 +1031,15 @@ BasicGame frame_rate=30
         box2 avatar  > killSprite
         goal box1 > bounceForward
         goal box2 > bounceForward
-        goal wall > undoAll
-        goal poison1 > undoAll
-        goal poison2 > undoAll
-        box1 wall    > undoAll    
-        box2 wall    > undoAll    
-        box1 poison1 > undoAll
-        box2 poison1 > undoAll
-        box1 poison2 > undoAll
-        box2 poison2 > undoAll
+        goal wall > stepBack
+        goal poison1 > stepBack
+        goal poison2 > stepBack
+        box1 wall    > stepBack    
+        box2 wall    > stepBack    
+        box1 poison1 > stepBack
+        box2 poison1 > stepBack
+        box1 poison2 > stepBack
+        box2 poison2 > stepBack
     TerminationSet
         SpriteCounter stype=goal    limit=0 win=True
         SpriteCounter stype=avatar  limit=0 win=False` 
@@ -1307,15 +1307,15 @@ BasicGame frame_rate=30
         box2 avatar  > killSprite
         goal box1 > bounceForward
         goal box2 > bounceForward
-        goal wall > undoAll
-        goal poison1 > undoAll
-        goal poison2 > undoAll
-        box1 wall    > undoAll    
-        box2 wall    > undoAll    
-        box1 poison1 > undoAll
-        box2 poison1 > undoAll
-        box1 poison2 > undoAll
-        box2 poison2 > undoAll
+        goal wall > stepBack
+        goal poison1 > stepBack
+        goal poison2 > stepBack
+        box1 wall    > stepBack    
+        box2 wall    > stepBack    
+        box1 poison1 > stepBack
+        box2 poison1 > stepBack
+        box1 poison2 > stepBack
+        box2 poison2 > stepBack
     TerminationSet
         SpriteCounter stype=goal    limit=0 win=True
         SpriteCounter stype=avatar  limit=0 win=False`
