@@ -104,7 +104,7 @@ BasicGame
             sam  > orientation=UP    color=BLUE singleton=True
             bomb > orientation=DOWN  color=RED  speed=0.5
         alien   > Bomber       stype=bomb   prob=0.3  cooldown=3 speed=0.75
-        portal  > SpawnPoint   stype=alien  cooldown=1   total=3
+        portal  > SpawnPoint   stype=alien  cooldown=5   total=10
     
     LevelMapping
         0 > base
@@ -292,16 +292,16 @@ BasicGame frame_rate=30
         g > goal
     InteractionSet
         avatar wall > stepBack
-        avatar box6 > undoAll 
+        avatar box6 > stepBack 
         box avatar > bounceForward
-        box probe > undoAll
-        box box > undoAll
-        box wall > undoAll
+        box probe > stepBack
+        box box > stepBack
+        box wall > stepBack
         converter box > bounceForward
-        converter converter > undoAll
+        converter converter > stepBack
         probe avatar > killSprite
         converter avatar > transformTo stype=box6
-        avatar converter > undoAll
+        avatar converter > stepBack
         goal avatar > killSprite
     TerminationSet
         SpriteCounter stype=avatar  limit=0 win=False          

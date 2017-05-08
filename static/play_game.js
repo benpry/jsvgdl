@@ -5,9 +5,17 @@
  */
 
 
+console.log('is this even running?')
 var gamejs = require('gamejs');
+console.log('gamejs loaded');
 var vgdl_parser = VGDLParser(gamejs);
+console.log('game parsed');
 var game = vgdl_parser.playGame(vgdl_game.game, vgdl_game.level);
+// var on_game_end = function () {
+// }
+// game.paused = false;
+// gamejs.ready(game.run(on_game_end));
+// console.log('game started');
 
 
 $(document).ready(function () {
@@ -24,6 +32,8 @@ $(document).ready(function () {
 		else {
 			$('#status').text('game lost');
 		}
+
+	var on_game_end = function () {}
 		
 		
 	}
@@ -40,6 +50,7 @@ $(document).ready(function () {
 	// start_modal.style.display = 'none';
 	game.paused = true;
 	gamejs.ready(game.run(on_game_end));
+	console.log('game started')
 });
 
 // // gamejs.ready will call your main function

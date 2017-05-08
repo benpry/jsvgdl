@@ -1,6 +1,7 @@
 /**
  * params {**kwargs} any number of arguments which will be used in the game
  */
+ console.log('loading basic game');
 var BasicGame = function (gamejs, args) {
 	var that = Object.create(BasicGame.prototype);
 	var MAX_SPRITES = 10000;
@@ -489,293 +490,199 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that._eventHandling = function () {
-		that.lastcollisions = that._getAllSpriteGroups();
+		
 		that.effectList = [];
-
-		that.collision_eff.forEach(function (eff) {
-			var [class1, class2, effect, kwargs] = eff;
-			if (class2 == 'EOS') {
-				var ss1 = that.lastcollisions[class1];
-				ss1.forEach(function (s1) {
-					if (!(new gamejs.Rect([0, 0], that.screensize).collideRect(s1.rect))) {
-						var e = effect(s1, null, that, kwargs);
-						if (e != null) {
-							that.effectList.push(e);
-						}
-					}
-				});
-
-				return;
-			}
-
-			// console.log(ss);
-			var sprite_array1 = that.lastcollisions[class1];
-			var sprite_array2 = that.lastcollisions[class2];
-
-
-			var score = 0;
-
-			var dim = null;
-			if ('dim' in kwargs) {
-				kwargs = kwargs.copy();
-				dim = kwargs['dim'];
-				delete kwargs['dim'];
-			}
-
-			// console.log(sprite_array2);
-			sprite_array1.forEach(function (s1) {
-				var rects = sprite_array2.map(os => {return os.rect});
-				// if (sprite_array2.length)
-				// 	console.log(s1.name, sprite_array2[0].name);
-				if (s1.rect.collidelistall(rects) == -1) return ;
-				s1.rect.collidelistall(rects).forEach(function (ci) {
-					var s2 = sprite_array2[ci];
-					if (s1 == s2)
-						return;
-
-					console.log(class1, s1.name, class2, s2.name);
-
-					if (score > 0) 
-						that.score += score;
-
-					if ('applyto' in kwargs) {
-						var stype = kwargs['applyto'];
-
-						var kwargs_use = deepcopy(kwargs);
-						delete kwargs_use['applyto'];
-						that.getSprites(stype).forEach(function (sC) {
-							var e = effect(sC, s1, self, kwargs_use);
-						});
-						that.effectList.push(e);
-						return;
-					}
-				
-
-					if (dim) {
-						var sprites = that.getSprites(class1);
-						var spritesFiltered = sprites.filter(function (sprite) {
-							return sprite[dim] == s2[dim];
-						});
-
-						spritesFiltered.forEach(function (sC) {
-							if (!(s1 in that.kill_list)) {
-
-								var e = effect(s1, sC, that, kwargs);
-							}
-							// console.log(e);
-							that.effectList.push(e);
-							return;
-						});
-					}
-
-
-					if (!(s1 in that.kill_list)) {
-						// console.log(s1);
-						if (effect.name == 'changeResource') {
-							var resource = kwargs['resource'];
-							var [sclass, args, stypes] = that.sprite_constr[resource];
-							var resource_color = args['color'];
-							var e = effect(s1, s2, resource_color, that, kwargs);
-						} else {
-							// console.log('apply effect', effect); 	  	
-							// why are all the effects happeening
-							var e = effect(s1, s2, that, kwargs);
-						}
-						if (e != null) {
-							that.effectList.push(e);
-						}
-					}
-				});
-			});
-		});
-		// console.log(that.effectList);
-		return that.effectList;
-	}
-
-
-	
-
-	that._eventHandlingWorking = function () {
-		// console.log(that.lastcollisions)
-		that.effectList = [];
-		that.lastcollisions = {};
 
 		var push_effect = 'bounceForward';
 		var back_effect = 'stepBack';
 
+		// list of objects sets
 		var force_collisions = [];
-		var dead = that.kill_list.slice();
 
+		// object sets
+		var new_collisions = {0: 0};
+		var collisions = {};
 
-		var collision_set = {}
-		var spritesActedOn = new Set([]);
-		var new_collisions = {place_holder: true};
 		var new_effects = [];
-		var iterations = 0;
-		while (Object.keys(new_collisions).length > 0 && iterations < 5) {
+
+		// make a copy of the kill list
+		that.dead = that.kill_list.slice();
+
+		// console.log(new_collisions)
+		// var iter = 1
+		while (Object.keys(new_collisions).length) {
+			// console.log('loop');
+			// console.log(new_collisons)
+			// console.log('stuck')
 			new_collisions = {};
 			new_effects = [];
-			iterations ++;
 
-			// Build the current sprite list (if not yet availale)
-			that.collision_eff.forEach(col_eff => {
-				var [class1, class2, effect, kwargs] = col_eff;
-				[class1, class2].forEach(sprite_class => {
-					var sprites = [];
-					if (!(sprite_class in that.lastcollisions)) {
-						// console.log(that.sprite_groups);
-						if (sprite_class in that.sprite_groups) {
-							sprites = that.sprite_groups[sprite_class];
+			// update collision sprites
+			that.lastcollisions = that._getAllSpriteGroups();
 
-						} else {
-							sprites = [];
-							Object.keys(that.sprite_groups).forEach(key => {
-								// console.log(key);
-								var sprite_array = that.sprite_groups[key];
-								
-								if (sprite_array.length && sprite_array[0].stypes.contains(sprite_class)) {
-									sprites = sprites.concat(sprite_array);
-									// console.log('updated', sprites);
-								}
-							})
-						}
-						// console.log(that.lastcollisions)
-						that.lastcollisions[sprite_class] = sprites;
-					}
-					
-				})
-				// console.log(Object.keys(that.lastcollisions));
-			})
+			that.collision_eff.forEach(function (eff) {
+				var [class1, class2, effect, kwargs] = eff;
 
-			// console.log(that.lastcollisions);
-
-			that.collision_eff.forEach(col_eff => {
-				var [class1, class2, effect, kwargs] = col_eff;
-			
-				// end build
+				// Special cases
 				if (class2 == 'EOS') {
-					// console.log(effect, 'effect with eos as arg');
-					var sprites1 = that.lastcollisions[class1];
-					sprites1.forEach(sprite1 => {
-						if (!(new gamejs.Rect([0, 0], that.screensize).contains(sprite1.rect)) &&
-							!(collision_set[sprite1] && collision_set[sprite1].contains('EOS'))) {
-
-							if (new_collisions[sprite1]) new_collisions[sprite1].push['EOS'];
-							else new_collisions[sprite1] = ['EOS'];
-
-							var e = effect(sprite1, null, that, kwargs);
-							if (e) that.effectList.push(e);
-							spritesActedOn.add(sprite1);
+					var ss1 = that.lastcollisions[class1];
+					ss1.forEach(function (s1) {
+						if (!(new gamejs.Rect([0, 0], that.screensize).collideRect(s1.rect))) {
+							var e = effect(s1, null, that, kwargs);
+							if (e != null) {
+								that.effectList.push(e);
+							}
 						}
-					})
+					});
+
 					return;
 				}
 
+				// console.log(ss);
+				var sprite_array1 = that.lastcollisions[class1];
+				var sprite_array2 = that.lastcollisions[class2];
+
+
 				var score = 0;
-				if (kwargs.scoreChange) {
-					kwargs = Object.copy(kwargs);
-					score = kwargs.scoreChange;
-					delete kwargs.scoreChange;
-				}
 
 				var dim = null;
-				if (kwargs.dim) {
-					kwargs = Object.copy(kwargs);
-					dim = kwargs.dim;
-					delete kwargs.dim
+				if ('dim' in kwargs) {
+					kwargs = kwargs.copy();
+					dim = kwargs['dim'];
+					delete kwargs['dim'];
 				}
 
-				var sprites1 = that.lastcollisions[class1];
-				var sprites2 = that.lastcollisions[class2];
+				// console.log(sprite_array2);
+				sprite_array1.forEach(sprite1 => {
+					var rects = sprite_array2.map(os => {return os.rect});
+					// if (sprite_array2.length)
+					// 	console.log(sprite1.name, sprite_array2[0].name);
+					if (sprite1.rect.collidelistall(rects) == -1) return ;
+					sprite1.rect.collidelistall(rects).forEach(function (ci) {
+						var sprite2 = sprite_array2[ci];
 
+						if (sprite1 in collisions){
+							console.log(collisions[sprite1])
+							console.log('s1 collides with s2', collisions[sprite1].contains(sprite2))
+						}
+						if (sprite1 == sprite2
+							|| that.dead.contains(sprite1) 
+							|| that.dead.contains(sprite2)
+							|| (sprite1 in collisions
+								&& collisions[sprite1].contains(sprite2))) {
+							return;
+						}
+						console.log('we made it here')
 
-				sprites1.forEach(sprite1 => {
-
-					sprite1.rect.collidelistall(sprites2).forEach(collision_index => {
-						var sprite2 = sprites2[collision_index];
-
-						if (sprite1 == sprite2 ||
-							(collision_set[sprite1] && 
-							 collision_set[sprite1].contains(sprite2)) ||
-							dead.contains(sprite1) ||
-							dead.contains(sprite2))
-							return
-						if (new_collisions[sprite1] instanceof Array) {
-							new_collisions[sprite1].push(sprite2);
+						// update new collision set
+						if (sprite1 in new_collisions) {
+							new_collisions[sprite1].push(sprite2)
 						}
 						else {
-							new_collisions[sprite1] = [sprite2];	
+							new_collisions[sprite1] = [sprite2]
 						}
 
-						if (score) that.score += score;
+						// console.log(class1, sprite1.name, class2, sprite2.name);
+
+						if (score > 0) 
+							that.score += score;
 
 						if ('applyto' in kwargs) {
-							// deal with later
-							// var stype = kwargs['applyto'];
+							var stype = kwargs['applyto'];
+
+							var kwargs_use = deepcopy(kwargs);
+							delete kwargs_use['applyto'];
+							that.getSprites(stype).forEach(function (sC) {
+								var e = effect(sC, sprite1, self, kwargs_use);
+							});
+							that.effectList.push(e);
+							return;
 						}
+					
 
 						if (dim) {
-							// deal with later
+							var sprites = that.getSprites(class1);
+							var spritesFiltered = sprites.filter(function (sprite) {
+								return sprite[dim] == sprite2[dim];
+							});
+
+							spritesFiltered.forEach(function (sC) {
+								if (!(sprite1 in that.dead)) {
+
+									var e = effect(sprite1, sC, that, kwargs);
+								}
+								// console.log(e);
+								that.effectList.push(e);
+								return;
+							});
 						}
 
 						if (effect.name == 'changeResource') {
 							var resource = kwargs['resource'];
 							var [sclass, args, stypes] = that.sprite_constr[resource];
 							var resource_color = args['color'];
-							new_effects.push(effect(sprite1, sprite2, resource_color, that, kwargs));
+							var e = effect(sprite1, sprite2, resource_color, that, kwargs);
+						} else if (effect.name == push_effect) {
+							console.log('push_effect');
+							console.log(force_collisions)
+							var contained = false;
+							if (force_collisions.length) {
+								force_collisions.forEach(collision_set => {
+									if (collision_set.contains(sprite2)) {
+										collision_set.push(sprite1)
+										contained = true;
+									}
+								})
+							}
+							if (!(contained)) {
+								force_collisions.push([sprite1, sprite2]);
+							}
+							var e = effect(sprite1, sprite2, that, kwargs);
+						} else if (effect.name == back_effect) {
+							console.log('back effect');
+							console.log(force_collisions)
+							var contained = false;
+							if (force_collisions.length) {
+								force_collisions.forEach(collision_set => {
+									console.log(collision_set.contains(sprite1));
+									if (collision_set.contains(sprite1)) {
+										collision_set.forEach(sprite => {
+											var e = effect(sprite, sprite2, that, kwargs);
+										})
+										contained = true;
+									}
+								})
+							}
+							else if (!(contained)) {
+								var e = effect(sprite1, sprite2, that, kwargs);
+							}
+						} else {
+							// console.log('apply effect', effect); 	  	
+							// why are all the effects happeening
+							var e = effect(sprite1, sprite2, that, kwargs);
 						}
-
-						else if (effect.name == push_effect) {
-							var sprite_in_collision = false;
-							force_collisions.forEach(collision => {
-								if (collision.has(sprite2)) {
-									collision.add(sprite1);
-									sprite_in_collision = true;
-								}
-							})
-
-							if (!(sprite_in_collision))
-								force_collisions.push(new Set([sprite1, sprite2]));
-
-							new_effects.push(effect(sprite1, sprite2, that, kwargs));
+						if (e != null) {
+							that.effectList.push(e);
 						}
-
-						else if (effect.name == back_effect) {
-							var sprite_in_collision = false;
-							force_collisions.forEach(collision => {
-								if (collision.has(sprite1)) {
-									collision.forEach(sprite => {
-										new_effects.push(effect(sprite, sprite2, that, kwargs));
-									})
-								}
-							})
-
-							if (!(sprite_in_collision)) 
-								new_effects.push(effect(sprite1, sprite2, that, kwargs))
-						}
-
-						else {
-							new_effects.push(effect(sprite1, sprite2, that, kwargs));
-						}
-					}) 
-				})
-
+						
+					});
+				});
+			});
+			// update collisions
+			Object.keys(new_collisions).forEach(collision_sprite => {
+				if (collision_sprite in collisions)
+					collisions[collision_sprite].concat(new_collisions[collision_sprite])
+				else
+					collisions[collision_sprite] = new_collisions[collision_sprite]
 			})
-
-			that.effectList.concat(new_effects.filter(new_effect => {
-				return new_effect != null;
-			}));
-			Object.assign(collision_set, new_collisions);
-
 		}
-		// console.log(iterations);
 		// console.log(that.effectList);
-		// if (that.effectList.length) 
-		// 	console.log('effectList', that.effectList);
 		return that.effectList;
 	}
 
+
 	that.run = function (on_game_end) {
+		console.log('running game')
 		if (that.images) {
 			gamejs.preload(that.images.map(image => {return image_dir + image}))
 		}
@@ -784,6 +691,7 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that.startGame = function () {
+		console.log('initializing game')
 		that._initScreen(that.screensize);
 		// gamejs.display.flip();
 
@@ -903,6 +811,7 @@ var BasicGame = function (gamejs, args) {
 			console.log(eff);
 		})
 
+		console.log('defining loop');
 		gamejs.onTick(function () {
 
 			if (that.paused) return;

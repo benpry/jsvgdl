@@ -2,7 +2,9 @@
 var VGDLParser = function (gamejs) {
 	var images = [];
 	var tools_module = Tools; //|| require('../../vgdl/tools.js');
+	console.log('importing basic game')
 	var basic_game = BasicGame; //|| require('./basic-game.js');
+	console.log('basic game imported')
 	var gamejs = gamejs;
 	// ontology.extend(require('../ontology/ontology.js'));
 
