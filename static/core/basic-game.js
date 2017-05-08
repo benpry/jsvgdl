@@ -561,10 +561,6 @@ var BasicGame = function (gamejs, args) {
 					sprite1.rect.collidelistall(rects).forEach(function (ci) {
 						var sprite2 = sprite_array2[ci];
 
-						if (sprite1 in collisions){
-							console.log(collisions[sprite1])
-							console.log('s1 collides with s2', collisions[sprite1].contains(sprite2))
-						}
 						if (sprite1 == sprite2
 							|| that.dead.contains(sprite1) 
 							|| that.dead.contains(sprite2)
@@ -572,7 +568,6 @@ var BasicGame = function (gamejs, args) {
 								&& collisions[sprite1].contains(sprite2))) {
 							return;
 						}
-						console.log('we made it here')
 
 						// update new collision set
 						if (sprite1 in new_collisions) {
@@ -623,8 +618,6 @@ var BasicGame = function (gamejs, args) {
 							var resource_color = args['color'];
 							var e = effect(sprite1, sprite2, resource_color, that, kwargs);
 						} else if (effect.name == push_effect) {
-							console.log('push_effect');
-							console.log(force_collisions)
 							var contained = false;
 							if (force_collisions.length) {
 								force_collisions.forEach(collision_set => {
@@ -639,12 +632,9 @@ var BasicGame = function (gamejs, args) {
 							}
 							var e = effect(sprite1, sprite2, that, kwargs);
 						} else if (effect.name == back_effect) {
-							console.log('back effect');
-							console.log(force_collisions)
 							var contained = false;
 							if (force_collisions.length) {
 								force_collisions.forEach(collision_set => {
-									console.log(collision_set.contains(sprite1));
 									if (collision_set.contains(sprite1)) {
 										collision_set.forEach(sprite => {
 											var e = effect(sprite, sprite2, that, kwargs);
@@ -662,13 +652,14 @@ var BasicGame = function (gamejs, args) {
 							var e = effect(sprite1, sprite2, that, kwargs);
 						}
 						if (e != null) {
-							that.effectList.push(e);
+							new_effects.push(e);
 						}
 						
 					});
 				});
 			});
 			// update collisions
+			that.effectList.concat(new_effects);
 			Object.keys(new_collisions).forEach(collision_sprite => {
 				if (collision_sprite in collisions)
 					collisions[collision_sprite].concat(new_collisions[collision_sprite])
@@ -807,11 +798,13 @@ var BasicGame = function (gamejs, args) {
 		that.screen.blit(that.background, [0, 0]);
 		that._drawAll();
 
-		that.collision_eff.forEach(eff => {
-			console.log(eff);
+		that.collision_eff.sort((a, b) => {
+			return (a[2].name == 'killSprite')
 		})
 
-		console.log('defining loop');
+		that.collision_eff.forEach(eff => {
+			console.log(eff[2]);
+		})
 		gamejs.onTick(function () {
 
 			if (that.paused) return;

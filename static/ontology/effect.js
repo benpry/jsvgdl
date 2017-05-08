@@ -35,7 +35,8 @@ function transformTo (sprite, partner, game, kwargs) {
 	if (newones.length > 0) {
 		if ((sprite instanceof OrientedSprite) && (newones[0] instanceof OrientedSprite))
 			newones[0].orientation = sprite.orientation;
-		killSprite(sprite, partner, game, kwargs); 
+		game.kill_list.push(sprite); 
+		game.dead.push(sprite);
 	}
 
 	var args = {'stype': stype}
