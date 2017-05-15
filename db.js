@@ -75,7 +75,7 @@ var DB = function () {
 	}
 
 	that.get_games_list = function () {
-		return Object.keys(games);
+		return Object.keys(games).sort();
 	}
 
 	that.get_full_game = function (name) {
@@ -98,8 +98,13 @@ var DB = function () {
 
 	that.update_game = function (name, game, levels) {
 		games[name] = {game: game, levels: levels};
-		// pool.query(`update games set (game, levels)=('${game}', '{"${levels.toString().replace(/,/g, '","')}"}')
-		// 				where name = ${name}`, function (err, ))
+		pool.query(`update games set game='${game}', levels='{"${levels.toString().replace(/,/g, '","')}"}'
+						where name = '${name}'`, function (err) {
+							if (err) {
+								console.error('could not update game', err);
+							}
+							console.log('successfully saved');
+						})
 	}
 
 	that.add_game = function (name, game, levels) {

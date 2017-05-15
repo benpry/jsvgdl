@@ -18,9 +18,6 @@
       <li id="experiments">
         Experiments
       </li>
-      <li id="new">
-        New
-      </li>
       <li id="save">
         Save
       </li>
@@ -30,6 +27,9 @@
       <li id="play">
         Play
       </li>
+      <li id="delete">
+        Delete
+      </li>
     </ul>
   </div>
   <div class='container'>
@@ -38,6 +38,7 @@
         <% for(var i=0; i < games.length; i++) {%>
          <li class="game" id='<%= games[i] %>'><%= games[i] %></li>
         <% } %>
+        <li id='new'>Create New Game</li>
       </ul>
     </div>
     <div class="row">
@@ -59,7 +60,9 @@
       <div class="Flex-Container">
         <input type='text' name='name_text' placeholder='name'></input>
         <button id="create">Create</button>
+        <button id="cancel">Cancel</button>
       </div> 
+      
     </div>
 
   </div>

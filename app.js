@@ -62,7 +62,7 @@ DB.get_experiments(function (result) {
 	console.log(result);
 })
 
-var exp = 'exp3';
+var exp = 'exp2';
 
 app.get('/', function (req, res) {
 	res.render('home');
@@ -83,10 +83,20 @@ app.get('/edit/:game_name', require_login, function (req, res) {
 	res.send(DB.get_full_game(req.params.game_name))
 })
 
+app.post('/edit/:game_name', require_login, function (req, res) {
+	DB.add_game(req.body.name, req.body.game, req.body.levels) 
+	res.send({success: true});
+})
+
 app.put('/edit/:game_name', require_login, function (req, res) {
 	DB.update_game(req.body.name, req.body.game, req.body.levels)
 	res.send({success: true})
 	// console.log(req.body);
+})
+
+app.delete('/edit/:game_name', require_login, function (req, res) {
+	DB.delete_game(req.params.game_name);
+	res.send({success: true})
 })
 
 app.get('/play/:game_name', require_login, function (req, res) {
@@ -103,8 +113,8 @@ app.get('/admin', require_login, function (req, res) {
 });
 
 app.get('/admin/login', function (req, res) {
-	console.log(req.query);
 	res.render('login');
+	
 });
 
 // Sends the current game to be played for the given experiment id

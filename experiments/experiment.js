@@ -54,6 +54,7 @@ var Experiment = function (exp_name) {
         var level_rounds = settings[2];
         if (settings[3])
             game_levels = shuffle(game_levels);
+        console.log(game_levels)
 
         game_levels.forEach(game_level => {
             for (var i = 0; i < level_rounds ; i++) {

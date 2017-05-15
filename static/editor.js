@@ -8,6 +8,14 @@ var get_game = function (game_name, callback) {
   });
 }
 
+var delete_game = function (game_name, callback) {
+  $.ajax({
+    type: "DELETE",
+    url: `/edit/${game_name}`,
+    success: callback,
+  });
+}
+
 var save_game = function (game_obj, callback) {
     $.ajax({
     type: "PUT",
@@ -17,13 +25,25 @@ var save_game = function (game_obj, callback) {
   });  
 }
 
+var add_game = function (game_obj, callback) {
+    $.ajax({
+    type: "POST",
+    url: `/edit/${game_obj.name}`,
+    data: game_obj,
+    success: callback,
+  });  
+}
 var update_text_areas = function (game_text, level_text) {
   $('#game_area').val(game_text);
   $('#level_area').val(level_text);
 }
 
 var update_nav_bar = function (game_name) {
-  $('.side-bar ul').append(`<li class="game active">${game_name}</li>`)
+  $('.side-bar ul li').each(function () {
+    $(this).removeClass('active');
+  })
+  $('#new').remove();
+  $('.side-bar ul').append(`<li class="game active" id="${game_name}">${game_name}</li><li id="new">Create New Game</li>`)
 }
 
 var update_game_obj = function (game_obj) {
@@ -66,10 +86,17 @@ $(document).ready(function () {
     get_game(game_name, update_game_obj)
   })
 
+  $('#cancel').click(e => {
+    create_modal.style.display = 'none';
+  })
+
   $('#create').click(e => {
     var name = $('input').val();
     if (name) {
       new_game_obj = {name: name, game: '', levels: [''], level: 0}
+      add_game(new_game_obj, function () {
+        console.log('added game')
+      })
       update_game_obj(new_game_obj);
       update_nav_bar(name);
       create_modal.style.display = 'none';
@@ -105,6 +132,13 @@ $(document).ready(function () {
           console.log('error saving')
         }
       })
+    }
+  })
+
+  $('#delete').click(e => {
+    if (current_game_obj.name) {
+      delete_game(current_game_obj.name, function () {})
+      $(`#${current_game_obj.name}`).remove();
     }
   })
 
