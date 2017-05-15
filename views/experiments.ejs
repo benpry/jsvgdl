@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="/client/experiment.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Lato:thin" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Asap:700|Lato" rel="stylesheet">
+</head>
+<body>
+
+<div class="Flex-Container">
+
+<div class="Flex-Container experiments" id="exp-box">
+  <h1>Current Experiment</h1>
+  <% for(var i=0; i < exp.length; i++) {%>
+    <ul class="exp-item" id='<%= exp[i] %>'>
+      <li class='delete item'>X</li>
+      <li class='game item'>
+        <select name='game'> 
+          <% for(var g=0; g < games.length; g++) {%>
+            <option <% if (games[g] == exp[i][0]) {%>selected='selected'<%}%>>
+            <%= games[g] %>
+            </option>
+          <% } %>
+        </select>
+      </li>
+      <% for(var l=0; l < exp[i][4]; l++) {%>
+        <li class='level item <% if (exp[i][1].indexOf(l) != -1) {%> active = true <% } %>'><%=l%></li>
+      <% }%>
+      <li class='rounds item'><input type='number' min='1' value='<%= exp[i][2] %>'></li></li>
+      <li class='random item'><input type='checkbox' <% if (exp[i][3]) { %> checked <% } %> ></input></li>
+      </ul>
+  <% } %>
+
+  <button id="begin">Run Experiment</button>
+</div>
+
+<footer class="footer">
+  <a href="/admin">Editor</a>
+</footer>
+
+</div>
+
+</body>
+</html>

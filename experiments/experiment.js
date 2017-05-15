@@ -26,7 +26,7 @@ function shuffle(array) {
 var Experiment = function (exp_name) {
     var experiment = Object.create(Experiment.prototype);
 
-    var experiments = {
+    this.experiments = {
         exp1 : [
             ['dodge', [0], 3, true], 
             ['simpleGame1', [0], 1, true]
@@ -46,7 +46,7 @@ var Experiment = function (exp_name) {
     var store = {}
     var games_ordered = [];
     var game_number = 0;
-    experiments[exp_name].forEach(settings => {
+    this.experiments[exp_name].forEach(settings => {
         game_number ++;
         var next_games = [];
         var game_name = settings[0];
@@ -108,5 +108,18 @@ var Experiment = function (exp_name) {
     return experiment;
 }
 
+Experiment.experiments = {
+        exp1 : [
+            ['dodge', [0], 3, true], 
+            ['simpleGame1', [0], 1, true]
+        ], 
+
+        exp2 : [
+            ['aliens', [0], 2, false],
+            ['simpleGame4', [0, 2, 3], 2, true]
+        ],
+
+        exp3: [['aliens', [0], 1, false]]
+    }
 
 module.exports = Experiment;

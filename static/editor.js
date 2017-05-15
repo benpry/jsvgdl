@@ -108,6 +108,10 @@ $(document).ready(function () {
     }
   })
 
+  $('#experiments').click(function (e) {
+    window.location.replace('/experiments');
+  })
+
   $('#home').click(function (e) {
     window.location.replace('/');
   })

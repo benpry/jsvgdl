@@ -40,6 +40,16 @@ p.centered {
 	max-width:400px; 
 }
 
+
+#exp-box {
+    border: 5px solid #ccc;
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 100px;
+
+/*    max-width:400px; 
+*/}
+
 #gjs-canvas {
     border: 3px solid #ccc;
     margin: 20px;
@@ -146,4 +156,43 @@ ul {
 
 .side-bar li.active {
     background-color: #aaa;
+}
+
+/*Experiment settings styles*/
+
+
+.exp-container {
+    display: flex;
+    flex-direction: row;
+
+}
+
+.exp-item li{
+    display: inline;
+    padding: 1px 5px 1px 5px;
+    border-radius: 5px; 
+    /*border-style: solid; */
+}
+
+.exp-item li.item{
+    display: inline;
+    padding: 1px 5px 1px 5px;
+    border-radius: 5px; 
+    /*border-style: solid; */
+    cursor: pointer;  
+}
+
+
+.exp-item li.active {
+    background-color: #aaa;
+}
+
+.exp-item input[type='number'] {
+    height: 10px;
+    width: 30px;
+}
+
+.exp-item input[type='checkbox'] {
+    cursor: unset;
+
 }

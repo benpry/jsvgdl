@@ -56,6 +56,8 @@ var DB = require('./db.js')()
 var Experiment = require('./experiments/experiment.js');
 var experiments = {};
 
+console.log(Experiment.experiments)
+
 DB.get_experiments(function (result) {
 	console.log(result);
 })
@@ -65,6 +67,17 @@ var exp = 'exp3';
 app.get('/', function (req, res) {
 	res.render('home');
 });
+
+app.get('/experiments', require_login, function (req, res) {
+	var setup = Experiment.experiments[exp].slice();
+	setup = setup.map(game => {
+		new_game = game.slice();
+		new_game.push(DB.get_full_game(game[0]).levels.length)
+		return new_game
+	})
+	console.log(setup);
+	res.render('experiments', {exp: setup, games: DB.get_games_list()})
+})
 
 app.get('/edit/:game_name', require_login, function (req, res) {
 	res.send(DB.get_full_game(req.params.game_name))
