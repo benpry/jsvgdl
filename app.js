@@ -4,7 +4,6 @@ var shortid = require('shortid');
 var session = require('express-session');
 var bcrypt = require('bcrypt-nodejs')
 
-
 var app = express();
 
 app.set('view engine', 'ejs');
@@ -17,7 +16,7 @@ app.use(express.static(__dirname + '/static'));
  * and exposes the resulting object (containing the keys and values) on req.body
  */
 app.use(bodyParser.urlencoded({
-    extended: true
+	extended: true
 }));
 
 /**bodyParser.json(options)
@@ -31,9 +30,9 @@ app.use(bodyParser.json());
  */
 app.set('trust proxy', 1) // trust first proxy 
 app.use(session({
-  secret: 'cocosciiscool',
-  resave: true,
-  saveUninitialized: true
+	secret: 'cocosciiscool',
+	resave: true,
+	saveUninitialized: true
 }))
 var login_password = 'cocosciiscool';
 
@@ -44,10 +43,14 @@ function require_login (req, res, next) {
 		res.redirect('/admin/login');
 }
 
-// DB, sort of.
-var games = require('./experiments/games.js')();
+// PostgreSQL DB 
+var DB = require('./db.js')()
+var Experiment = require('./experiments/experiment.js');
 var experiments = {};
-var new_exp = games.new_experiment('exp2');
+
+// DB.get_experiments(function (result) {
+// 	console.log(result);
+// })
 
 app.get('/', function (req, res) {
 	res.render('home');
@@ -56,13 +59,13 @@ app.get('/', function (req, res) {
 app.get('/play/:game_name', require_login, function (req, res) {
 	var data = {};
 	data.exp_id = 0;
-	data.game_obj = games.get_game(req.params.game_name);
+	data.game_obj = DB.get_game(req.params.game_name);
 	res.render('game', data);
 });
 
 app.get('/admin', require_login, function (req, res) {
 	var data = {};
-	data.games = games.get_games_list();
+	data.games = DB.get_games_list();
 	res.render('dashboard', data);
 });
 
@@ -72,30 +75,44 @@ app.get('/admin/login', function (req, res) {
 });
 
 // Sends the current game to be played for the given experiment id
-app.get('/experiment/:exp_id', function (req, res) {	
+app.get('/experiment/:exp_id', function (req, res, next) {	
 	var data = {};
 	data.exp_id = req.params.exp_id;
-	data.game_obj = experiments[data.exp_id].current_game_obj();
-	if (data.game_obj) 
+	var current_exp = experiments[data.exp_id];
+
+	if (!(current_exp)) {
+		next();
+	} else if (current_exp.is_done()) {
+		res.render('thank_you');
+		delete experiments[data.exp_id];
+	} else {
+		current_game = current_exp.current_game();
+		data.game_obj = DB.get_game(current_game.name, current_game.level);
+		var round = current_exp.current_round()
+		data.game_obj.name = round.number;
+		data.game_obj.round = round.round;
 		res.render('game', data);
-	else
-		res.render('home');
+	}
+
 })
 
 app.put('/experiment/:exp_id', function (req, res) {
-	console.log(req.body);
 	var exp_id = req.params.exp_id;
-	if (exp_id == 0) {
-		res.send();
-	} else {
-		experiments[req.params.exp_id].next();
+	var current_exp = experiments[req.params.exp_id];
+	if (current_exp) {
+		current_exp.next(req.body)
+		if (current_exp.is_done()) {
+			DB.post_experiment(exp_id, current_exp.get_data())
+		}
 		res.send({exp_id: exp_id});
+	} else {
+		res.send();
 	}	
 })
 
 app.post('/experiment/', function (req, res) {
 	var new_exp_id = shortid.generate();
-	experiments[new_exp_id] = games.new_experiment('exp1');
+	experiments[new_exp_id] = Experiment('exp3');
 	res.send({exp_id: new_exp_id});
 });
 
@@ -114,11 +131,11 @@ app.post('/admin/login', function (req, res) {
 
 
 app.get('*', function(req, res){
-  res.send('what???', 404);
+  res.status(404).render('404');
 });
 
 
 var PORT = process.env.PORT || 3000;
 app.listen(PORT, function () {
-	console.log("LISTENING ON PORT ", PORT);
+	console.log("listening on port", PORT);
 });

@@ -24,7 +24,7 @@ var continue_experiment = function (exp_id, game) {
 		$.ajax({
 			type: 'PUT',
 			url: "/experiment/"+exp_id,
-			data: JSON.stringify(game.getFullState()),
+			data: game.getFullState(),
 			success: load_experiment
 		})		
 	}
