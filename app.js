@@ -43,18 +43,38 @@ function require_login (req, res, next) {
 		res.redirect('/admin/login');
 }
 
+function validate_exp (req, res, next) {
+	if (req.session.exp_id == req.params.exp_id) {
+		next();
+	} else {
+		res.status(404).render('404');
+	}
+}
+
 // PostgreSQL DB 
 var DB = require('./db.js')()
 var Experiment = require('./experiments/experiment.js');
 var experiments = {};
 
-// DB.get_experiments(function (result) {
-// 	console.log(result);
-// })
+DB.get_experiments(function (result) {
+	console.log(result);
+})
+
+var exp = 'exp3';
 
 app.get('/', function (req, res) {
 	res.render('home');
 });
+
+app.get('/edit/:game_name', require_login, function (req, res) {
+	res.send(DB.get_full_game(req.params.game_name))
+})
+
+app.put('/edit/:game_name', require_login, function (req, res) {
+	DB.update_game(req.body.name, req.body.game, req.body.levels)
+	res.send({success: true})
+	// console.log(req.body);
+})
 
 app.get('/play/:game_name', require_login, function (req, res) {
 	var data = {};
@@ -66,7 +86,7 @@ app.get('/play/:game_name', require_login, function (req, res) {
 app.get('/admin', require_login, function (req, res) {
 	var data = {};
 	data.games = DB.get_games_list();
-	res.render('dashboard', data);
+	res.render('editor', data);
 });
 
 app.get('/admin/login', function (req, res) {
@@ -75,7 +95,7 @@ app.get('/admin/login', function (req, res) {
 });
 
 // Sends the current game to be played for the given experiment id
-app.get('/experiment/:exp_id', function (req, res, next) {	
+app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {	
 	var data = {};
 	data.exp_id = req.params.exp_id;
 	var current_exp = experiments[data.exp_id];
@@ -96,7 +116,7 @@ app.get('/experiment/:exp_id', function (req, res, next) {
 
 })
 
-app.put('/experiment/:exp_id', function (req, res) {
+app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 	var exp_id = req.params.exp_id;
 	var current_exp = experiments[req.params.exp_id];
 	if (current_exp) {
@@ -112,7 +132,8 @@ app.put('/experiment/:exp_id', function (req, res) {
 
 app.post('/experiment/', function (req, res) {
 	var new_exp_id = shortid.generate();
-	experiments[new_exp_id] = Experiment('exp3');
+	experiments[new_exp_id] = Experiment(exp);
+	req.session.exp_id = new_exp_id;
 	res.send({exp_id: new_exp_id});
 });
 

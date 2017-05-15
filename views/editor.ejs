@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="/editor.js"></script>
+  <script src="/client/games.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Asap:700|Lato" rel="stylesheet">
+</head>
+<body>
+  <div class='topnav'>
+    <ul id='nav'>
+      <li id="home">
+        Home
+      </li>
+      <li id="experiments">
+        Experiments
+      </li>
+      <li id="new">
+        New
+      </li>
+      <li id="save">
+        Save
+      </li>
+      <li id="level">
+        Level
+      </li>
+      <li id="play">
+        Play
+      </li>
+    </ul>
+  </div>
+  <div class='container'>
+    <div class='side-bar FlexItem'>
+      <ul>
+        <% for(var i=0; i<games.length; i++) {%>
+         <li class="game" id='<%= games[i] %>'><%= games[i] %></li>
+        <% } %>
+      </ul>
+    </div>
+    <div class="row">
+      <textarea id="game_area" class='textbox' rows="4" cols="50" name="comment" form="usrform">
+      </textarea>
+    </div>
+    <div class="row">
+
+      <textarea id="level_area" class='textbox' rows="4" cols="50" name="comment" form="usrform">
+      </textarea>
+
+    </div>
+  </div>
+
+  <div id="create_modal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+      <div class="Flex-Container">
+        <input type='text' name='name_text' placeholder='name'></input>
+        <button id="create">Create</button>
+      </div> 
+    </div>
+
+  </div>
+
+</body>
+</html>

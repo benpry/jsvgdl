@@ -31,8 +31,15 @@ var continue_experiment = function (exp_id, game) {
 }
 
 $(document).ready(function () {
+	console.log(exp_id);
+	if (exp_id == 0) {
+		$('#continue').attr('id', 'return')
+	}
 	console.log('page finished');
 	$('#begin').click(create_new_experiment);
+	$('#return').click(function (e) {
+		window.location.replace('/admin');
+	})
 
 })
 

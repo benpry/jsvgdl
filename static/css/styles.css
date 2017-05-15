@@ -7,6 +7,10 @@ h1 {
     font-size: 30pt;
 }
 
+input {
+    margin: 20px;
+}
+
 .Flex-Container {
     display: flex;
     flex-direction: column;
@@ -69,4 +73,77 @@ p.centered {
     padding: 20px;
     border: 1px solid #888;
     width: 200px;
+}
+
+/*text editor*/
+.topnav {
+    background-color: #aaa;
+    overflow: hidden;
+}
+.side-bar {
+    flex-grow: 1;
+    overflow-y: scroll;
+    overflow-wrap: break-word;
+    background-color: #eee; 
+}
+.textbox {
+    /*float: right;*/
+    /*position: fixed;*/
+    font-family: Consolas, monospace;
+    height: 100%;
+    width: 100%;
+    resize: none;
+    word-wrap: normal;
+    overflow-y: scroll;
+}
+.container, html, body {
+    height: 98%;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.row {
+    flex-grow: 4;
+    height: 100%;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+.topnav li {
+    display: inline;
+    padding-left: 40px;
+}
+
+.topnav li:hover {
+    color: black;
+    cursor: pointer;
+}
+
+.side-bar li {
+    /*font-size: 18px;*/
+    padding: 0px 0px 10px 10px;
+}
+
+.side-bar li:hover {
+    background-color: #ddd;
+    color: black;
+    cursor: pointer;
+}
+
+
+.side-bar li:active {
+    background-color: #888;
+    color: white;
+}
+
+.side-bar li.active {
+    background-color: #aaa;
 }

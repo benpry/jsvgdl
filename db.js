@@ -78,6 +78,13 @@ var DB = function () {
 		return Object.keys(games);
 	}
 
+	that.get_full_game = function (name) {
+		var game_obj = games[name];
+		game_obj.name = name;
+		game_obj.level = 0;
+		return game_obj;
+	}
+
 	that.get_game = function (name, level) {
 		if (!(level)) level = 0;
 
@@ -87,6 +94,12 @@ var DB = function () {
         return_game.name = name;
         return_game.round = 0;
         return return_game;
+	}
+
+	that.update_game = function (name, game, levels) {
+		games[name] = {game: game, levels: levels};
+		// pool.query(`update games set (game, levels)=('${game}', '{"${levels.toString().replace(/,/g, '","')}"}')
+		// 				where name = ${name}`, function (err, ))
 	}
 
 	that.add_game = function (name, game, levels) {
@@ -126,11 +139,6 @@ var DB = function () {
 
 			console.log(result.rows.slice());
 		})
-	}
-
-	that.insert = function (table) {
-
-		pool.query(`insert into ${table} (id, name) `)
 	}
 
 	Object.freeze(that);
