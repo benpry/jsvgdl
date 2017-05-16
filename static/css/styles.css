@@ -137,6 +137,10 @@ ul {
     cursor: pointer;
 }
 
+.topnav li.active {
+    color: white;
+}
+
 .side-bar li {
     /*font-size: 18px;*/
     padding: 0px 0px 10px 10px;

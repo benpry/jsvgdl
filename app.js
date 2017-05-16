@@ -99,10 +99,11 @@ app.delete('/edit/:game_name', require_login, function (req, res) {
 	res.send({success: true})
 })
 
-app.get('/play/:game_name', require_login, function (req, res) {
+app.get('/play/:game_name/level/:level', require_login, function (req, res) {
+	var level = parseInt(req.params.level);
 	var data = {};
 	data.exp_id = 0;
-	data.game_obj = DB.get_game(req.params.game_name);
+	data.game_obj = DB.get_game(req.params.game_name, level);
 	res.render('game', data);
 });
 

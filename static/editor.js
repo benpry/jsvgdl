@@ -33,9 +33,10 @@ var add_game = function (game_obj, callback) {
     success: callback,
   });  
 }
-var update_text_areas = function (game_text, level_text) {
-  $('#game_area').val(game_text);
-  $('#level_area').val(level_text);
+var update_text_areas = function () {
+  console.log(current_game_obj)
+  $('#game_area').val(current_game_obj.game);
+  $('#level_area').val(current_game_obj.levels[current_game_obj.level]);
 }
 
 var update_nav_bar = function (game_name) {
@@ -47,11 +48,42 @@ var update_nav_bar = function (game_name) {
 }
 
 var update_game_obj = function (game_obj) {
+  $('.level').remove()
   current_game_obj = game_obj;
-  update_text_areas(current_game_obj.game, current_game_obj.levels[0])
+  var i = 0;
+  current_game_obj.levels.forEach(level => {
+    $('#nav').append(`<li class="level" id=${i}>${i}</li>`)
+    i ++;
+  })
+  $('#0').addClass('active');
+  update_text_areas()
 }
 
+$(document).on("click", '.game',function() {
+  $('.side-bar ul li').each(function () {
+    $(this).removeClass('active');
+  })
+  $(this).addClass('active');
+  var game_name = $(this).attr('id')
+  get_game(game_name, update_game_obj)
+})
+
+$(document).on("click", '.level',function() {
+  $('.level').each(function () {
+    $(this).removeClass('active');
+  })
+  $(this).addClass('active');
+  current_game_obj.level = parseInt($(this).attr('id'));
+  update_text_areas();
+
+  // var game_name = $(this).attr('id')
+  // get_game(game_name, update_game_obj)
+})
+
 $(document).ready(function () {
+
+  $('#game_area').val('');
+  $('#level_area').val('');
 
   var create_modal = $('#create_modal')[0];
   console.log(create_modal)
@@ -75,16 +107,6 @@ $(document).ready(function () {
       $(this).get(0).selectionEnd = start + 1;
     } 
   });
-
-
-  $('.game').click(function (e) {
-    $('.side-bar ul li').each(function () {
-      $(this).removeClass('active');
-    })
-    $(this).addClass('active');
-    var game_name = $(this).attr('id')
-    get_game(game_name, update_game_obj)
-  })
 
   $('#cancel').click(e => {
     create_modal.style.display = 'none';
@@ -114,7 +136,7 @@ $(document).ready(function () {
       current_game_obj.levels[current_game_obj.level] = $('#level_area').val();
       save_game(current_game_obj, function (success) {
         if (success.success) {
-          window.location.replace(`/play/${current_game_obj.name}`);
+          window.location.replace(`/play/${current_game_obj.name}/level/${current_game_obj.level}`);
         }
       })
     }
