@@ -44,7 +44,7 @@ var update_nav_bar = function (game_name) {
     $(this).removeClass('active');
   })
   $('#new').remove();
-  $('.side-bar ul').append(`<li class="game active" id="${game_name}">${game_name}</li><li id="new">Create New Game</li>`)
+  $('.side-bar ul').append(`<li class="game active" id="${game_name}">${game_name}</li><li id="new">+</li>`)
 }
 
 var update_game_obj = function (game_obj) {

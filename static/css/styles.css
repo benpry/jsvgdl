@@ -87,7 +87,7 @@ p.centered {
 
 /*text editor*/
 .topnav {
-    background-color: #aaa;
+    background-color: #6D7D7F;
     overflow: hidden;
 }
 .side-bar {
@@ -147,19 +147,17 @@ ul {
 }
 
 .side-bar li:hover {
-    background-color: #ddd;
-    color: black;
+    background-color: #AFC8CC;
     cursor: pointer;
 }
 
 
 .side-bar li:active {
-    background-color: #888;
-    color: white;
+    background-color: #AFC8CC;
 }
 
 .side-bar li.active {
-    background-color: #aaa;
+    background-color: #6D7D7F;
 }
 
 /*Experiment settings styles*/
