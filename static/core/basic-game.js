@@ -12,7 +12,7 @@ var BasicGame = function (gamejs, args) {
 	var frame_rate = 20;
 	var load_save_enabled = true;
 	var disableContinuousKeyPress = true;
-	var image_dir = '../images/'
+	var image_dir = '/images/'
 
 	that.reset = function () {
 		that.score = 0;

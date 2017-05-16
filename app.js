@@ -114,6 +114,7 @@ app.get('/admin', require_login, function (req, res) {
 });
 
 app.get('/admin/login', function (req, res) {
+
 	res.render('login');
 	
 });

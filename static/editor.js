@@ -154,7 +154,7 @@ $(document).ready(function () {
       current_game_obj.levels[current_game_obj.level] = $('#level_area').val();
       save_game(current_game_obj, function (success) {
         if (success.success) {
-          window.location.replace(`/play/${current_game_obj.name}/level/${current_game_obj.level}`);
+          window.location.href = `/play/${current_game_obj.name}/level/${current_game_obj.level}`;
         }
       })
     }
