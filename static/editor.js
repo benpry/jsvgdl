@@ -55,6 +55,7 @@ var update_game_obj = function (game_obj) {
     $('#nav').append(`<li class="level" id=${i}>${i}</li>`)
     i ++;
   })
+  $('#nav').append('<li id="add-level">+</li>')
   $('#0').addClass('active');
   update_text_areas()
 }
