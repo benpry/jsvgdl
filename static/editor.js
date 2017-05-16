@@ -49,6 +49,7 @@ var update_nav_bar = function (game_name) {
 
 var update_game_obj = function (game_obj) {
   $('.level').remove()
+  $('#add-level').remove()
   current_game_obj = game_obj;
   var i = 0;
   current_game_obj.levels.forEach(level => {
@@ -80,6 +81,22 @@ $(document).on("click", '.level',function() {
   // var game_name = $(this).attr('id')
   // get_game(game_name, update_game_obj)
 })
+
+$(document).on("click", '#add-level',function() {
+  $('.level').each(function () {
+    $(this).removeClass('active');
+  })
+  current_game_obj.levels.push(['']);
+  $('#add-level').remove();
+  var new_level = current_game_obj.levels.length-1
+  current_game_obj.level = new_level;
+  $('#nav').append(`<li class="level active" id=${new_level}>${new_level}</li><li id="add-level">+</li>`)
+  update_text_areas();
+
+  // var game_name = $(this).attr('id')
+  // get_game(game_name, update_game_obj)
+})
+
 
 $(document).ready(function () {
 
