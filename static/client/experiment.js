@@ -38,7 +38,7 @@ $(document).ready(function () {
 	console.log('page finished');
 	$('#begin').click(create_new_experiment);
 	$('#return').click(function (e) {
-		window.location.replace('/admin');
+		window.location.href = '/admin';
 	})
 
 })

@@ -1,8 +1,21 @@
 var express = require('express');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 var shortid = require('shortid');
 var session = require('express-session');
-var bcrypt = require('bcrypt-nodejs')
+var bcrypt = require('bcrypt-nodejs');
+var multer = require('multer');
+var fs = require('fs');
+
+var storage = multer.diskStorage({
+	destination: 'static/images/',
+	filename: function (req, file, callback) {
+		callback(null, file.originalname)
+	}
+})
+var upload = multer({
+	dest : 'images/',
+	storage: storage
+	});
 
 var app = express();
 
@@ -18,6 +31,7 @@ app.use(express.static(__dirname + '/static'));
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
+
 
 /**bodyParser.json(options)
  * Parses the text as JSON and exposes the resulting object on req.body.
@@ -56,11 +70,11 @@ var DB = require('./db.js')()
 var Experiment = require('./experiments/experiment.js');
 var experiments = {};
 
-console.log(Experiment.experiments)
+// console.log(Experiment.experiments)
 
-DB.get_experiments(function (result) {
-	console.log(result);
-})
+// DB.get_experiments(function (result) {
+// 	console.log(result);
+// })
 
 var exp = 'exp2';
 
@@ -68,6 +82,29 @@ app.get('/', function (req, res) {
 	res.render('home');
 });
 
+// Images
+app.get('/images', require_login, function(req, res) {
+	fs.readdir('./static/images', function (err, images) {
+		if (err) {
+			res.render('images');
+			return console.error(err);
+		}
+		res.render('images', {images: images});
+
+	})
+})
+
+app.post('/images/upload', require_login, upload.any(), function(req, res) {
+	var photoUpload = upload.single('userPhoto')
+	photoUpload(req, res, function (err) {
+		if (err) {
+			res.send(err);
+		}
+		res.redirect('/images');
+	})
+})
+
+// Experiments
 app.get('/experiments', require_login, function (req, res) {
 	var setup = Experiment.experiments[exp].slice();
 	setup = setup.map(game => {
@@ -75,10 +112,31 @@ app.get('/experiments', require_login, function (req, res) {
 		new_game.push(DB.get_full_game(game[0]).levels.length)
 		return new_game
 	})
-	console.log(setup);
 	res.render('experiments', {exp: setup, games: DB.get_games_list()})
 })
 
+app.put('/experiments', require_login, function (req, res) {
+	var setup = Experiment.experiments[exp].slice();
+	setup = setup.map(game => {
+		new_game = game.slice();
+		new_game.push(DB.get_full_game(game[0]).levels.length)
+		return new_game
+	})
+	res.send({levels: DB.get_full_game(req.body.name).levels.length})
+})
+
+
+app.post('/experiments', require_login, function (req, res) {
+	var setup = Experiment.experiments[exp].slice();
+	setup = setup.map(game => {
+		new_game = game.slice();
+		new_game.push(DB.get_full_game(game[0]).levels.length)
+		return new_game
+	})
+	res.send({setup: setup, games: DB.get_full_games()})
+})
+
+// Editor
 app.get('/edit/:game_name', require_login, function (req, res) {
 	res.send(DB.get_full_game(req.params.game_name))
 })
@@ -107,6 +165,7 @@ app.get('/play/:game_name/level/:level', require_login, function (req, res) {
 	res.render('game', data);
 });
 
+// Administrative
 app.get('/admin', require_login, function (req, res) {
 	var data = {};
 	data.games = DB.get_games_list();
@@ -116,8 +175,22 @@ app.get('/admin', require_login, function (req, res) {
 app.get('/admin/login', function (req, res) {
 
 	res.render('login');
-	
+
 });
+
+app.post('/admin/login', function (req, res) {
+	if (req.body.password == login_password){
+		console.log('user logged in');
+		req.session.logged_in = true;
+		req.session.save();
+
+		res.redirect('/admin');
+	} else {
+		res.redirect('/admin/login');
+	}
+
+});
+
 
 // Sends the current game to be played for the given experiment id
 app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {	
@@ -161,20 +234,6 @@ app.post('/experiment/', function (req, res) {
 	req.session.exp_id = new_exp_id;
 	res.send({exp_id: new_exp_id});
 });
-
-app.post('/admin/login', function (req, res) {
-	if (req.body.password == login_password){
-		console.log('user logged in');
-		req.session.logged_in = true;
-		req.session.save();
-
-		res.redirect('/admin');
-	} else {
-		res.redirect('/admin/login');
-	}
-
-});
-
 
 app.get('*', function(req, res){
   res.status(404).render('404');

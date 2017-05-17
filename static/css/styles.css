@@ -47,8 +47,8 @@ p.centered {
     padding: 20px;
     margin-top: 100px;
 
-/*    max-width:400px; 
-*/}
+    /*max-width:400px; */
+}
 
 #gjs-canvas {
     border: 3px solid #ccc;
@@ -163,38 +163,56 @@ ul {
 /*Experiment settings styles*/
 
 
+#add-exp {
+    background-color: #aaa; 
+}
+
+#add-exp:hover {
+    cursor: pointer; 
+}
+
 .exp-container {
     display: flex;
     flex-direction: row;
 
 }
 
-.exp-item li{
-    display: inline;
-    padding: 1px 5px 1px 5px;
+.exp-container li{
+    /*display: inline;*/
+    padding: 0px 5px 0px 5px;
     border-radius: 5px; 
+    justify-content: center;
     /*border-style: solid; */
+    /*height: auto;*/
 }
 
-.exp-item li.item{
-    display: inline;
-    padding: 1px 5px 1px 5px;
-    border-radius: 5px; 
-    /*border-style: solid; */
-    cursor: pointer;  
+.exp-container li.align {
+    margin: 20px 1px 20px 1px;
+}
+
+.exp-container li.center {
+    padding: 5px 5px 5px 5px;
 }
 
 
-.exp-item li.active {
+.exp-container li.level:hover {
+    cursor: pointer;
+}
+
+.exp-container li.delete:hover {
+    cursor: pointer;
+}
+
+.exp-container li.active {
     background-color: #aaa;
 }
 
-.exp-item input[type='number'] {
+.exp-container input[type='number'] {
     height: 10px;
     width: 30px;
 }
 
-.exp-item input[type='checkbox'] {
+.exp-container input[type='checkbox'] {
     cursor: unset;
 
 }

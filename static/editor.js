@@ -183,11 +183,15 @@ $(document).ready(function () {
   })
 
   $('#experiments').click(function (e) {
-    window.location.replace('/experiments');
+    window.location.href = '/experiments';
+  })
+
+  $('#images').click(function (e) {
+    window.location.href = '/images';
   })
 
   $('#home').click(function (e) {
-    window.location.replace('/');
+    window.location.href = '/';
   })
 
 })

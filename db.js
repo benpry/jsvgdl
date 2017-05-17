@@ -78,6 +78,12 @@ var DB = function () {
 		return Object.keys(games).sort();
 	}
 
+	that.get_full_games = function () {
+		return that.get_games_list().map(game => {
+			return that.get_full_game(game);
+		})
+	}
+
 	that.get_full_game = function (name) {
 		var game_obj = games[name];
 		game_obj.name = name;
