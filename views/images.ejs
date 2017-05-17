@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Lato:thin" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Asap:700|Lato" rel="stylesheet">
+  <script src="/images.js"></script>
+</head>
+<body>
+
+<div class="Flex-Container">
+
+<h1>Add Image</h1>
+<form method="post"  enctype="multipart/form-data" action="/images/upload">
+    <input id='file' type="file" name="imageUpload">
+    <input id='submit' type="submit" value="Submit">
+</form>
+<div class="Flex-Container" id="info-box">
+  <h1>Images</h1>
+  <ul>
+    <% for(var i=0; i<images.length; i++) {%>
+       <li><a href='/images/<%= images[i] %>'><%= images[i] %></a></li>
+    <% } %>
+  </ul>
+</div>
+
+</div>
+
+</body>
+</html>
