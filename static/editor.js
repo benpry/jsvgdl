@@ -9,6 +9,10 @@ var get_game = function (game_name, callback) {
 }
 
 var delete_game = function (game_name, callback) {
+  if (!(game_obj.name)) {
+    callback({success: false});
+    return;
+  }
   $.ajax({
     type: "DELETE",
     url: `/edit/${game_name}`,
@@ -17,6 +21,10 @@ var delete_game = function (game_name, callback) {
 }
 
 var save_game = function (game_obj, callback) {
+    if (!(game_obj.name)) {
+      callback({success: false});
+      return;
+    }
     $.ajax({
     type: "PUT",
     url: `/edit/${game_obj.name}`,
@@ -67,6 +75,9 @@ $(document).on("click", '.game',function() {
   })
   $(this).addClass('active');
   var game_name = $(this).attr('id')
+  $('#game_area').val('loading...');
+  $('#level_area').val('loading...');
+  current_game_obj = {};
   get_game(game_name, update_game_obj)
 })
 
