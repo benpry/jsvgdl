@@ -9,7 +9,8 @@ var get_game = function (game_name, callback) {
 }
 
 var delete_game = function (game_name, callback) {
-  if (!(game_obj.name)) {
+  console.log(game_name);
+  if (!(game_name)) {
     callback({success: false});
     return;
   }
@@ -45,6 +46,9 @@ var update_text_areas = function () {
   console.log(current_game_obj)
   $('#game_area').val(current_game_obj.game);
   $('#level_area').val(current_game_obj.levels[current_game_obj.level]);
+  $('textarea').each(function () {
+    $(this).attr('readonly', false);
+  })
 }
 
 var update_nav_bar = function (game_name) {
@@ -75,6 +79,9 @@ $(document).on("click", '.game',function() {
   })
   $(this).addClass('active');
   var game_name = $(this).attr('id')
+  $('textarea').each(function () {
+    $(this).attr('readonly', true);
+  })
   $('#game_area').val('loading...');
   $('#level_area').val('loading...');
   current_game_obj = {};
@@ -108,6 +115,9 @@ $(document).on("click", '#add-level',function() {
   // get_game(game_name, update_game_obj)
 })
 
+  $(document).on('click', '#new', function (e) {
+    create_modal.style.display = 'block';
+  })
 
 $(document).ready(function () {
 
@@ -137,26 +147,35 @@ $(document).ready(function () {
     } 
   });
 
+  $('#name-input').change(e => {
+    console.log('updating');
+  })
+
   $('#cancel').click(e => {
     create_modal.style.display = 'none';
   })
 
   $('#create').click(e => {
+    $('.warning').remove()
     var name = $('input').val();
-    if (name) {
+    var regexp = /^[a-zA-Z0-9-_]+$/
+    if (name.search(regexp) != -1) {
       new_game_obj = {name: name, game: '', levels: [''], level: 0}
-      add_game(new_game_obj, function () {
-        console.log('added game')
+      add_game(new_game_obj, function (response) {
+        if (response.success) {
+          update_game_obj(new_game_obj);
+          update_nav_bar(name);
+          create_modal.style.display = 'none';
+        } else {
+          $('#modal-content').append('<p class="warning">Name already taken</p>')
+        }
       })
-      update_game_obj(new_game_obj);
-      update_nav_bar(name);
-      create_modal.style.display = 'none';
+    } else {
+      $('#modal-content').append('<p class="warning">Invalid name</p>')
     }
   })
 
-  $('#new').click(function (e) {
-    create_modal.style.display = 'block';
-  })
+
 
   // fix this code
   $('#play').click(function (e) {
@@ -188,8 +207,12 @@ $(document).ready(function () {
 
   $('#delete').click(e => {
     if (current_game_obj.name) {
-      delete_game(current_game_obj.name, function () {})
-      $(`#${current_game_obj.name}`).remove();
+      console.log('deleting game');
+      delete_game(current_game_obj.name, function () {
+         $(`#${current_game_obj.name}`).remove();
+         current_game_obj = {};
+      })
+     
     }
   })
 

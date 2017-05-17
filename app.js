@@ -142,8 +142,8 @@ app.get('/edit/:game_name', require_login, function (req, res) {
 })
 
 app.post('/edit/:game_name', require_login, function (req, res) {
-	DB.add_game(req.body.name, req.body.game, req.body.levels) 
-	res.send({success: true});
+	success = DB.add_game(req.body.name, req.body.game, req.body.levels) 
+	res.send({success: success});
 })
 
 app.put('/edit/:game_name', require_login, function (req, res) {
@@ -153,6 +153,8 @@ app.put('/edit/:game_name', require_login, function (req, res) {
 })
 
 app.delete('/edit/:game_name', require_login, function (req, res) {
+	console.log('deleting game')
+	console.log(req.params.game_name);
 	DB.delete_game(req.params.game_name);
 	res.send({success: true})
 })

@@ -6,28 +6,27 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
   <script src="/editor.js"></script>
   <script src="/client/games.js"></script>
-  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Asap:700|Lato" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto|Lato:regular,bold" rel="stylesheet">
 </head>
 <body>
   <div class='topnav'>
     <ul id='nav'>
-      <li id="home">
+      <li class='main button' id="home">
         Home
       </li>
-      <li id="experiments">
+      <li class='main button' id="experiments">
         Experiments
       </li>
-      <li id="images">
+      <li class='main button' id="images">
         Images
       </li>
-      <li id="save">
+      <li class='button' id="save">
         Save
       </li>
-      <li id="play">
+      <li class='button' id="play">
         Play
       </li>
-      <li id="delete">
+      <li class='button' id="delete">
         Delete
       </li>
       <li>
@@ -60,8 +59,8 @@
 
     <!-- Modal content -->
     <div class="modal-content">
-      <div class="Flex-Container">
-        <input type='text' name='name_text' placeholder='name'></input>
+      <div id="modal-content" class="Flex-Container">
+        <input id="name-input" type='text' name='name_text' placeholder='name'></input>
         <button id="create">Create</button>
         <button id="cancel">Cancel</button>
       </div> 

@@ -114,6 +114,8 @@ var DB = function () {
 	}
 
 	that.add_game = function (name, game, levels) {
+		if (name in games) 
+			return false;
 		games[name] = {game: game, levels: levels};
 		pool.query(`insert into games values
 					('${name}', '${game}', 
@@ -125,6 +127,7 @@ var DB = function () {
 
 				console.log('successfully added game');
 			})
+		return true;
 	}	
 
 	that.delete_game = function (name) {

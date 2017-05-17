@@ -1,5 +1,5 @@
 body {
-    font-family: 'Lato';
+    font-family: 'Lato', regular;
     font-size: 12pt;
 }
 
@@ -86,6 +86,11 @@ p.centered {
 }
 
 /*text editor*/
+li.main {
+    font-family: 'Lato', bold;
+    font-size: 14pt;
+}
+
 .topnav {
     background-color: #6D7D7F;
     overflow: hidden;
@@ -129,11 +134,12 @@ ul {
 
 .topnav li {
     display: inline;
-    padding-left: 40px;
+    padding: 0px 20px 0px 20px;
+
 }
 
-.topnav li:hover {
-    color: black;
+.topnav li.button:hover {
+    color: white;
     cursor: pointer;
 }
 
