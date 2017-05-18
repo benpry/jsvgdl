@@ -46,6 +46,8 @@ var Experiment = function (exp_name) {
     var store = {}
     var games_ordered = [];
     var game_number = 0;
+    var refresh = false;
+
     this.experiments[exp_name].forEach(settings => {
         game_number ++;
         var next_games = [];
@@ -68,6 +70,13 @@ var Experiment = function (exp_name) {
     var current_trial = 0;
     var max_trials = games_ordered.length
 
+    experiment.refresh = function () {
+        if (!refresh) {
+            refresh = true
+            return false;
+        }
+        return true;
+    }
     experiment.current_game = function () {
         if (current_trial == max_trials)
             return false;
@@ -88,6 +97,7 @@ var Experiment = function (exp_name) {
 
 
     experiment.next = function (data) {
+        refresh = false;
         var current_game = games_ordered[current_trial];
         store[current_trial] = {game: current_game, data: data}
         current_trial += 1;

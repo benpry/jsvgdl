@@ -18,34 +18,40 @@ var game = vgdl_parser.playGame(vgdl_game.game, vgdl_game.level);
 // console.log('game started');
 
 
+$(document).on('click', '#continue', continue_experiment(exp_id, game))
+
 $(document).ready(function () {
 
-	var button = $(':button');
-	var end_modal = $('#end-modal')[0];
-	var start_modal = $('#start-modal')[0];
+	var end_game_delay = 1000;
 
 	var on_game_end = function () {
-		end_modal.style.display = 'block';
-		if (game.win) {
-			$('#status').text('game won');
-		}
-		else {
-			$('#status').text('game lost');
-		}
+		game.paused = true;
+		var show_status = function () {
+			var status_text = '';
+			if (game.win) {
+				status_text = 'game won';
+			}
+			else {
+				status_text = 'game lost';
+			}
+			console.log('game ended');
+			var container = $('<div id="end-div" class="Flex-Container"></div>');
+			var status = $(`<p id="status">${status_text}</p>`);
+			var cont_button = $('<button id="continue">Continue</button>')
+			container.append(status);
+			container.append(cont_button);
+			console.log(container)
+			$('body').append(container)
+		}	
 
-	var on_game_end = function () {}
-		
-		
+		window.setTimeout(show_status,end_game_delay);
 	}
-
-	start_modal.style.display = 'block';
 
 	$('#gjs-canvas').focus();
 	$('#start').click(function () {
-		start_modal.style.display = 'none';
+		$('#start-div').remove();
 		game.paused = false
 	})
-	$('#continue').click(continue_experiment(exp_id, game));
 
 	// start_modal.style.display = 'none';
 	game.paused = true;

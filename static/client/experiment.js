@@ -1,10 +1,11 @@
 var exp_id = exp_id || undefined;
 
 var load_experiment = function (data) {
+	console.log('loading experimeent, I suppose')
 	if (data.exp_id) {
-		window.location.replace('/experiment/'+data.exp_id);
+		window.location.href = '/experiment/'+data.exp_id;
 	} else {
-		window.location.replace('/admin');
+		window.location.href = '/admin';
 	}
 }
 

@@ -811,7 +811,6 @@ var BasicGame = function (gamejs, args) {
 
 			if (that.ended) {
 				that.on_game_end();
-				that.paused = true;
 				return
 			};
 
