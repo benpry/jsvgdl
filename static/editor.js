@@ -65,10 +65,10 @@ var update_game_obj = function (game_obj) {
   current_game_obj = game_obj;
   var i = 0;
   current_game_obj.levels.forEach(level => {
-    $('#nav').append(`<li class="level" id=${i}>${i}</li>`)
+    $('#nav').append(`<li class="level button" id=${i}>${i}</li>`)
     i ++;
   })
-  $('#nav').append('<li id="add-level">+</li>')
+  $('#nav').append('<li class="button" id="add-level">+</li>')
   $('#0').addClass('active');
   update_text_areas()
 }
@@ -108,7 +108,7 @@ $(document).on("click", '#add-level',function() {
   $('#add-level').remove();
   var new_level = current_game_obj.levels.length-1
   current_game_obj.level = new_level;
-  $('#nav').append(`<li class="level active" id=${new_level}>${new_level}</li><li id="add-level">+</li>`)
+  $('#nav').append(`<li class="level active button" id=${new_level}>${new_level}</li><li class="button" id="add-level">+</li>`)
   update_text_areas();
 
   // var game_name = $(this).attr('id')
