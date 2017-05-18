@@ -19,6 +19,9 @@ var game = vgdl_parser.playGame(vgdl_game.game, vgdl_game.level);
 
 
 $(document).on('click', '#continue', continue_experiment(exp_id, game))
+$(document).on('click', '#return', function () {
+	window.location.href = '/admin';	
+})
 
 $(document).ready(function () {
 
@@ -37,7 +40,12 @@ $(document).ready(function () {
 			console.log('game ended');
 			var container = $('<div id="end-div" class="Flex-Container"></div>');
 			var status = $(`<p id="status">${status_text}</p>`);
-			var cont_button = $('<button id="continue">Continue</button>')
+			console.log(exp_id == '0')
+			if (exp_id != '0') {
+				var cont_button = $('<button id="continue">Continue</button>')
+			} else {
+				var cont_button = $('<button id="return">Return</button>')
+			}
 			container.append(status);
 			container.append(cont_button);
 			console.log(container)
