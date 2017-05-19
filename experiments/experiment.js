@@ -56,7 +56,6 @@ var Experiment = function (exp_name) {
         var level_rounds = settings[2];
         if (settings[3])
             game_levels = shuffle(game_levels);
-        console.log(game_levels)
 
         game_levels.forEach(game_level => {
             for (var i = 0; i < level_rounds ; i++) {
@@ -66,11 +65,19 @@ var Experiment = function (exp_name) {
         games_ordered = games_ordered.concat(next_games);
     })
 
-
+    var started = true;
     var current_trial = 0;
     var current_game_number = 1;
     var first = true;
     var max_trials = games_ordered.length
+
+    experiment.started = function () {
+        if (started) {
+            started = false
+            return true;
+        }
+        return false
+    }
 
     experiment.refresh = function () {
         if (!refresh) {

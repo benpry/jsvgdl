@@ -46,10 +46,10 @@ var experiments = {};
 
 // console.log(Experiment.experiments)
 
-DB.get_experiments(function (result) {
-	console.log('retrieved experiments')
-	console.log(result);
-})
+// DB.get_experiments(function (result) {
+// 	console.log('retrieved experiments')
+// 	console.log(result);
+// })
 
 // DB.get_experiments(function (result) {
 // 	result.forEach(exp_result => {
@@ -219,6 +219,8 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 
 	if (!(current_exp)) {
 		next();
+	} else if (current_exp.started()) {
+		res.render('start')
 	} else if (current_exp.is_done()) {
 		res.render('thank_you');
 		delete experiments[data.exp_id];
@@ -228,7 +230,6 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 		delete experiments[data.exp_id]
 		res.send("you weren't supposed to do that")
 	} else {
-
 		current_game = current_exp.current_game();
 		data.game_obj = DB.get_game(current_game.name, current_game.level);
 		var round = current_exp.current_round()

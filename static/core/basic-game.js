@@ -265,6 +265,7 @@ var BasicGame = function (gamejs, args) {
                            'only_active',
                            'airsteering',
                            'strength',
+                           'gamejs'
                            ];
 
 	that.getObjects = function () {
@@ -301,8 +302,7 @@ var BasicGame = function (gamejs, args) {
 			that.getSprites(key).forEach(function (s) {
 
 				var attrs = {};
-				Object.keys(s).forEach(function (a) {
-					if (a == 'gamejs') return;
+				Object.keys(s).forEach(function (a) {	
 					var val = s[a];
 					if (ias.indexOf(a) == -1) {
 						attrs[a] = val;
@@ -317,7 +317,8 @@ var BasicGame = function (gamejs, args) {
 			obs[key] = Object.copy(ss);
 		};
 
-		return {'score': that.score,
+		return {'frame': that.time,
+				'score': that.score,
 				'ended': that.ended,
 				'win'  : that.win,
 				'objects': Object.copy(obs),
@@ -835,6 +836,7 @@ var BasicGame = function (gamejs, args) {
 
 			that.gameStates.push(that.getFullState());
 
+
 			that.time ++;
 
 			// Discontinuous key press
@@ -852,6 +854,7 @@ var BasicGame = function (gamejs, args) {
 
 		
 	}
+
 
 	that.getPossibleActions = function () {
 		that.getAvatars()[0].declare_possible_actions();
