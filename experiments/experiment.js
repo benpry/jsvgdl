@@ -28,7 +28,7 @@ var Experiment = function (exp_name) {
 
     this.experiments = {
         exp1 : [
-            ['dodge', [0], 3, true], 
+            ['dodge', [0], 2, true], 
             ['simpleGame1', [0], 1, true]
         ], 
 
@@ -68,6 +68,8 @@ var Experiment = function (exp_name) {
 
 
     var current_trial = 0;
+    var current_game_number = 1;
+    var first = true;
     var max_trials = games_ordered.length
 
     experiment.refresh = function () {
@@ -84,6 +86,7 @@ var Experiment = function (exp_name) {
         game_obj = {};
         game_obj.name = current_game[0];
         game_obj.level = current_game[1];
+        game_obj.first = first;
         return game_obj;
     }
 
@@ -95,11 +98,21 @@ var Experiment = function (exp_name) {
         return round_obj;
     }
 
+    experiment.mid_point = function () {
+        
+        if (current_game_number == games_ordered[current_trial][2]) 
+            return false;
+        current_game_number ++;
+        first = true
+        return true;
+    }
+
 
     experiment.next = function (data) {
         refresh = false;
-        var current_game = games_ordered[current_trial];
-        store[current_trial] = {game: current_game, data: data}
+        first = false;
+        // var current_game = games_ordered[current_trial];
+        // store[current_trial] = {game: current_game, data: data}
         current_trial += 1;
     }
 
@@ -111,7 +124,7 @@ var Experiment = function (exp_name) {
     }
 
     experiment.get_data = function () {
-        return JSON.stringify(store);
+        return JSON.stringify(games_ordered[current_trial])
     }
 
     Object.freeze(experiment);

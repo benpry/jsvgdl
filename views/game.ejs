@@ -35,6 +35,8 @@
                          game : `<%-game_obj.game%>`};
 
         var exp_id = '<%-exp_id%>';
+        var first = eval('<%-first%>');
+        console.log('this is first', first);
 
         require.setModuleRoot('/');
         require.run('play_game');

@@ -10,7 +10,7 @@ var gamejs = require('gamejs');
 console.log('gamejs loaded');
 var vgdl_parser = VGDLParser(gamejs);
 console.log('game parsed');
-var game = vgdl_parser.playGame(vgdl_game.game, vgdl_game.level);
+var game = vgdl_parser.	playGame(vgdl_game.game, vgdl_game.level);
 // var on_game_end = function () {
 // }
 // game.paused = false;
@@ -18,16 +18,23 @@ var game = vgdl_parser.playGame(vgdl_game.game, vgdl_game.level);
 // console.log('game started');
 
 
-$(document).on('click', '#continue', continue_experiment(exp_id, game))
+$(document).on('click', '#continue', function () {
+	window.location.href = `/experiment/${exp_id}`
+})
 $(document).on('click', '#return', function () {
 	window.location.href = '/admin';	
 })
 
 $(document).ready(function () {
+	var time_stamp = {
+		start_time: 0,
+		end_time: 0
+	}
 
 	var end_game_delay = 1000;
 
 	var on_game_end = function () {
+		time_stamp.end_time = Date.now();
 		game.paused = true;
 		var show_status = function () {
 			var status_text = '';
@@ -52,19 +59,29 @@ $(document).ready(function () {
 			$('body').append(container)
 		}	
 
-		window.setTimeout(show_status,end_game_delay);
+		put_experiment(exp_id, game, time_stamp, function () {
+			window.setTimeout(show_status,end_game_delay);
+		})
+	}
+
+	var begin_game = function () {
+		$('#start-div').remove();
+		game.paused = false;
+		time_stamp.start_time = Date.now();
 	}
 
 	$('#gjs-canvas').focus();
-	$('#start').click(function () {
-		$('#start-div').remove();
-		game.paused = false
-	})
+	$('#start').click(begin_game)
 
 	// start_modal.style.display = 'none';
 	game.paused = true;
 	gamejs.ready(game.run(on_game_end));
-	console.log('game started')
+
+	if (!(first)) {
+		begin_game();
+	}
+
+	console.log(first);
 });
 
 // // gamejs.ready will call your main function

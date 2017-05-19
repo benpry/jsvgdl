@@ -1,7 +1,6 @@
 /**
  * params {**kwargs} any number of arguments which will be used in the game
  */
- console.log('loading basic game');
 var BasicGame = function (gamejs, args) {
 	var that = Object.create(BasicGame.prototype);
 	var MAX_SPRITES = 10000;
@@ -72,6 +71,7 @@ var BasicGame = function (gamejs, args) {
 
 	that.lastcollisions = {};
 
+	that.keystate = {}
 	that.reset();
 
 	that.buildLevel = function (lstr) {
@@ -270,11 +270,9 @@ var BasicGame = function (gamejs, args) {
 	that.getObjects = function () {
 		var obj_list = {};
 		var fs = that.getFullState();
-		var obs = fs['objects'];
+		var obs = Object.copy(fs['objects']);
 
 		for (obj_type in obs) {
-			console.log(obj_type);
-			console.log(that.getSprites(obj_type));
 			that.getSprites(obj_type).forEach(function (obj) {
 				var features = {'color': colorDict[obj.color.toString()],
 				                'row': [obj.rect.top]};
@@ -291,36 +289,39 @@ var BasicGame = function (gamejs, args) {
 		return obj_list;
 	}
 
-	that.getFullState = function (as_string = false) {
+	that.getFullState = function () {
 		var ias = that.ignoredattributes;
 		var obs = {};
+		var actions = Object.keys(that.keystate).filter(key => {
+			return that.keystate[key]
+		})
 		for (key in that.sprite_groups) {
 			if (!(that.sprite_groups.hasOwnProperty(key))) break;
 			var ss = {};
-			var obs = {};
 			that.getSprites(key).forEach(function (s) {
-				var pos = [s.rect.left, s.rect.top];
+
 				var attrs = {};
-				while (ss[pos])
-					pos = [pos, null];
-				if (as_string)
-					ss[pos.toString()] = attrs;
-				else
-					ss[pos] = attrs;
 				Object.keys(s).forEach(function (a) {
+					if (a == 'gamejs') return;
 					var val = s[a];
-					if (ias.indexOf(a) == -1)
+					if (ias.indexOf(a) == -1) {
 						attrs[a] = val;
+					}
 				});
-				if (s.resources)
+				if (s.resources) {
 					attrs['resources'] = s.resources; // Should be object
+				}
+
+				ss[s.ID] = Object.copy(attrs)
 			});
+			obs[key] = Object.copy(ss);
 		};
 
 		return {'score': that.score,
 				'ended': that.ended,
 				'win'  : that.win,
-				'objects': obs
+				'objects': Object.copy(obs),
+				'actions': actions,
 		};
 	}
 
@@ -673,7 +674,6 @@ var BasicGame = function (gamejs, args) {
 
 
 	that.run = function (on_game_end) {
-		console.log('running game')
 		if (that.images) {
 			gamejs.preload(that.images.map(image => {return image_dir + image}))
 		}
@@ -682,7 +682,6 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that.startGame = function () {
-		console.log('initializing game')
 		that._initScreen(that.screensize);
 		// gamejs.display.flip();
 
@@ -692,8 +691,6 @@ var BasicGame = function (gamejs, args) {
 				that.image_dict[image] = gamejs.image.load(image_dir + image);
 			})
 		}
-
-		console.log(that.image_dict)
 
 
 		that.reset();
@@ -740,9 +737,12 @@ var BasicGame = function (gamejs, args) {
 		that.all_objects = that.getObjects(); // Save all objects, some which may be killed in game
 
 		// figure out keypress type
-		disableContinuousKeyPress = Object.keys(that.all_objects).every(function (k) {
-			return that.all_objects[k]['sprite'].physicstype.__name__ == 'GridPhysics';
-		});
+
+		// disableContinuousKeyPress = Object.keys(that.all_objects).every(function (k) {
+		// 	return that.all_objects[k]['sprite'].physicstype.__name__ == 'GridPhysics';
+		// });
+		// console.log(disableContinuousKeyPress)
+
 
 		var objects = that.getObjects();
 		that.spriteDistribution = {};
@@ -758,7 +758,7 @@ var BasicGame = function (gamejs, args) {
 		// This should actually be in a game loop function, or something.
 		
 	
-		that.time ++;
+		that.time = 0;
 
 		// that._clearAll();
 
@@ -780,8 +780,9 @@ var BasicGame = function (gamejs, args) {
 		// disableContinuousKeyPress = false;
 
 		gamejs.event.onKeyDown (event => {
-			if (!(that.keywait[event.key]))
+			if (!(that.keywait[event.key])) 
 				that.keystate[event.key] = true;
+			
 		});
 
 		gamejs.event.onKeyUp (event => {
@@ -802,9 +803,8 @@ var BasicGame = function (gamejs, args) {
 			return (a[2].name == 'killSprite')
 		})
 
-		that.collision_eff.forEach(eff => {
-			console.log(eff[2]);
-		})
+
+		that.gameStates = [];
 		gamejs.onTick(function () {
 
 			if (that.paused) return;
@@ -833,9 +833,12 @@ var BasicGame = function (gamejs, args) {
 			that._drawAll();
 			that._updateAll();
 
+			that.gameStates.push(that.getFullState());
+
 			that.time ++;
 
 			// Discontinuous key press
+			// console.log(that.getFullState())
 			if (disableContinuousKeyPress) {
 				Object.keys(that.keystate).forEach(key => {
 					if (that.keystate[key]) {

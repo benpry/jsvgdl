@@ -50,7 +50,29 @@ var DB = function () {
 		
 	})
 
+	var reset_experiments = function (callback) {
+		console.log('deleting experiments')
+		pool.query('drop table experiments', function (err, result) {
+			if (err) {
+				console.error('no table to delete')
+			}
+			console.log('creating new experiments')
+			pool.query(`create table experiments(
+				id 		text 	not null,
+				times	text	not null,
+				data 	text	not null,
+				states 	text	not null)	`, function (err, result) {
+					if (err) {
+						console.error(err)
+					}
+					callback(result)
+				})
+		})
+	}
 
+	// reset_experiments(console.log)
+
+	// subjectID, game, level of game, star_timestamp, end_timestamp, score, win, fullGameStateSeries
 	that.get_experiments = function (callback) {
 		pool.query('select * from experiments', function (err, result) {
 			if (err) {
@@ -65,12 +87,17 @@ var DB = function () {
 		})
 	}
 
-	that.post_experiment = function (id, data) {
+	that.post_experiment = function (id, time_stamp, game_states, data) {
+		console.log(id)
+		console.log(time_stamp)
+		console.log(game_states)
+		console.log(data)
 		pool.query(`insert into experiments values 
-					('${id}', '${data}')`, function (err, result) {
+					('${id}', '$(time_stamp)', '${data}', '${game_states}')`, function (err, result) {
 						if (err) 
 							return console.error('could not update experiment', err);
 						console.log(result);
+						console.log('successfully uploaded data')
 					});
 	}
 

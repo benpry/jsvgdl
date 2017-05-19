@@ -1,7 +1,6 @@
 var exp_id = exp_id || undefined;
 
 var load_experiment = function (data) {
-	console.log('loading experimeent, I suppose')
 	if (data.exp_id) {
 		window.location.href = '/experiment/'+data.exp_id;
 	} else {
@@ -18,17 +17,15 @@ var create_new_experiment = function () {
 	});
 }
 
-var continue_experiment = function (exp_id, game) {
+var put_experiment = function (exp_id, game, time_stamp, callback) {
+	$.ajax({
+		type: 'PUT',
+		url: "/experiment/"+exp_id,
+		data: {timeStamp: JSON.stringify(time_stamp),
+		 	   gameStates: JSON.stringify(game.gameStates)},
+		success: callback,
+	})		
 
-	return function () {
-		console.log('continuing experiment');
-		$.ajax({
-			type: 'PUT',
-			url: "/experiment/"+exp_id,
-			data: game.getFullState(),
-			success: load_experiment
-		})		
-	}
 }
 
 $(document).ready(function () {

@@ -29,6 +29,7 @@ app.use(express.static(__dirname + '/static'));
  * and exposes the resulting object (containing the keys and values) on req.body
  */
 app.use(bodyParser.urlencoded({
+	limit: '5000mb',
 	extended: true
 }));
 
@@ -36,8 +37,7 @@ app.use(bodyParser.urlencoded({
 /**bodyParser.json(options)
  * Parses the text as JSON and exposes the resulting object on req.body.
  */
-app.use(bodyParser.json());
-
+// app.use(bodyParser.json({limit: '5000mb'}));
 
 // PostgreSQL DB 
 var DB = require('./db.js')()
@@ -46,11 +46,28 @@ var experiments = {};
 
 // console.log(Experiment.experiments)
 
+DB.get_experiments(function (result) {
+	console.log('retrieved experiments')
+	console.log(result);
+})
+
 // DB.get_experiments(function (result) {
-// 	console.log(result);
+// 	result.forEach(exp_result => {
+
+// 		console.log(exp_result.id)
+// 		// console.log(exp_result.data)
+// 		Object.keys(exp_result.data).forEach(key => {
+// 			console.log(key);
+// 			console.log(exp_result.data[key])
+// 		})
+// 	})
+// 	// result.data.forEach(round => {
+// 	// 	console.log(round)
+// 	// })
+
 // })
 
-var exp = 'exp2';
+var exp = 'exp1';
 
 /**
  * Middle ware for session data
@@ -199,23 +216,25 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 	var data = {};
 	data.exp_id = req.params.exp_id;
 	var current_exp = experiments[data.exp_id];
-	if (current_exp.refresh()) {
-		delete experiments[data.exp_id]
-		res.send("you weren't supposed to do that")
-		return;
-	}
 
 	if (!(current_exp)) {
 		next();
 	} else if (current_exp.is_done()) {
 		res.render('thank_you');
 		delete experiments[data.exp_id];
+	} else if (current_exp.mid_point()) {
+		res.render('midpoint')
+	} else if (current_exp.refresh()) {
+		delete experiments[data.exp_id]
+		res.send("you weren't supposed to do that")
 	} else {
+
 		current_game = current_exp.current_game();
 		data.game_obj = DB.get_game(current_game.name, current_game.level);
 		var round = current_exp.current_round()
 		data.game_obj.name = round.number;
 		data.game_obj.round = round.round;
+		data.first = current_game.first
 		res.render('game', data);
 	}
 
@@ -223,12 +242,13 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 
 app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 	var exp_id = req.params.exp_id;
+	var game_states = req.body.gameStates;
+	var time_stamp = req.body.timeStamp
 	var current_exp = experiments[req.params.exp_id];
 	if (current_exp) {
-		current_exp.next(req.body)
-		if (current_exp.is_done()) {
-			DB.post_experiment(exp_id, current_exp.get_data())
-		}
+		console.log('posting exeriment')
+		DB.post_experiment(exp_id, time_stamp, game_states, current_exp.get_data())
+		current_exp.next();
 		res.send({exp_id: exp_id});
 	} else {
 		res.send();
