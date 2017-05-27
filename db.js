@@ -112,6 +112,8 @@ var DB = function () {
 	}
 
 	that.get_full_game = function (name) {
+		if (!(name in games)) 
+			return {game: '', levels: [], name: '', level: 0};
 		var game_obj = games[name];
 		game_obj.name = name;
 		game_obj.level = 0;

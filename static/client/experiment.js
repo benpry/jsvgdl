@@ -18,13 +18,17 @@ var create_new_experiment = function () {
 }
 
 var put_experiment = function (exp_id, game, time_stamp, callback) {
-	$.ajax({
-		type: 'PUT',
-		url: "/experiment/"+exp_id,
-		data: {timeStamp: JSON.stringify(time_stamp),
-		 	   gameStates: JSON.stringify(game.gameStates)},
-		success: callback,
-	})		
+	if (exp_id != '0') {
+		$.ajax({
+			type: 'PUT',
+			url: "/experiment/"+exp_id,
+			data: {timeStamp: JSON.stringify(time_stamp),
+			 	   gameStates: JSON.stringify(game.gameStates)},
+			success: callback,
+		})		
+	} else {
+		callback();
+	}
 
 }
 

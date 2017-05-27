@@ -467,11 +467,11 @@ Chaser.prototype.update = function (game) {
 	position_options = {};
 
 	this._closestTargets(game).forEach(target => {
-		options.concat(this._movesToward(gamee, target));
+		options.concat(this._movesToward(game, target));
 	});
 	if (options.length == 0)
-		opptions = BASEDIRS;
-	this.physics.activeMovement(this, this.gamejs.random.choice(options));
+		options = BASEDIRS;
+	this.physics.activeMovement(this, options.randomElement());
 }
 
 function Fleeing(gamejs, pos, size, args) {

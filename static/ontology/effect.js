@@ -13,6 +13,10 @@ function getColor(sprite) {
 	}
 }
 
+function nothing (sprite, partner, game, kwargs) {
+	return ['nothing', sprite.ID, partner.ID]
+}
+
 function killSprite (sprite, partner, game, kwargs) {
 
 	// console.log(sprite.name, 'killed');
