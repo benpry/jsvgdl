@@ -181,7 +181,7 @@ app.get('/play/:game_name/level/:level', require_login, function (req, res) {
 	var data = {};
 	data.exp_id = 0;
 	data.game_obj = DB.get_game(req.params.game_name, level);
-	data.first = false;
+	data.first = false; //Take this out later.
 	res.render('game', data);
 });
 
