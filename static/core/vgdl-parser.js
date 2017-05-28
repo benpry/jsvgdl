@@ -1,6 +1,6 @@
 
 var VGDLParser = function (gamejs) {
-	var images = [];
+	var images = ['error.png'];
 	var tools_module = Tools; //|| require('../../vgdl/tools.js');
 	var basic_game = BasicGame; //|| require('./basic-game.js');
 	var gamejs = gamejs;

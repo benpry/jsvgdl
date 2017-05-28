@@ -432,8 +432,9 @@ Chaser.prototype = Object.create(RandomNPC.prototype);
 Chaser.prototype._closestTargets = function (game) {
 	var bestd = 1e100;
 	var res = [];
+	var that = this;
 	game.getSprites(this.stype).forEach(target => {
-		var d = this.physics.distance(this.rect, target.rect);
+		var d = that.physics.distance(that.rect, target.rect);
 		if (d < bestd) {
 			bestd = d;
 			res = [target];
@@ -447,13 +448,14 @@ Chaser.prototype._closestTargets = function (game) {
 Chaser.prototype._movesToward = function(game, target) {
 	var res = [];
 	var basedist = this.physics.distance(this.rect, target.rect);
+	var that = this;
 	BASEDIRS.forEach(a => {
-		var r = this.rect.copy();
+		var r = that.rect.copy();
 		r = r.move(a);
-		var newdist = this.physics.distance(r, target.rect);
-		if (this.fleeing && basedist < newdist) 
+		var newdist = that.physics.distance(r, target.rect);
+		if (that.fleeing && basedist < newdist) 
 			res.push(a);
-		if (!(this.fleeing && basedist > newdist))
+		if (!(that.fleeing && basedist > newdist))
 			res.push(a);
 
 	});
@@ -465,9 +467,9 @@ Chaser.prototype.update = function (game) {
 
 	options = [];
 	position_options = {};
-
+	var that = this;
 	this._closestTargets(game).forEach(target => {
-		options.concat(this._movesToward(game, target));
+		options.concat(that._movesToward(game, target));
 	});
 	if (options.length == 0)
 		options = BASEDIRS;
@@ -495,13 +497,14 @@ AStarChaser.prototype = Object.create(RandomNPC.prototype);
 AStarChaser.prototype._movesToward = function (game, target) {
 	var res = [];
 	var basedist = this.physics.distance(this.rect, target.rect);
+	var that = this;
 	BASEDIRS.forEach(a => {
-		var r = this.rect.copy();
+		var r = that.rect.copy();
 		r = r.move(a);
-		var newdist = this.physics.distance(r, target.rect);
-		if (this.fleeing && basedist < newdist)
+		var newdist = that.physics.distance(r, target.rect);
+		if (that.fleeing && basedist < newdist)
 			res.push(a);
-		if (!(this.fleeing && basedist > newdist))
+		if (!(that.fleeing && basedist > newdist))
 			res.push(a);
 	});
 	return res;
@@ -511,22 +514,25 @@ AStarChaser.prototype._draw = function (game) {
 	RandomNPC.prototype._draw.call(this, game);
 	if (this.walableTiles) {
 		var col = this.gamejs.Color(0, 0, 255, 100);
+		var that = this;
 		this.walableTiles.forEach(sprite => {
-			this.gamejs.draw.rect(game.screen, col, sprite.rect);
+			that.gamejs.draw.rect(game.screen, col, sprite.rect);
 		});
 	}
 
 	if (this.neighborNodes) {
 		var col = this.gamejs.Color(0, 255, 255, 80);
+		var that = this;
 		this.neighborNodes.forEach(node => {
-			this.gamejs.draw.rect(game.screen, col, node.sprite.rect);
+			that.gamejs.draw.rect(game.screen, col, node.sprite.rect);
 		})
 	}
 
 	if (this.drawpath) {
 		var col = this.gamejs.Color(0, 255, 0, 120);
+		var that = this;
 		this.drawpath.slice(1, -1).forEach(sprite => {
-			this.gamejs.draw.rect(game.screen, col, sprite.rect);
+			that.gamejs.draw.rect(game.screen, col, sprite.rect);
 		});
 	}
 }

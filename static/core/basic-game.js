@@ -34,7 +34,7 @@ var BasicGame = function (gamejs, args) {
 			console.log(`WARNING: undefined parameters ${arg} for game!`);
 	}
 
-	that.use_images = [];
+	// that.use_images = ['error.png'];
 	// contains mappings to constructor (just a few defaults are known)
 	that.sprite_constr = {'wall': [Immovable, {'color': DARKGRAY}, ['wall']],
 						  'avatar': [MovingAvatar, {}, ['avatar']]};
@@ -675,8 +675,11 @@ var BasicGame = function (gamejs, args) {
 
 
 	that.run = function (on_game_end) {
-		if (that.images) {
-			gamejs.preload(that.images.map(image => {return image_dir + image}))
+		console.log(that.images)
+		if (that.images.length) {
+			that.images.forEach(image => {
+				gamejs.preload(that.images.map(image => {return image_dir + image}))
+			})			
 		}
 		that.on_game_end = on_game_end;
 		return that.startGame;
@@ -689,7 +692,12 @@ var BasicGame = function (gamejs, args) {
 		if (that.images) {
 			that.image_dict = {}
 			that.images.forEach(image => {
-				that.image_dict[image] = gamejs.image.load(image_dir + image);
+				try {
+					that.image_dict[image] = gamejs.image.load(image_dir + image);
+				} catch (err) {
+					that.image_dict[image] = gamejs.image.load(image_dir + 'error.png');	
+					console.log(`could not load imag {image_dir}{image}`, err)
+				}
 			})
 		}
 
