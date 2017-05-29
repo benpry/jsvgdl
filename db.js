@@ -59,6 +59,7 @@ var DB = function () {
 			console.log('creating new experiments')
 			pool.query(`create table experiments(
 				id 		text 	not null,
+				val_id  text    not null,
 				times	text	not null,
 				data 	text	not null,
 				states 	text	not null)	`, function (err, result) {
@@ -87,17 +88,30 @@ var DB = function () {
 		})
 	}
 
-	that.post_experiment = function (id, time_stamp, game_states, data) {
+	that.get_experiment_info = function (callback) {
+		pool.query('select id, data from experiments', function (err, result) {
+			if (err) {
+				callback([], {success: false})
+				return console.error('could not get experiments')
+			}
+			result.rows = result.rows.map(exp_obj => {
+				exp_obj.data = JSON.parse(exp_obj.data);
+				return exp_obj
+			})
+			callback(result.rows, {success: true})
+		})
+	}
+	that.get_experiment_info(console.log);
+
+	that.post_experiment = function (id, val_id, time_stamp, game_states, data) {
 		// console.log(id)
 		// console.log(time_stamp)
 		// console.log(game_states)
 		// console.log(data)
 		pool.query(`insert into experiments values 
-					('${id}', '$(time_stamp)', '${data}', '${game_states}')`, function (err, result) {
+					('${id}', '${val_id}', '${time_stamp}', '${data}', '${game_states}')`, function (err, result) {
 						if (err) 
 							return console.error('could not update experiment', err);
-						console.log(result);
-						console.log('successfully uploaded data')
 					});
 	}
 

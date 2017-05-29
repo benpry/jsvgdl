@@ -44,28 +44,6 @@ var DB = require('./db.js')()
 var Experiment = require('./experiments/experiment.js');
 var experiments = {};
 
-// console.log(Experiment.experiments)
-
-// DB.get_experiments(function (result) {
-// 	console.log('retrieved experiments')
-// 	console.log(result);
-// })
-
-// DB.get_experiments(function (result) {
-// 	result.forEach(exp_result => {
-
-// 		console.log(exp_result.id)
-// 		// console.log(exp_result.data)
-// 		Object.keys(exp_result.data).forEach(key => {
-// 			console.log(key);
-// 			console.log(exp_result.data[key])
-// 		})
-// 	})
-// 	// result.data.forEach(round => {
-// 	// 	console.log(round)
-// 	// })
-
-// })
 
 var exp = 'exp1';
 
@@ -89,7 +67,11 @@ function require_login (req, res, next) {
 }
 
 function validate_exp (req, res, next) {
-	if (req.session.exp_id in experiments && req.session.exp_id == req.params.exp_id) {
+	var exp_id = req.session.exp_id
+	var val_id = req.session.val_id
+	if (exp_id in experiments 
+		&& exp_id == req.params.exp_id 
+		&& experiments[exp_id].validate(val_id)) {
 		next();
 	} else {
 		res.status(404).render('404');
@@ -124,13 +106,20 @@ app.post('/images/upload', require_login, upload.any(), function(req, res) {
 
 // Experiments
 app.get('/experiments', require_login, function (req, res) {
-	var setup = Experiment.experiments[exp].slice();
-	setup = setup.map(game => {
-		new_game = game.slice();
-		new_game.push(DB.get_full_game(game[0]).levels.length)
-		return new_game
+	// var setup = Experiment.experiments[exp].slice();
+	// setup = setup.map(game => {
+	// 	new_game = game.slice();
+	// 	new_game.push(DB.get_full_game(game[0]).levels.length)
+	// 	return new_game
+	// })
+	// res.render('experiments', {exp: setup, games: DB.get_games_list()})
+	DB.get_experiment_info(function (result, status) {
+		if (status.success)
+			res.render('db', {experiments: result});
+		else
+			res.send('internal server error');
 	})
-	res.render('experiments', {exp: setup, games: DB.get_games_list()})
+	
 })
 
 app.put('/experiments', require_login, function (req, res) {
@@ -201,7 +190,6 @@ app.get('/admin/login', function (req, res) {
 
 app.post('/admin/login', function (req, res) {
 	if (req.body.password == login_password){
-		console.log('user logged in');
 		req.session.id = shortid.generate();
 		logged_in[req.session.id] = true;
 		req.session.save();
@@ -225,13 +213,10 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 	} else if (current_exp.started()) {
 		res.render('start')
 	} else if (current_exp.is_done()) {
-		res.render('thank_you');
+		res.render('thank_you', {val_id: req.session.val_id});
 		delete experiments[data.exp_id];
 	} else if (current_exp.mid_point()) {
 		res.render('midpoint')
-	} else if (current_exp.refresh()) {
-		delete experiments[data.exp_id]
-		res.send("you weren't supposed to do that")
 	} else {
 		current_game = current_exp.current_game();
 		data.game_obj = DB.get_game(current_game.name, current_game.level);
@@ -247,15 +232,13 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 
 app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 	var exp_id = req.params.exp_id;
+	var val_id = req.session.val_id
 	var game_states = req.body.gameStates;
 	var time_stamp = req.body.timeStamp;
 	var current_exp = experiments[req.params.exp_id];
 	if (current_exp) {
-		console.log('---------------------')
-		console.log('retrying experiment');
-		console.log(current_exp.get_data());
+		DB.post_experiment(exp_id, val_id, time_stamp, game_states, current_exp.get_data())
 		current_exp.retry();
-		DB.post_experiment(exp_id, time_stamp, game_states, current_exp.get_data())
 		res.send({success: true})		
 	} else {
 		res.send({success: false, error: 'invalid expreriment ID'})
@@ -265,13 +248,12 @@ app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 
 app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 	var exp_id = req.params.exp_id;
+	var val_id = req.session.val_id;
 	var game_states = req.body.gameStates;
 	var time_stamp = req.body.timeStamp
 	var current_exp = experiments[req.params.exp_id];
 	if (current_exp) {
-		console.log('-----------------')
-		console.log('posting exeriment')
-		DB.post_experiment(exp_id, time_stamp, game_states, current_exp.get_data())
+		DB.post_experiment(exp_id, val_id, time_stamp, game_states, current_exp.get_data())
 		current_exp.next();
 		res.send({exp_id: exp_id});
 	} else {
@@ -281,8 +263,10 @@ app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 
 app.post('/experiment/', function (req, res) {
 	var new_exp_id = shortid.generate();
-	experiments[new_exp_id] = Experiment(exp);
+	var validation_id = shortid.generate();
+	experiments[new_exp_id] = Experiment(exp, validation_id);
 	req.session.exp_id = new_exp_id;
+	req.session.val_id = validation_id;
 	res.send({exp_id: new_exp_id});
 });
 

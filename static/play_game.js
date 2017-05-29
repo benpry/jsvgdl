@@ -5,11 +5,8 @@
  */
 
 
-console.log('is this even running?')
-var gamejs = require('gamejs');
-console.log('gamejs loaded');
+var gamejs = require('gamejs');;
 var vgdl_parser = VGDLParser(gamejs);
-console.log('game parsed');
 var game = vgdl_parser.	playGame(vgdl_game.game, vgdl_game.level);
 // var on_game_end = function () {
 // }
@@ -30,6 +27,20 @@ var retry_game = function () {
 	})
 }
 
+var page_refresh = function () {
+	if (game.win === null) {
+		retry_experiment(exp_id, game, time_stamp, function () {
+			console.log('game refreshed');
+		})
+	}
+}
+
+$(document).on('click', '#forfeit', function () {
+	post_experiment(exp_id, game, time_stamp, function () {
+		window.location.href = `/experiment/${exp_id}`;
+	})
+})
+
 $(document).on('click', '#continue', function () {
 	window.location.href = `/experiment/${exp_id}`
 })
@@ -37,13 +48,29 @@ $(document).on('click', '#return', function () {
 	window.location.href = '/admin';	
 })
 $(document).on('click', '#retry', retry_game);
+$(window).bind('beforeunload', page_refresh);
+
 
 $(document).ready(function () {
+
+	var cont_button = $('<button id="continue">Continue</button>');
+	var return_button = $('<button id="return">Return</button>');
+
+	var forfeit_div = $('<div id="forfeit-div" class="Flex-Container"></div>')
+	var forfeit_text = $('<p id="forfeit-text">If you want to forfeit the entire level and try a new one, press "Forfeit".</p>');
+	var forfeit_button = $('<button id="forfeit">Forfeit</button>');
+
 	var retry_container = $('<div id="retry-div" class="Flex-Container"></div>');
+	var retry_text = $('<p id="retry-text">If you get stuck, you can press "Retry" to reset this level.</p>')
 	var retry_button = $('<button id="retry">Retry</button>')
+	retry_container.append(retry_text)
 	retry_container.append(retry_button)
 
+	forfeit_div.append(forfeit_text);
+	forfeit_div.append(forfeit_button);
+
 	var end_game_delay = 1000;
+	var forfeit_delay = 60000*2;
 
 	var on_game_end = function () {
 		time_stamp.end_time = Date.now();
@@ -52,31 +79,31 @@ $(document).ready(function () {
 		var show_status = function () {
 			var status_text = '';
 			if (game.win) {
-				status_text = 'game won';
 				var container = $('<div id="end-div" class="Flex-Container"></div>');
 				if (exp_id != '0') {
-					var cont_button = $('<button id="continue">Continue</button>')
+					var button = cont_button;
 				} else {
-					var cont_button = $('<button id="return">Return</button>')
+					var button = return_button;
 				}
 			}
 			else {
-				status_text = 'game lost';
 				var container = retry_container;
-				var cont_button = retry_button;
+				var button = retry_button;
 			}
 			
-			var status = $(`<p id="status">${status_text}</p>`);
-			container.append(status);
-			container.append(cont_button);
+			container.append(button);
 			$('body').append(container)
+			$('#forfeit-div').remove();
+			$('#retry-text').remove();
 		}	
 
 		if (game.win) {
+			$('#title').text('Game Won!')
 			post_experiment(exp_id, game, time_stamp, function () {
 				window.setTimeout(show_status, end_game_delay);
 			})
 		} else {
+			$('#title').text('Game Lost!')
 			window.setTimeout(show_status, end_game_delay);
 		}
 	}
@@ -86,6 +113,9 @@ $(document).ready(function () {
 		game.paused = false;
 		time_stamp.start_time = Date.now();
 		$('body').append(retry_container)
+		window.setTimeout(function () {
+			$('#retry-div').append(forfeit_div);
+		}, forfeit_delay)
 	}
 
 

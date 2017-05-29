@@ -47,7 +47,6 @@ var Experiment = function (exp_name, cookie) {
     var cookie = cookie;
     var games_ordered = [];
     var game_number = 0;
-    var refresh = false;
 
     experiments[exp_name].forEach(settings => {
         game_number ++;
@@ -70,6 +69,13 @@ var Experiment = function (exp_name, cookie) {
     var first = true;
     var max_trials = games_ordered.length
 
+    experiment.validate = function (validation_id) {
+        if (validation_id == cookie) {
+            return true;
+        }
+        return false;
+    }
+
     experiment.started = function () {
         if (started) {
             started = false
@@ -79,19 +85,14 @@ var Experiment = function (exp_name, cookie) {
     }
 
     experiment.retry = function () {
-        refresh = false;
         first = false;
         var current_game = games_ordered[current_trial]
-        current_game[3] ++;
+        if (current_game) 
+            current_game[3] ++;
+        // console.log('retrying experiment', current_game[3])
     }
 
-    experiment.refresh = function () {
-        if (!refresh) {
-            refresh = true
-            return false;
-        }
-        return true;
-    }
+
     experiment.current_game = function () {
         if (current_trial == max_trials)
             return false;
@@ -99,6 +100,7 @@ var Experiment = function (exp_name, cookie) {
         game_obj = {};
         game_obj.name = current_game[0];
         game_obj.level = current_game[1];
+        game_obj.number = current_game[2];
         game_obj.first = first;
         return game_obj;
     }
@@ -121,7 +123,6 @@ var Experiment = function (exp_name, cookie) {
 
 
     experiment.next = function (data) {
-        refresh = false;
         first = false;
         current_trial += 1;
     }

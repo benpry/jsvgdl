@@ -12,13 +12,16 @@
 <div class="Flex-Container">
 
 <div class="Flex-Container" id="info-box">
-  <h1>Thank You!</h1>
-  <p style="text-align: center;">
-    Thanks for playing!
-  </p>
-  <p style='text-align: center;'>
-    Your mturk ID is: <%= val_id %>
-  </p>
+  <ul>
+    <li>Experiment ID : : Name : : Level : : Game : : Attempt</li>
+    <% for(var i=0; i < experiments.length; i++) {%>
+      <li class="exp_id" id='<%= experiments[i] %>'><%= experiments[i].id %>
+      <% for(var j=0; j < experiments[i].data.length; j ++) {%>
+        : : <%= experiments[i].data[j] %>
+      <% } %>
+      </li>
+    <% } %>
+  </ul>
 </div>
 
 </div>
