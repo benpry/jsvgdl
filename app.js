@@ -45,7 +45,7 @@ var Experiment = require('./experiments/experiment.js');
 var experiments = {};
 
 
-var exp = 'exp1';
+var exp = 'exp4';
 
 /**
  * Middle ware for session data

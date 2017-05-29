@@ -45,7 +45,7 @@ GridPhysics.prototype = {
 
 	},
 	distance : function (r1, r2) {
-		return (Math.pow(Math.sqrt((r1.top - r2.top), 2)) + Math.pow(Math.sqrt(r1.left - r2.left), 2));
+		return (Math.sqrt(Math.pow(r1.top - r2.top, 2)) + Math.sqrt(Math.pow(r1.left - r2.left, 2)));
 	}
 	// distance : function (r1, r2) {
 	// return (Math.abs(r1.top - r2.top) + Math.abs(r1.left - r2.left))
@@ -77,7 +77,7 @@ ContinuousPhysics.prototype = {
 	},
 
 	distance : function (r1, r2) {
-		return (Math.pow(Math.sqrt((r1.top - r2.top), 2)) + Math.pow(Math.sqrt(r1.left - r2.left), 2));
+		return (Math.sqrt(Math.pow(r1.top - r2.top, 2)) + Math.sqrt(Math.pow(r1.left - r2.left, 2)));
 	}
 };
 

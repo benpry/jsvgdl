@@ -52,7 +52,7 @@ function VGDLSprite(gamejs, pos, size, args) {
 	this.lastmove = 0;
 
 	// management of resources contained in the sprite
-	this.resources = {};
+	this.resources = new defaultDict(0);
 }
 
 VGDLSprite.dirtyrects = [];
@@ -433,8 +433,11 @@ Chaser.prototype._closestTargets = function (game) {
 	var bestd = 1e100;
 	var res = [];
 	var that = this;
+	// console.log(this.stype);
+	// console.log(game.getSprites(this.stype)[0].name);
 	game.getSprites(this.stype).forEach(target => {
 		var d = that.physics.distance(that.rect, target.rect);
+		// console.log(d)
 		if (d < bestd) {
 			bestd = d;
 			res = [target];
@@ -442,6 +445,7 @@ Chaser.prototype._closestTargets = function (game) {
 			res.push(target);
 		}
 	});
+	// console.log(res)
 	return res;
 }
 
@@ -450,13 +454,17 @@ Chaser.prototype._movesToward = function(game, target) {
 	var basedist = this.physics.distance(this.rect, target.rect);
 	var that = this;
 	BASEDIRS.forEach(a => {
+		// console.log(a)
 		var r = that.rect.copy();
-		r = r.move(a);
+		r = r.move(a.map(function (v) {return 2*v}));
 		var newdist = that.physics.distance(r, target.rect);
-		if (that.fleeing && basedist < newdist) 
+		// console.log(a, basedist,  newdist);
+		if (that.fleeing && basedist < newdist) {
 			res.push(a);
-		if (!(that.fleeing && basedist > newdist))
+		}
+		if (!(that.fleeing) && basedist > newdist){
 			res.push(a);
+		}
 
 	});
 	return res;
@@ -469,7 +477,7 @@ Chaser.prototype.update = function (game) {
 	position_options = {};
 	var that = this;
 	this._closestTargets(game).forEach(target => {
-		options.concat(that._movesToward(game, target));
+		options = options.concat(that._movesToward(game, target));
 	});
 	if (options.length == 0)
 		options = BASEDIRS;
@@ -477,8 +485,8 @@ Chaser.prototype.update = function (game) {
 }
 
 function Fleeing(gamejs, pos, size, args) {
-	this.fleeing = true;
 	Chaser.call(this, gamejs, pos, size, args);
+	this.fleeing = true;
 }
 Fleeing.prototype = Object.create(Chaser.prototype);
 

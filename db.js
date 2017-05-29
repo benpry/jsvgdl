@@ -152,7 +152,7 @@ var DB = function () {
 							if (err) {
 								console.error('could not update game', err);
 							}
-							console.log('successfully saved');
+							console.log('successfully saved game');
 						})
 	}
 
@@ -197,6 +197,35 @@ var DB = function () {
 			console.log(result.rows.slice());
 		})
 	}
+
+	that.print_size_usage = function (table_name) {
+		pool.query(`SELECT *, pg_size_pretty(total_bytes) AS total
+	    , pg_size_pretty(index_bytes) AS INDEX
+	    , pg_size_pretty(toast_bytes) AS toast
+	    , pg_size_pretty(table_bytes) AS TABLE
+	  FROM (
+	  SELECT *, total_bytes-index_bytes-COALESCE(toast_bytes,0) AS table_bytes FROM (
+	      SELECT c.oid,nspname AS table_schema, relname AS TABLE_NAME
+	              , c.reltuples AS row_estimate
+	              , pg_total_relation_size(c.oid) AS total_bytes
+	              , pg_indexes_size(c.oid) AS index_bytes
+	              , pg_total_relation_size(reltoastrelid) AS toast_bytes
+	          FROM pg_class c
+	          LEFT JOIN pg_namespace n ON n.oid = c.relnamespace
+	          WHERE relkind = 'r'
+	  ) a
+	) a;`, function (err, result) {
+			if (err) {
+				return console.error('error with query', err);
+			}
+
+			console.log(result.rows.filter(row => {
+				return row.table_name == table_name;
+			}));
+		})
+	}
+
+	// that.print_size_usage('experiments');
 
 	Object.freeze(that);
 	return that;

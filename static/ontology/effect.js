@@ -235,6 +235,8 @@ function spawnIfHasMore(sprite, partner, game, kwargs) {
 function killIfHasMore(sprite, partner, game, kwargs) {
 	var limit = kwargs.limit;
 	var resource = kwargs.resource;
+	if (sprite.resources[resource] === undefined) 
+		sprite.resources[resource] = 0;
 	if (sprite.resources[resource] >= limit)
 		return killSprite(sprite, partner, game, kwargs);
 }
@@ -242,6 +244,8 @@ function killIfHasMore(sprite, partner, game, kwargs) {
 function killIfHasLess(sprite, partner, game, kwargs) {
 	var resource = kwargs.resource;
 	var limit = kwargs.limit;
+	if (sprite.resources[resource] === undefined) 
+		sprite.resources[resource] = 0;
 	if (sprite.resources[resource] <= limit)
 		return killSprite(sprite, partner, game, kwargs);
 }
@@ -249,6 +253,8 @@ function killIfHasLess(sprite, partner, game, kwargs) {
 function killIfOtherHasMore(sprite, partner, game, kwargs) {
 	var resource = kwargs.resource;
 	var limit = kwargs.limit;
+	if (sprite.resources[resource] === undefined) 
+		sprite.resources[resource] = 0;
 	if (partner.resources[resource] <= limit)
 		return killSprite(sprite, partner, game, kwargs);
 }

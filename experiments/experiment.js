@@ -32,7 +32,10 @@ var experiments = {
         ['simpleGame4', [0, 2, 3], true]
     ],
 
-    exp3: [['aliens', [0], false]]
+    exp3: [['aliens', [0], false]],
+
+    exp4: [['expt_preconditions', [0], false],
+           ['expt_relational', [0], false]]
 }
 // An object that updates what game its on
 // by calling next
@@ -143,18 +146,5 @@ var Experiment = function (exp_name, cookie) {
     return experiment;
 }
 
-Experiment.experiments = {
-        exp1 : [
-            ['dodge', [0], 3, true], 
-            ['simpleGame1', [0], 1, true]
-        ], 
-
-        exp2 : [
-            ['aliens', [0], 2, false],
-            ['simpleGame4', [0, 2, 3], 2, true]
-        ],
-
-        exp3: [['aliens', [0], 1, false]]
-    }
 
 module.exports = Experiment;
