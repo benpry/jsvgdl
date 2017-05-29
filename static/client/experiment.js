@@ -1,5 +1,5 @@
 var exp_id = exp_id || undefined;
-
+console.log(exp_id)
 var load_experiment = function (data) {
 	if (data.exp_id) {
 		window.location.href = '/experiment/'+data.exp_id;
@@ -17,10 +17,11 @@ var create_new_experiment = function () {
 	});
 }
 
-var put_experiment = function (exp_id, game, time_stamp, callback) {
+
+var post_experiment = function (exp_id, game, time_stamp, callback) {
 	if (exp_id != '0') {
 		$.ajax({
-			type: 'PUT',
+			type: 'POST',
 			url: "/experiment/"+exp_id,
 			data: {timeStamp: JSON.stringify(time_stamp),
 			 	   gameStates: JSON.stringify(game.gameStates)},
@@ -29,7 +30,20 @@ var put_experiment = function (exp_id, game, time_stamp, callback) {
 	} else {
 		callback();
 	}
+}
 
+var retry_experiment = function (exp_id, game, time_stamp, callback) {
+	if (exp_id != '0') {
+		$.ajax({
+			type: 'PUT',
+			url: '/experiment/'+exp_id,
+			data: {timeStamp: JSON.stringify(time_stamp),
+					gameStates: JSON.stringify(game.gameStates)},
+			success: callback
+		})
+	} else {
+		callback();
+	}
 }
 
 $(document).ready(function () {

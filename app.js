@@ -79,9 +79,10 @@ app.use(session({
 	saveUninitialized: true
 }))
 var login_password = 'cocosciiscool';
+var logged_in = {};
 
 function require_login (req, res, next) {
-	if (req.session.logged_in) 
+	if (logged_in[req.session.id]) 
 		next();
 	else
 		res.redirect('/admin/login');
@@ -201,7 +202,8 @@ app.get('/admin/login', function (req, res) {
 app.post('/admin/login', function (req, res) {
 	if (req.body.password == login_password){
 		console.log('user logged in');
-		req.session.logged_in = true;
+		req.session.id = shortid.generate();
+		logged_in[req.session.id] = true;
 		req.session.save();
 
 		res.redirect('/admin');
@@ -242,18 +244,38 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 
 })
 
+
 app.put('/experiment/:exp_id', validate_exp, function (req, res) {
+	var exp_id = req.params.exp_id;
+	var game_states = req.body.gameStates;
+	var time_stamp = req.body.timeStamp;
+	var current_exp = experiments[req.params.exp_id];
+	if (current_exp) {
+		console.log('---------------------')
+		console.log('retrying experiment');
+		console.log(current_exp.get_data());
+		current_exp.retry();
+		DB.post_experiment(exp_id, time_stamp, game_states, current_exp.get_data())
+		res.send({success: true})		
+	} else {
+		res.send({success: false, error: 'invalid expreriment ID'})
+	}
+
+})
+
+app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 	var exp_id = req.params.exp_id;
 	var game_states = req.body.gameStates;
 	var time_stamp = req.body.timeStamp
 	var current_exp = experiments[req.params.exp_id];
 	if (current_exp) {
+		console.log('-----------------')
 		console.log('posting exeriment')
 		DB.post_experiment(exp_id, time_stamp, game_states, current_exp.get_data())
 		current_exp.next();
 		res.send({exp_id: exp_id});
 	} else {
-		res.send();
+		res.send('invalid experiment');
 	}	
 })
 

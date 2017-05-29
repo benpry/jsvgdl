@@ -88,10 +88,10 @@ var DB = function () {
 	}
 
 	that.post_experiment = function (id, time_stamp, game_states, data) {
-		console.log(id)
-		console.log(time_stamp)
-		console.log(game_states)
-		console.log(data)
+		// console.log(id)
+		// console.log(time_stamp)
+		// console.log(game_states)
+		// console.log(data)
 		pool.query(`insert into experiments values 
 					('${id}', '$(time_stamp)', '${data}', '${game_states}')`, function (err, result) {
 						if (err) 

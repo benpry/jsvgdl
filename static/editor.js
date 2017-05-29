@@ -125,7 +125,6 @@ $(document).ready(function () {
   $('#level_area').val('');
 
   var create_modal = $('#create_modal')[0];
-  console.log(create_modal)
 
   $('.textbox').keydown(function(e) {
     var keyCode = e.keyCode || e.which;

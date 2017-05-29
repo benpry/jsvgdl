@@ -21,46 +21,45 @@ function shuffle(array) {
   return array;
 }
 
+var experiments = {
+    exp1 : [
+        ['dodge', [0], true], 
+        ['chase', [0], true]
+    ], 
+
+    exp2 : [
+        ['aliens', [0], false],
+        ['simpleGame4', [0, 2, 3], true]
+    ],
+
+    exp3: [['aliens', [0], false]]
+}
 // An object that updates what game its on
 // by calling next
-var Experiment = function (exp_name) {
+var Experiment = function (exp_name, cookie) {
     var experiment = Object.create(Experiment.prototype);
 
-    this.experiments = {
-        exp1 : [
-            ['dodge', [0], 2, true], 
-            ['simpleGame1', [0], 1, true]
-        ], 
 
-        exp2 : [
-            ['aliens', [0], 2, false],
-            ['simpleGame4', [0, 2, 3], 2, true]
-        ],
-
-        exp3: [['aliens', [0], 1, false]]
-    }
 
     if (exp_name == undefined) {
         exp_name = 'exp1'
     }
-    var store = {}
+    var cookie = cookie;
     var games_ordered = [];
     var game_number = 0;
     var refresh = false;
 
-    this.experiments[exp_name].forEach(settings => {
+    experiments[exp_name].forEach(settings => {
         game_number ++;
         var next_games = [];
         var game_name = settings[0];
         var game_levels = settings[1];
-        var level_rounds = settings[2];
         if (settings[3])
             game_levels = shuffle(game_levels);
 
         game_levels.forEach(game_level => {
-            for (var i = 0; i < level_rounds ; i++) {
-                next_games.push([game_name, game_level, game_number, i+1])
-            }
+            next_games.push([game_name, game_level, game_number, 1])
+            
         })
         games_ordered = games_ordered.concat(next_games);
     })
@@ -77,6 +76,13 @@ var Experiment = function (exp_name) {
             return true;
         }
         return false
+    }
+
+    experiment.retry = function () {
+        refresh = false;
+        first = false;
+        var current_game = games_ordered[current_trial]
+        current_game[3] ++;
     }
 
     experiment.refresh = function () {
@@ -101,7 +107,6 @@ var Experiment = function (exp_name) {
         var current_game = games_ordered[current_trial]
         round_obj = {};
         round_obj.number = current_game[2];
-        round_obj.round = current_game[3];
         return round_obj;
     }
 
@@ -118,8 +123,6 @@ var Experiment = function (exp_name) {
     experiment.next = function (data) {
         refresh = false;
         first = false;
-        // var current_game = games_ordered[current_trial];
-        // store[current_trial] = {game: current_game, data: data}
         current_trial += 1;
     }
 
