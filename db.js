@@ -15,11 +15,11 @@ var DB = function () {
 	  port: 5432, 
 	  ssl: true, // needs to be true for some reason
 	  max: 10, // max number of clients in the pool 
-	  idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed 
+	  idleTimeoutMillis: 1000, // how long a client is allowed to remain idle before being closed 
 	};
 
 	//this initializes a connection pool 
-	//it will keep idle connections open for 30 seconds 
+	//it will keep idle connections open for 1 seconds 
 	//and set a limit of maximum 10 idle clients 
 
 	var pool = new pg.Pool(config);
@@ -47,7 +47,6 @@ var DB = function () {
 		result.rows.forEach(row => {
 			games[row.name] = {descs: row.descs.slice(), levels: row.levels.slice()}
 		})
-		Object.keys(games).forEach(name => {console.log(name)})
 	})
 
 
@@ -97,13 +96,13 @@ var DB = function () {
 			}
 			result.rows = result.rows.map(exp_obj => {
 				exp_obj.data = JSON.parse(exp_obj.data);
-				console.log(exp_obj.data)
+				// console.log(exp_obj.data)
 				return exp_obj
 			})
 			callback(result.rows, {success: true})
 		})
 	}
-	that.get_experiment_info(console.log);
+	// that.get_experiment_info(console.log);
 
 	that.post_experiment = function (id, val_id, time_stamp, game_states, data) {
 		pool.query(`insert into experiments values 
@@ -227,7 +226,9 @@ var DB = function () {
 
 			console.log(result.rows.filter(row => {
 				return row.table_name == table_name;
-			}));
+			}).map(row => {
+				return `${row.table_name}: total size ${row.total}`
+			})[0]);
 		})
 	}
 

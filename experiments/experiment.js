@@ -24,6 +24,22 @@ function shuffle(array) {
 
 // [name, [[desc_num, level_num], ]]
 var experiments = {
+    exp0: [
+        ['expt_exploration_exploitation', 
+            [[0, 0], [1, 1], [2, 2], [3, 3]], false],
+        ['expt_push_boulders', 
+            [[0, 0], [0, 1], [0, 2], [0, 3]], false],
+        ['expt_preconditions', 
+            [[0, 0], [0, 1], [0, 2], [0, 3]], false],
+        ['expt_relational',
+            [[0, 0], [0, 1], [0, 2], [1, 3]], false],
+        ['expt_physics_sharpshooter',
+            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false],
+        ['expt_helper',
+            [[0, 0], [0, 1], [0, 2], [0, 3]], false],
+        ['expt_antagonist',
+            [[0, 0], [0, 1], [0, 2], [0, 3]], false]
+    ],
     exp1 : [
         ['dodge', [[0, 0]], true], 
         ['chase', [[0, 0]], true]
@@ -47,9 +63,10 @@ var Experiment = function (exp_name, cookie) {
 
 
     if (exp_name == undefined) {
-        exp_name = 'exp1'
+        exp_name = 'exp0'
     }
     var cookie = cookie;
+    var timeout = Date.now()+30*60*1000;
     var games_ordered = [];
     game_number = 0;
 
@@ -144,6 +161,12 @@ var Experiment = function (exp_name, cookie) {
 
     experiment.get_data = function () {
         return games_ordered[current_trial];
+    }
+
+    experiment.timeout = function () {
+        if (Date.now() > timeout)
+            return true;
+        return false
     }
 
     Object.freeze(experiment);

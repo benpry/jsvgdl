@@ -208,8 +208,11 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that.numSprites = function (key) {
+
 		var deleted = that.kill_list.filter(function (s) {return s.stypes[key]}).length;
 		if (that._getAllSpriteGroups()[key] != undefined) {
+			console.log(that._getAllSpriteGroups())
+			console.log(deleted)
 			return that._getAllSpriteGroups()[key].length-deleted;
 		}
 		else{
@@ -675,7 +678,7 @@ var BasicGame = function (gamejs, args) {
 
 
 	that.run = function (on_game_end) {
-		console.log(that.images)
+		// console.log(that.images)
 		if (that.images.length) {
 			that.images.forEach(image => {
 				gamejs.preload(that.images.map(image => {return image_dir + image}))

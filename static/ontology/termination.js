@@ -45,13 +45,21 @@ var MultiSpriteCounter = function (args) {
 	this.limit = args.limit;
 	this.win = args.win;
 	array_args = Object.keys(args);
-	this.stypes = array_args.filter(arg => {return arg.includes('stype')}).map(stype => {return args[stype]});
+	this.stypes = array_args.filter(arg => {return arg.includes('stype')}).map(stype => {return args[stype]})
 	
 }
 MultiSpriteCounter.prototype = Object.create(Termination.prototype);
 
 MultiSpriteCounter.prototype.isDone = function (game) {
-	if (this.stypes.map(st => {return game.numSprites(st)}).reduce((s, n) => {return s+n}, 0) <= this.limit) {
+	console.log(this.stypes.map(st => {
+		// console.log(st);
+		return game.numSprites(st);
+	}))
+	if (this.stypes.map(st => {
+			return game.numSprites(st)
+		}).reduce((s, n) => {
+			return s+n
+		}, 0) <= this.limit) {
 		return [true, this.win];
 	}
 	else {

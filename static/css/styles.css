@@ -107,7 +107,7 @@ li.main {
 .side-bar {
     flex-grow: 1;
     overflow-y: scroll;
-    overflow-wrap: break-word;
+    /*overflow-wrap: break-word;*/
     background-color: #eee; 
 }
 .textbox {
@@ -118,6 +118,7 @@ li.main {
     width: 100%;
     resize: none;
     word-wrap: normal;
+    /*overflow-x: scroll;*/
     overflow-y: scroll;
 }
 .container, html, body {
