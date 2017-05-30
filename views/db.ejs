@@ -11,15 +11,20 @@
 
 <div class="Flex-Container">
 
-<div class="Flex-Container" id="info-box">
+<div class="Flex-Container" id="db-box">
   <ul>
-    <li>Experiment ID : : Name : : Level : : Game : : Attempt</li>
     <% for(var i=0; i < experiments.length; i++) {%>
-      <li class="exp_id" id='<%= experiments[i] %>'><%= experiments[i].id %>
-      <% for(var j=0; j < experiments[i].data.length; j ++) {%>
-        : : <%= experiments[i].data[j] %>
-      <% } %>
-      </li>
+      <li class="exp_id" id='<%= experiments[i] %>'><%= experiments[i].id %> </li>
+      <li> -- GAME : <%= experiments[i].data.name %> </li>
+      <li> -- GAME-NUM : <%= experiments[i].data.number %> </li>
+      <li> -- ROUND-NUM : <%= experiments[i].data.round %> </li>
+
+      <li> -- LEVEL : <%= experiments[i].data.level %> </li>
+      <li> -- DESC : <%= experiments[i].data.desc %> </li>
+      <li> -- WIN : <%= experiments[i].data.win %> </li>
+      <li> -- SCORE:  <%= experiments[i].data.score %> </li>
+      <li> -- STEPS : <%= experiments[i].data.steps %> </li>
+      <li>------------------------------------------------</li>
     <% } %>
   </ul>
 </div>

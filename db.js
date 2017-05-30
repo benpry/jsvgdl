@@ -39,16 +39,17 @@ var DB = function () {
 
 	var games = {}
 	// populate games field
-	pool.query('select * from games', function (err, result) {
+	pool.query('select * from multigames', function (err, result) {
 		if (err) {
 			return console.error('error loading games db', err);
 		}
 
 		result.rows.forEach(row => {
-			games[row.name] = {game: row.game, levels: row.levels.slice()}
+			games[row.name] = {descs: row.descs.slice(), levels: row.levels.slice()}
 		})
-		
+		Object.keys(games).forEach(name => {console.log(name)})
 	})
+
 
 	var reset_experiments = function (callback) {
 		console.log('deleting experiments')
@@ -58,11 +59,11 @@ var DB = function () {
 			}
 			console.log('creating new experiments')
 			pool.query(`create table experiments(
-				id 		text 	not null,
-				val_id  text    not null,
-				times	text	not null,
-				data 	text	not null,
-				states 	text	not null)	`, function (err, result) {
+				id 			text 	not null,
+				val_id  	text    not null,
+				time_stamp	text	not null,
+				data 		text	not null,
+				states 		text	not null)	`, function (err, result) {
 					if (err) {
 						console.error(err)
 					}
@@ -89,13 +90,14 @@ var DB = function () {
 	}
 
 	that.get_experiment_info = function (callback) {
-		pool.query('select id, data from experiments', function (err, result) {
+		pool.query('select id, time_stamp, data from experiments', function (err, result) {
 			if (err) {
 				callback([], {success: false})
 				return console.error('could not get experiments')
 			}
 			result.rows = result.rows.map(exp_obj => {
 				exp_obj.data = JSON.parse(exp_obj.data);
+				console.log(exp_obj.data)
 				return exp_obj
 			})
 			callback(result.rows, {success: true})
@@ -104,10 +106,6 @@ var DB = function () {
 	that.get_experiment_info(console.log);
 
 	that.post_experiment = function (id, val_id, time_stamp, game_states, data) {
-		// console.log(id)
-		// console.log(time_stamp)
-		// console.log(game_states)
-		// console.log(data)
 		pool.query(`insert into experiments values 
 					('${id}', '${val_id}', '${time_stamp}', '${data}', '${game_states}')`, function (err, result) {
 						if (err) 
@@ -126,28 +124,35 @@ var DB = function () {
 	}
 
 	that.get_full_game = function (name) {
-		if (!(name in games)) 
-			return {game: '', levels: [], name: '', level: 0};
+		// console.log(name);
+		if (!(name in games)) {
+			console.log(name, ' not in game')
+			return {descs: [], levels: [], name: '', level: 0};
+		}
 		var game_obj = games[name];
 		game_obj.name = name;
 		game_obj.level = 0;
+		game_obj.desc = 0;
 		return game_obj;
 	}
 
-	that.get_game = function (name, level) {
+	that.get_game = function (name, level, desc) {
 		if (!(level)) level = 0;
+		if (!(desc)) desc = 0;
 
         var return_game = {};
-        return_game.game = games[name].game;
+        return_game.game = games[name].descs[desc];
         return_game.level = games[name].levels[level];
         return_game.name = name;
         return_game.round = 0;
         return return_game;
 	}
 
-	that.update_game = function (name, game, levels) {
-		games[name] = {game: game, levels: levels};
-		pool.query(`update games set game='${game}', levels='{"${levels.toString().replace(/,/g, '","')}"}'
+	that.update_game = function (name, descs, levels) {
+		games[name] = {descs: descs, levels: levels};
+		pool.query(`update multigames set 
+						descs='{"${descs.toString().replace(/,/g, '","')}"}',
+						levels='{"${levels.toString().replace(/,/g, '","')}"}'
 						where name = '${name}'`, function (err) {
 							if (err) {
 								console.error('could not update game', err);
@@ -156,12 +161,13 @@ var DB = function () {
 						})
 	}
 
-	that.add_game = function (name, game, levels) {
+	that.add_game = function (name, descs, levels) {
 		if (name in games) 
 			return false;
-		games[name] = {game: game, levels: levels};
-		pool.query(`insert into games values
-					('${name}', '${game}', 
+		games[name] = {descs: descs, levels: levels};
+		pool.query(`insert into multigames values
+					('${name}', 
+					'{"${descs.toString().replace(/,/g, '","')}"}',
 					'{"${levels.toString().replace(/,/g, '","')}"}')`, 
 			function (err) {
 				if (err) {
@@ -178,7 +184,7 @@ var DB = function () {
 			return console.error('game does not exist');
 		}
 		delete games[name]
-		pool.query(`delete from games where name = '${name}'`, function (err, result) {
+		pool.query(`delete from multigames where name = '${name}'`, function (err, result) {
 			if (err) {
 				return console.error('could not delete', err)
 			}
@@ -225,7 +231,7 @@ var DB = function () {
 		})
 	}
 
-	// that.print_size_usage('experiments');
+	that.print_size_usage('experiments');
 
 	Object.freeze(that);
 	return that;

@@ -21,21 +21,23 @@ function shuffle(array) {
   return array;
 }
 
+
+// [name, [[desc_num, level_num], ]]
 var experiments = {
     exp1 : [
-        ['dodge', [0], true], 
-        ['chase', [0], true]
+        ['dodge', [[0, 0]], true], 
+        ['chase', [[0, 0]], true]
     ], 
 
     exp2 : [
-        ['aliens', [0], false],
-        ['simpleGame4', [0, 2, 3], true]
+        ['aliens', [[0, 0]], false],
+        ['simpleGame4', [[0, 0], [0, 2], [0, 3]], true]
     ],
 
-    exp3: [['aliens', [0], false]],
+    exp3: [['aliens', [[0, 0]], false]],
 
-    exp4: [['expt_preconditions', [0], false],
-           ['expt_relational', [0], false]]
+    exp4: [['expt_preconditions', [[0, 0]], false],
+           ['expt_relational', [[0, 0]], false]]
 }
 // An object that updates what game its on
 // by calling next
@@ -49,21 +51,23 @@ var Experiment = function (exp_name, cookie) {
     }
     var cookie = cookie;
     var games_ordered = [];
-    var game_number = 0;
+    game_number = 0;
 
     experiments[exp_name].forEach(settings => {
         game_number ++;
-        var next_games = [];
         var game_name = settings[0];
         var game_levels = settings[1];
-        if (settings[3])
+        if (settings[2])
             game_levels = shuffle(game_levels);
 
         game_levels.forEach(game_level => {
-            next_games.push([game_name, game_level, game_number, 1])
+            games_ordered.push({name: game_name, 
+                             desc: game_level[0], 
+                             level: game_level[1], 
+                             number: game_number, 
+                             round: 1})
             
         })
-        games_ordered = games_ordered.concat(next_games);
     })
 
     var started = true;
@@ -91,7 +95,7 @@ var Experiment = function (exp_name, cookie) {
         first = false;
         var current_game = games_ordered[current_trial]
         if (current_game) 
-            current_game[3] ++;
+            current_game.round ++;
         // console.log('retrying experiment', current_game[3])
     }
 
@@ -101,9 +105,10 @@ var Experiment = function (exp_name, cookie) {
             return false;
         var current_game = games_ordered[current_trial]
         game_obj = {};
-        game_obj.name = current_game[0];
-        game_obj.level = current_game[1];
-        game_obj.number = current_game[2];
+        game_obj.name = current_game.name;
+        game_obj.desc = current_game.desc;
+        game_obj.level = current_game.level;
+        game_obj.number = current_game.number;
         game_obj.first = first;
         return game_obj;
     }
@@ -111,13 +116,13 @@ var Experiment = function (exp_name, cookie) {
     experiment.current_round = function () {
         var current_game = games_ordered[current_trial]
         round_obj = {};
-        round_obj.number = current_game[2];
+        round_obj.number = current_game.number;
         return round_obj;
     }
 
     experiment.mid_point = function () {
         
-        if (current_game_number == games_ordered[current_trial][2]) 
+        if (current_game_number == games_ordered[current_trial].number) 
             return false;
         current_game_number ++;
         first = true
@@ -138,7 +143,7 @@ var Experiment = function (exp_name, cookie) {
     }
 
     experiment.get_data = function () {
-        return JSON.stringify(games_ordered[current_trial])
+        return games_ordered[current_trial];
     }
 
     Object.freeze(experiment);

@@ -15,14 +15,19 @@ var create_new_experiment = function () {
 	});
 }
 
-
-var post_experiment = function (exp_id, game, time_stamp, callback) {
+var ajax_experiment = function (action, exp_id, game, time_stamp, callback) {
+	var steps = game.gameStates.length;
+	var win = game.gameStates[steps-1].win;
+	var score = game.gameStates[steps-1].score;
 	if (exp_id != '0') {
 		$.ajax({
-			type: 'POST',
+			type: action,
 			url: "/experiment/"+exp_id,
 			data: {timeStamp: JSON.stringify(time_stamp),
-			 	   gameStates: JSON.stringify(game.gameStates)},
+			 	   gameStates: JSON.stringify(game.gameStates),
+			 	   score: score,
+			 	   win: win,
+			 	   steps: steps},
 			success: callback,
 		})		
 	} else {
@@ -30,18 +35,12 @@ var post_experiment = function (exp_id, game, time_stamp, callback) {
 	}
 }
 
+var post_experiment = function (exp_id, game, time_stamp, callback) {
+	ajax_experiment('POST', exp_id, game, time_stamp, callback);
+}
+
 var retry_experiment = function (exp_id, game, time_stamp, callback) {
-	if (exp_id != '0') {
-		$.ajax({
-			type: 'PUT',
-			url: '/experiment/'+exp_id,
-			data: {timeStamp: JSON.stringify(time_stamp),
-					gameStates: JSON.stringify(game.gameStates)},
-			success: callback
-		})
-	} else {
-		callback();
-	}
+	ajax_experiment('PUT', exp_id, game, time_stamp, callback);
 }
 
 $(document).ready(function () {

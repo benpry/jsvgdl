@@ -149,12 +149,12 @@ app.get('/edit/:game_name', require_login, function (req, res) {
 })
 
 app.post('/edit/:game_name', require_login, function (req, res) {
-	success = DB.add_game(req.body.name, req.body.game, req.body.levels) 
+	success = DB.add_game(req.body.name, req.body.descs, req.body.levels) 
 	res.send({success: success});
 })
 
 app.put('/edit/:game_name', require_login, function (req, res) {
-	DB.update_game(req.body.name, req.body.game, req.body.levels)
+	DB.update_game(req.body.name, req.body.descs, req.body.levels)
 	res.send({success: true})
 	// console.log(req.body);
 })
@@ -166,11 +166,12 @@ app.delete('/edit/:game_name', require_login, function (req, res) {
 	res.send({success: true})
 })
 
-app.get('/play/:game_name/level/:level', require_login, function (req, res) {
+app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req, res) {
 	var level = parseInt(req.params.level);
+	var desc = parseInt(req.params.desc)
 	var data = {};
 	data.exp_id = 0;
-	data.game_obj = DB.get_game(req.params.game_name, level);
+	data.game_obj = DB.get_game(req.params.game_name, level, desc);
 	data.first = false; //Take this out later.
 	res.render('game', data);
 });
@@ -219,7 +220,7 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 		res.render('midpoint')
 	} else {
 		current_game = current_exp.current_game();
-		data.game_obj = DB.get_game(current_game.name, current_game.level);
+		data.game_obj = DB.get_game(current_game.name, current_game.level, current_game.desc);
 		var round = current_exp.current_round()
 		data.game_obj.name = round.number;
 		data.game_obj.round = round.round;
@@ -229,36 +230,45 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 
 })
 
-
-app.put('/experiment/:exp_id', validate_exp, function (req, res) {
-	var exp_id = req.params.exp_id;
-	var val_id = req.session.val_id
-	var game_states = req.body.gameStates;
-	var time_stamp = req.body.timeStamp;
-	var current_exp = experiments[req.params.exp_id];
-	if (current_exp) {
-		DB.post_experiment(exp_id, val_id, time_stamp, game_states, current_exp.get_data())
-		current_exp.retry();
-		res.send({success: true})		
-	} else {
-		res.send({success: false, error: 'invalid expreriment ID'})
-	}
-
-})
-
-app.post('/experiment/:exp_id', validate_exp, function (req, res) {
+var parse_and_push = function (req, callback) {
 	var exp_id = req.params.exp_id;
 	var val_id = req.session.val_id;
 	var game_states = req.body.gameStates;
-	var time_stamp = req.body.timeStamp
+	var time_stamp = req.body.timeStamp;
 	var current_exp = experiments[req.params.exp_id];
+	var data = current_exp.get_data();
+	data.steps = req.body.steps;
+	data.score = req.body.score;
+	data.win = req.body.win;
+	data = JSON.stringify(data);
 	if (current_exp) {
-		DB.post_experiment(exp_id, val_id, time_stamp, game_states, current_exp.get_data())
-		current_exp.next();
-		res.send({exp_id: exp_id});
+		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
+		callback({success: true}, current_exp, exp_id)
 	} else {
-		res.send('invalid experiment');
-	}	
+		callback({success: false, error: 'there was an error updating the db'})
+	}
+}
+
+app.put('/experiment/:exp_id', validate_exp, function (req, res) {
+	parse_and_push(req, function (status, current_exp, exp_id) {
+		if (status.success) {
+			current_exp.retry();
+			res.send(status)
+		} else {
+			res.send(status)
+		}
+	})
+})
+
+app.post('/experiment/:exp_id', validate_exp, function (req, res) {
+	parse_and_push(req, function (status, current_exp, exp_id) {
+		if (status.success) {
+			current_exp.next();
+			res.send({exp_id: exp_id});
+		} else {
+			res.send('invalid experiment')
+		}
+	})
 })
 
 app.post('/experiment/', function (req, res) {
