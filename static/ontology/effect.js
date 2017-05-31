@@ -23,7 +23,7 @@ function killSprite (sprite, partner, game, kwargs) {
 	game.kill_list.push(sprite);
 
 	// console.log('kill sprite', sprite);
-	return ['killSprite', sprite.ID, partner.ID];
+	return ['killSprite', sprite.name, partner.name];
 }
 
 function cloneSprite (sprite, partner, game, kwargs) {
@@ -58,7 +58,7 @@ function triggerOnLading (sprite, partner, game, kwargs) {
 
 function stepBack (sprite, partner, game, kwargs) {
 	sprite.rect = sprite.lastrect.clone();
-	return ['stepBack', sprite.ID, partner.ID];
+	return ['stepBack', sprite.name, partner.name];
 }
 
 function undoAll(sprite, partner, game, kwargs) {
@@ -71,7 +71,7 @@ function undoAll(sprite, partner, game, kwargs) {
 function bounceForward(sprite, partner, game, kwargs) {
 	sprite.physics.activeMovement(sprite, tools.unitVector(partner.lastdirection()));
 	game._updateCollisionDict(sprite);
-	return ['bounceForward', sprite.ID, partner.ID]
+	return ['bounceForward', sprite.name, partner.name]
 
 }
 
@@ -221,7 +221,8 @@ function changeResource(sprite, partner, resourceColor, game, kwargs) {
 	var sprite_resource = sprite.resources[resource] || 0;
 	var resource_limit = game.resources_limits[resource] || Infinity;
 	sprite.resources[resource] = Math.max(-1, Math.min(sprite_resource + value, resource_limit))
-	console.log(sprite.resources);
+	// console.log(sprite.resources);
+	return ['changeResource', sprite.ID, partner.ID]
 }
 
 function spawnIfHasMore(sprite, partner, game, kwargs) {

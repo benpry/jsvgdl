@@ -499,7 +499,7 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that._eventHandling = function () {
-		
+
 		that.effectList = [];
 
 		var push_effect = 'bounceForward';
@@ -517,8 +517,6 @@ var BasicGame = function (gamejs, args) {
 		// make a copy of the kill list
 		that.dead = that.kill_list.slice();
 
-		// console.log(new_collisions)
-		// var iter = 1
 		while (Object.keys(new_collisions).length) {
 			new_collisions = {};
 			new_effects = [];
@@ -551,6 +549,11 @@ var BasicGame = function (gamejs, args) {
 
 				var score = 0;
 
+				if ('scoreChange' in kwargs) {
+					kwargs = kwargs.copy();
+					score = kwargs['scoreChange'];
+					delete kwargs['scoreChange'];
+				}
 				var dim = null;
 				if ('dim' in kwargs) {
 					kwargs = kwargs.copy();
@@ -621,8 +624,9 @@ var BasicGame = function (gamejs, args) {
 							var resource = kwargs['resource'];
 							var [sclass, args, stypes] = that.sprite_constr[resource];
 							var resource_color = args['color'];
-							var e = effect(sprite1, sprite2, resource_color, that, kwargs);
+							new_effects.push(effect(sprite1, sprite2, resource_color, that, kwargs));
 						} else if (effect.name == push_effect) {
+							// console.log('push effect happening')
 							var contained = false;
 							if (force_collisions.length) {
 								force_collisions.forEach(collision_set => {
@@ -636,35 +640,32 @@ var BasicGame = function (gamejs, args) {
 							if (!(contained)) {
 								force_collisions.push([sprite1, sprite2]);
 							}
-							var e = effect(sprite1, sprite2, that, kwargs);
+							new_effects.push(effect(sprite1, sprite2, that, kwargs));
 						} else if (effect.name == back_effect) {
-							// console.log('back effect happening')
 							var contained = false;
 
 							if (force_collisions.length) {
 								force_collisions.forEach(collision_set => {
-
 									if (collision_set.contains(sprite1)) {
 										collision_set.forEach(sprite => {
-											var e = effect(sprite, sprite2, that, kwargs);
+											new_effects.push(effect(sprite, sprite2, that, kwargs));
 										})
 										contained = true;
 									}
 								})
 							}
-							else if (!(contained)) {
-								var e = effect(sprite1, sprite2, that, kwargs);
+							if (!(contained)) {
+								new_effects.push(effect(sprite1, sprite2, that, kwargs));
 							}
 						} else {
-							var e = effect(sprite1, sprite2, that, kwargs);
-						}
-						if (e != null) {
-							new_effects.push(e);
+							new_effects.push(effect(sprite1, sprite2, that, kwargs));
 						}
 						
 					});
 				});
 			});
+			// console.log(new_effects);
+
 			// update collisions
 			// console.log(new_effects);
 			that.effectList.concat(new_effects);

@@ -48,6 +48,10 @@ $(document).on('click', '#return', function () {
 	window.location.href = '/admin';	
 })
 $(document).on('click', '#retry', retry_game);
+
+$(document).on('click', '#pause', function () {
+	game.paused = !game.paused;
+})
 $(window).bind('beforeunload', page_refresh);
 
 
