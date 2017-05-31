@@ -191,4 +191,44 @@ var Experiment = function (exp_name, cookie) {
 }
 
 
+Experiment.experiments = {
+    exp0: [
+        ['expt_exploration_exploitation', 
+            [[0, 0], [1, 1], [2, 2], [3, 3]], false, 
+            ''], // never gets shown
+        ['expt_push_boulders', 
+            [[0, 0], [0, 1], [0, 2], [0, 3]], false,
+            ''],
+        ['expt_preconditions', 
+            [[0, 0], [0, 1], [0, 2], [0, 3]], false,
+            ''],
+        ['expt_relational',
+            [[0, 0], [0, 1], [0, 2], [1, 3]], false,
+            ''],
+        ['expt_physics_sharpshooter',
+            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+            'On this game you can also use the spacebar!'],
+        ['expt_helper',
+            [[0, 0], [0, 1], [0, 2], [0, 3]], false,
+            ''],
+        ['expt_antagonist',
+            [[0, 0], [0, 1], [0, 2], [0, 3]], false,
+            '']
+    ],
+    exp1 : [
+        ['dodge', [[0, 0]], true], 
+        ['chase', [[0, 0]], true]
+    ], 
+
+    exp2 : [
+        ['aliens', [[0, 0]], false],
+        ['simpleGame4', [[0, 0], [0, 2], [0, 3]], true]
+    ],
+
+    exp3: [['aliens', [[0, 0]], false]],
+
+    exp4: [['expt_preconditions', [[0, 0]], false],
+           ['expt_relational', [[0, 0]], false]]
+}
+
 module.exports = Experiment;

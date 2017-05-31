@@ -48,14 +48,18 @@ var experiments = {};
  *	this deletes an experiment 
  *	that has been alive for more than 30 minutes
  */
-var intervalID = setInterval(function () {
-	Object.keys(experiments).forEach(exp_id => {
-		if (experiments[exp_id].timeout()){
-			console.log(exp_id, 'experiment timed out')
-			delete experiments[exp_id];
-		}
-	})
-}, 30*60*1000)
+// var intervalID = setInterval(function () {
+// 	Object.keys(experiments).forEach(exp_id => {
+// 		if (experiments[exp_id].timeout()){
+// 			console.log(exp_id, 'experiment timed out')
+// 			delete experiments[exp_id];
+// 		}
+// 	})
+// }, 30*60*1000)
+
+// var intervalID = setInterval(function () {
+// 	console.log(experiments);
+// }, 5000)
 
 var exp = 'exp0';
 
@@ -81,9 +85,7 @@ function require_login (req, res, next) {
 function validate_exp (req, res, next) {
 	var exp_id = req.session.exp_id
 	var val_id = req.session.val_id
-	if (exp_id in experiments 
-		&& exp_id == req.params.exp_id 
-		&& experiments[exp_id].validate(val_id)) {
+	if (true) {
 		next();
 	} else {
 		res.status(404).render('404');
@@ -220,8 +222,9 @@ app.post('/admin/login', function (req, res) {
 app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {	
 	var data = {};
 	data.exp_id = req.params.exp_id;
+	console.log(req.params.exp_id, 'requested');
 	var current_exp = experiments[data.exp_id];
-
+	
 	if (!(current_exp)) {
 		next();
 	} else if (current_exp.started()) {
@@ -280,7 +283,7 @@ app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 app.post('/experiment/', function (req, res) {
 	var new_exp_id = shortid.generate();
 	var validation_id = shortid.generate();
-	experiments[new_exp_id] = Experiment(exp, validation_id);
+	experiments[new_exp_id] = new Experiment(exp, validation_id);
 	req.session.exp_id = new_exp_id;
 	req.session.val_id = validation_id;
 	res.send({exp_id: new_exp_id});
