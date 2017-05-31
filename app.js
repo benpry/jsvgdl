@@ -264,40 +264,25 @@ var parse_and_push = function (req, callback) {
 }
 
 app.put('/experiment/:exp_id', validate_exp, function (req, res) {
-	current_exp = experiments[req.params.exp_id];
-	if (current_exp) {
-		
-		parse_and_push(req, function (status, current_exp, exp_id) {
-			if (status.success) {
-				console.log('successfully put experiment')
-			} else {
-				console.log('could not put experiment')
-			}
-		})
-		current_exp.retry();
-		res.send({success: true})		
-	} else {
-		res.send('invalid experiment')
-	}
-
+	parse_and_push(req, function (status, current_exp, exp_id) {
+		if (status.success) {
+			current_exp.retry();
+			res.send(status)
+		} else {
+			res.send(status)
+		}
+	})
 })
 
 app.post('/experiment/:exp_id', validate_exp, function (req, res) {
-	current_exp = experiments[req.params.exp_id]
-	if (current_exp) {
-		
-		parse_and_push(req, function (status, current_exp, exp_id) {
-			if (status.success) {
-				console.log('successfully posted experiment')
-			} else {
-				console.log('could not post experiment')
-			}	
-		})
-		current_exp.next();
-		res.send({exp_id: req.params.exp_id});
-	} else {
-		res.send('invalid experiment')
-	}
+	parse_and_push(req, function (status, current_exp, exp_id) {
+		if (status.success) {
+			current_exp.next();
+			res.send({exp_id: exp_id});
+		} else {
+			res.send('invalid experiment')
+		}
+	})
 })
 
 app.post('/experiment/', function (req, res) {
