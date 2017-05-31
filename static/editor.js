@@ -43,7 +43,6 @@ var add_game = function (game_obj, callback) {
 }
 
 var update_text_areas = function () {
-  console.log(current_game_obj)
   $('#game_area').val(current_game_obj.descs[current_game_obj.desc]);
   $('#level_area').val(current_game_obj.levels[current_game_obj.level]);
   $('textarea').each(function () {

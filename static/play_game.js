@@ -70,11 +70,14 @@ $(document).ready(function () {
 	forfeit_div.append(forfeit_button);
 
 	var end_game_delay = 1000;
+	var retry_delay = 30000;
 	var forfeit_delay = 60000*2;
+	var ended = false;
 
 	var on_game_end = function () {
 		time_stamp.end_time = Date.now();
 		game.paused = true;
+		ended = true
 		$('#retry-div').remove()
 		var show_status = function () {
 			var status_text = '';
@@ -112,10 +115,14 @@ $(document).ready(function () {
 		$('#start-div').remove();
 		game.paused = false;
 		time_stamp.start_time = Date.now();
-		$('body').append(retry_container)
 		window.setTimeout(function () {
-			$('#retry-div').append(forfeit_div);
-		}, forfeit_delay)
+			if (!ended)
+				$('body').append(retry_container)	
+		}, retry_delay);
+		window.setTimeout(function () {
+			if (!ended)
+				$('#retry-div').append(forfeit_div);
+		}, forfeit_delay);
 	}
 
 

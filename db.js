@@ -24,6 +24,15 @@ var DB = function () {
 
 	var pool = new pg.Pool(config);
 
+	var array2db = function (array) {
+		var db_string = '{'
+		array.forEach(string => {
+			db_string = db_string + '"'+string+'",';
+		})
+		db_string = db_string.slice(0, -1)
+		return db_string + '}'
+	}
+
 	pool.on('error', function (err, client) {
 	  // if an error is encountered by a client while it sits idle in the pool 
 	  // the pool itself will emit an error event with both the error and 
@@ -150,13 +159,14 @@ var DB = function () {
 	that.update_game = function (name, descs, levels) {
 		games[name] = {descs: descs, levels: levels};
 		pool.query(`update multigames set 
-						descs='{"${descs.toString().replace(/,/g, '","')}"}',
-						levels='{"${levels.toString().replace(/,/g, '","')}"}'
+						descs='${array2db(descs)}',
+						levels='${array2db(levels)}'
 						where name = '${name}'`, function (err) {
 							if (err) {
-								console.error('could not update game', err);
+								console.error(err, 'could not update game');
+							} else {
+								console.log('successfully saved game');
 							}
-							console.log('successfully saved game');
 						})
 	}
 
@@ -166,17 +176,17 @@ var DB = function () {
 		games[name] = {descs: descs, levels: levels};
 		pool.query(`insert into multigames values
 					('${name}', 
-					'{"${descs.toString().replace(/,/g, '","')}"}',
-					'{"${levels.toString().replace(/,/g, '","')}"}')`, 
+					'${array2db(descs)}',
+					'${array2db(levels)}')`, 
 			function (err) {
 				if (err) {
 					return console.error('could not add game to DB - only local copy exists', err)
+				} else {
+					console.log('successfully added game');
 				}
-
-				console.log('successfully added game');
 			})
 		return true;
-	}	
+	}		
 
 	that.delete_game = function (name) {
 		if (!(name in games)) {

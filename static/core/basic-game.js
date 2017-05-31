@@ -566,7 +566,6 @@ var BasicGame = function (gamejs, args) {
 					if (sprite1.rect.collidelistall(rects) == -1) return ;
 					sprite1.rect.collidelistall(rects).forEach(function (ci) {
 						var sprite2 = sprite_array2[ci];
-
 						if (sprite1 == sprite2
 							|| that.dead.contains(sprite1) 
 							|| that.dead.contains(sprite2)
@@ -627,6 +626,7 @@ var BasicGame = function (gamejs, args) {
 							var contained = false;
 							if (force_collisions.length) {
 								force_collisions.forEach(collision_set => {
+									// console.log(collision_set)
 									if (collision_set.contains(sprite2)) {
 										collision_set.push(sprite1)
 										contained = true;
@@ -638,9 +638,12 @@ var BasicGame = function (gamejs, args) {
 							}
 							var e = effect(sprite1, sprite2, that, kwargs);
 						} else if (effect.name == back_effect) {
+							// console.log('back effect happening')
 							var contained = false;
+
 							if (force_collisions.length) {
 								force_collisions.forEach(collision_set => {
+
 									if (collision_set.contains(sprite1)) {
 										collision_set.forEach(sprite => {
 											var e = effect(sprite, sprite2, that, kwargs);
@@ -653,8 +656,6 @@ var BasicGame = function (gamejs, args) {
 								var e = effect(sprite1, sprite2, that, kwargs);
 							}
 						} else {
-							// console.log('apply effect', effect); 	  	
-							// why are all the effects happeening
 							var e = effect(sprite1, sprite2, that, kwargs);
 						}
 						if (e != null) {
@@ -665,6 +666,7 @@ var BasicGame = function (gamejs, args) {
 				});
 			});
 			// update collisions
+			// console.log(new_effects);
 			that.effectList.concat(new_effects);
 			Object.keys(new_collisions).forEach(collision_sprite => {
 				if (collision_sprite in collisions)

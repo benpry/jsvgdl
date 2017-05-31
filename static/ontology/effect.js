@@ -23,7 +23,7 @@ function killSprite (sprite, partner, game, kwargs) {
 	game.kill_list.push(sprite);
 
 	// console.log('kill sprite', sprite);
-	return ['killSprite'];
+	return ['killSprite', sprite.ID, partner.ID];
 }
 
 function cloneSprite (sprite, partner, game, kwargs) {
@@ -58,7 +58,7 @@ function triggerOnLading (sprite, partner, game, kwargs) {
 
 function stepBack (sprite, partner, game, kwargs) {
 	sprite.rect = sprite.lastrect.clone();
-	// return ['stepBack', sprite.ID, partner.ID];
+	return ['stepBack', sprite.ID, partner.ID];
 }
 
 function undoAll(sprite, partner, game, kwargs) {
@@ -71,6 +71,7 @@ function undoAll(sprite, partner, game, kwargs) {
 function bounceForward(sprite, partner, game, kwargs) {
 	sprite.physics.activeMovement(sprite, tools.unitVector(partner.lastdirection()));
 	game._updateCollisionDict(sprite);
+	return ['bounceForward', sprite.ID, partner.ID]
 
 }
 
