@@ -117,11 +117,12 @@ var Experiment = function (exp_name, cookie) {
         return false
     }
 
-    experiment.retry = function () {
+    experiment.retry = function (callback) {
         first = false;
         var current_game = games_ordered[current_trial]
         if (current_game) 
             current_game.round ++;
+        callback()
         // console.log('retrying experiment', current_game[3])
     }
 
@@ -161,9 +162,10 @@ var Experiment = function (exp_name, cookie) {
     }
 
 
-    experiment.next = function (data) {
+    experiment.next = function (callback) {
         first = false;
         current_trial += 1;
+        callback();
     }
 
     experiment.is_done = function  () {

@@ -244,7 +244,7 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 
 })
 
-var parse_and_push = function (req, callback) {
+var parse_and_push = function (action, req, res) {
 	var exp_id = req.params.exp_id;
 	var val_id = req.session.val_id;
 	var game_states = req.body.gameStates;
@@ -257,32 +257,24 @@ var parse_and_push = function (req, callback) {
 	data = JSON.stringify(data);
 	if (current_exp) {
 		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
-		callback({success: true}, current_exp, exp_id)
+		if (action == 'post') current_exp.next(function () {
+			res.send({success: true, exp_id: exp_id})
+		});
+		if (action == 'put') current_exp.retry(function () {
+			res.send({success: true, exp_id: exp_id});
+		});
+		
 	} else {
-		callback({success: false, error: 'there was an error updating the db'})
+		res.send({success: false, error: 'there was an error updating the db'})
 	}
 }
 
 app.put('/experiment/:exp_id', validate_exp, function (req, res) {
-	parse_and_push(req, function (status, current_exp, exp_id) {
-		if (status.success) {
-			current_exp.retry();
-			res.send(status)
-		} else {
-			res.send(status)
-		}
-	})
+	parse_and_push('put', req, res);
 })
 
 app.post('/experiment/:exp_id', validate_exp, function (req, res) {
-	parse_and_push(req, function (status, current_exp, exp_id) {
-		if (status.success) {
-			current_exp.next();
-			res.send({exp_id: exp_id});
-		} else {
-			res.send('invalid experiment')
-		}
-	})
+	parse_and_push('post', req, res);
 })
 
 app.post('/experiment/', function (req, res) {
