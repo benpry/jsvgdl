@@ -28,6 +28,7 @@ var retry_game = function () {
 }
 
 var page_refresh = function () {
+
 	if (game.win === null) {
 		retry_experiment(exp_id, game, time_stamp, function () {
 			console.log('game refreshed');
@@ -37,7 +38,7 @@ var page_refresh = function () {
 
 $(document).on('click', '#forfeit', function () {
 	post_experiment(exp_id, game, time_stamp, function () {
-		window.location.href = `/experiment/${exp_id}`;
+		location.reload();
 	})
 })
 
