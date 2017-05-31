@@ -26,19 +26,26 @@ function shuffle(array) {
 var experiments = {
     exp0: [
         ['expt_exploration_exploitation', 
-            [[0, 0], [1, 1], [2, 2], [3, 3]], false],
+            [[0, 0], [1, 1], [2, 2], [3, 3]], false, 
+            ''], // never gets shown
         ['expt_push_boulders', 
-            [[0, 0], [0, 1], [0, 2], [0, 3]], false],
+            [[0, 0], [0, 1], [0, 2], [0, 3]], false,
+            ''],
         ['expt_preconditions', 
-            [[0, 0], [0, 1], [0, 2], [0, 3]], false],
+            [[0, 0], [0, 1], [0, 2], [0, 3]], false,
+            ''],
         ['expt_relational',
-            [[0, 0], [0, 1], [0, 2], [1, 3]], false],
+            [[0, 0], [0, 1], [0, 2], [1, 3]], false,
+            ''],
         ['expt_physics_sharpshooter',
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false],
+            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+            'On this game you can also use the spacebar!'],
         ['expt_helper',
-            [[0, 0], [0, 1], [0, 2], [0, 3]], false],
+            [[0, 0], [0, 1], [0, 2], [0, 3]], false,
+            ''],
         ['expt_antagonist',
-            [[0, 0], [0, 1], [0, 2], [0, 3]], false]
+            [[0, 0], [0, 1], [0, 2], [0, 3]], false,
+            '']
     ],
     exp1 : [
         ['dodge', [[0, 0]], true], 
@@ -69,11 +76,13 @@ var Experiment = function (exp_name, cookie) {
     var timeout = Date.now()+30*60*1000;
     var games_ordered = [];
     game_number = 0;
+    var mipoints = {};
 
     experiments[exp_name].forEach(settings => {
         game_number ++;
         var game_name = settings[0];
         var game_levels = settings[1];
+        mipoints[game_number] = settings[3];
         if (settings[2])
             game_levels = shuffle(game_levels);
 
@@ -128,6 +137,11 @@ var Experiment = function (exp_name, cookie) {
         game_obj.number = current_game.number;
         game_obj.first = first;
         return game_obj;
+    }
+
+    experiment.midpoint_text = function () {
+        current_game_number = games_ordered[current_trial].number;
+        return mipoints[current_game_number];
     }
 
     experiment.current_round = function () {

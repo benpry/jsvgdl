@@ -15,11 +15,11 @@ var DB = function () {
 	  port: 5432, 
 	  ssl: true, // needs to be true for some reason
 	  max: 10, // max number of clients in the pool 
-	  idleTimeoutMillis: 1000, // how long a client is allowed to remain idle before being closed 
+	  idleTimeoutMillis: 100000, // how long a client is allowed to remain idle before being closed 
 	};
 
 	//this initializes a connection pool 
-	//it will keep idle connections open for 1 seconds 
+	//it will keep idle connections open for 100 seconds 
 	//and set a limit of maximum 10 idle clients 
 
 	var pool = new pg.Pool(config);

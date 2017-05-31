@@ -8,19 +8,23 @@
   <link href="https://fonts.googleapis.com/css?family=Lato:thin" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Asap:700|Lato" rel="stylesheet">
 </head>
+<script>
+  var load_experiment = function (data) {
+    if (data.exp_id) {
+      window.location.href = '/experiment/'+data.exp_id;
+    } else {
+      window.location.href = '/admin';
+    }
+  }
+  $.ajax({
+    type: "POST",
+    url: "/experiment",
+    success: load_experiment,
+  });
+
+</script>
 <body>
-
-<div class="Flex-Container">
-
-<div class="Flex-Container" id="info-box">
-  <h1>VGDL</h1>
-  <p style="text-align: center;">This is the home page for the online VGDL (video game decription language).
-  You will be given a series of games to play. Do your best!
-  Click the button below to begin.</p>
-  <button id="begin">Begin</button>
-</div>
-
-</div>
+<p>Redirecting you to the experiment</p>
 
 </body>
 </html>

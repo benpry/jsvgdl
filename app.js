@@ -215,6 +215,7 @@ app.post('/admin/login', function (req, res) {
 });
 
 
+
 // Sends the current game to be played for the given experiment id
 app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {	
 	var data = {};
@@ -229,12 +230,13 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 		res.render('thank_you', {val_id: req.session.val_id});
 		delete experiments[data.exp_id];
 	} else if (current_exp.mid_point()) {
-		res.render('midpoint')
+		res.render('midpoint', {text: current_exp.midpoint_text()})
 	} else {
 		current_game = current_exp.current_game();
 		data.game_obj = DB.get_game(current_game.name, current_game.level, current_game.desc);
 		var round = current_exp.current_round()
 		data.game_obj.name = round.number;
+		data.game_obj.level_num = current_game.level + 1
 		data.game_obj.round = round.round;
 		data.first = current_game.first
 		res.render('game', data);

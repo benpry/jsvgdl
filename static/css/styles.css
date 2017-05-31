@@ -1,14 +1,22 @@
 body {
-    font-family: 'Lato', regular;
+    font-family: 'Helvetica Light', 'Lato', sans-serif;
+    /*font-weight: lighter;*/
     font-size: 12pt;
 }
 
 h1 {
     font-size: 30pt;
+    font-weight: normal;
+    padding: 0;
+    margin: .5em 0em 0em 0em;
 }
 
 input {
     margin: 20px;
+}
+
+#info-box p {
+    text-align: center;
 }
 
 .Flex-Container {
@@ -42,11 +50,11 @@ p.centered {
 
 #info-box {
 	border: 5px solid #ccc;
-    border-radius: 15px;
+    border-radius: 5px;
 	padding: 20px;
 	margin-top: 100px;
 
-	max-width:400px; 
+	max-width:600px; 
 }
 
 

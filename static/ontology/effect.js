@@ -14,7 +14,7 @@ function getColor(sprite) {
 }
 
 function nothing (sprite, partner, game, kwargs) {
-	return ['nothing', sprite.ID, partner.ID]
+	return ['nothing', sprite, partner]
 }
 
 function killSprite (sprite, partner, game, kwargs) {
@@ -23,12 +23,12 @@ function killSprite (sprite, partner, game, kwargs) {
 	game.kill_list.push(sprite);
 
 	// console.log('kill sprite', sprite);
-	return ['killSprite', sprite.name, partner.name];
+	return ['killSprite', sprite, partner];
 }
 
 function cloneSprite (sprite, partner, game, kwargs) {
 	game._createSprite([sprite.name], [sprite.rect.left, sprite.rect.top]);
-	return ['cloneSprite', sprite.ID, partner.ID];
+	return ['cloneSprite', sprite, partner];
 }
 
 function transformTo (sprite, partner, game, kwargs) {
@@ -44,7 +44,7 @@ function transformTo (sprite, partner, game, kwargs) {
 	}
 
 	var args = {'stype': stype}
-	return ['transforrmTo', sprite.ID, partner.ID, args];
+	return ['transforrmTo', sprite, partner, args];
 
 }
 
@@ -153,7 +153,7 @@ function bounceDirection(sprite, partner, game, kwargs) {
     var dp = snorm[0] * inc[0] + snorm[1] * inc[1]
     sprite.orientation = [-2 * dp * snorm[0] + inc[0], -2 * dp * snorm[1] + inc[1]]
     sprite.speed *= (1. - friction)
-    // return ('bounceDirection', sprite.ID, partner.ID)
+    // return ('bounceDirection', sprite, partner)
 }
 
 function wallBounce(sprite, partner, game, kwargs) {
@@ -167,7 +167,7 @@ function wallBounce(sprite, partner, game, kwargs) {
         sprite.orientation = (sprite.orientation[0], -sprite.orientation[1])
     // return ('wallBounce', colorDict[str(partner.color)], colorDict[str(sprite.color)])
     // TODO: Not printing for now   
-    // return ('wallBounce', sprite.ID, partner.ID)
+    // return ('wallBounce', sprite, partner)
 }
 
 function wallStop(sprite, partner, game, kwargs) {
@@ -222,7 +222,7 @@ function changeResource(sprite, partner, resourceColor, game, kwargs) {
 	var resource_limit = game.resources_limits[resource] || Infinity;
 	sprite.resources[resource] = Math.max(-1, Math.min(sprite_resource + value, resource_limit))
 	// console.log(sprite.resources);
-	return ['changeResource', sprite.ID, partner.ID]
+	return ['changeResource', sprite, partner]
 }
 
 function spawnIfHasMore(sprite, partner, game, kwargs) {
