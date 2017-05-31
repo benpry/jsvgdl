@@ -107,8 +107,9 @@ $(document).ready(function () {
 		if (game.win) {
 			$('#title').text('Game Won!')
 			post_experiment(exp_id, game, time_stamp, function () {
-				window.setTimeout(show_status, end_game_delay);
+				console.log('success');
 			})
+			window.setTimeout(show_status, end_game_delay);
 		} else {
 			$('#title').text('Game Lost!')
 			window.setTimeout(show_status, end_game_delay);
