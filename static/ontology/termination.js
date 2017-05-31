@@ -51,10 +51,6 @@ var MultiSpriteCounter = function (args) {
 MultiSpriteCounter.prototype = Object.create(Termination.prototype);
 
 MultiSpriteCounter.prototype.isDone = function (game) {
-	console.log(this.stypes.map(st => {
-		// console.log(st);
-		return game.numSprites(st);
-	}))
 	if (this.stypes.map(st => {
 			return game.numSprites(st)
 		}).reduce((s, n) => {

@@ -152,14 +152,18 @@ var BasicGame = function (gamejs, args) {
 			var [sclass, args, stypes] = that.sprite_constr[key];
 			var anyother = false;
 
-			for (var pk in stypes.reverse()) {
-				if (that.singletons.indexOf(pk) == -1){
+			// console.log(stypes);
+			// console.log(that.singletons)
+			// console.log(stypes);
+			stypes.reverse().forEach(pk => {
+				if (anyother) return;
+				if (that.singletons.contains(pk)){
 					if (that.numSprites(pk) > 0) {
 						anyother = true;
-						break;
+						return;
 					}
 				}					
-			}
+			})
 			if (anyother) return;
 			args.key = key;
 			var s = new sclass(gamejs, pos, [that.block_size, that.block_size], args);
@@ -210,13 +214,13 @@ var BasicGame = function (gamejs, args) {
 	that.numSprites = function (key) {
 
 		var deleted = that.kill_list.filter(function (s) {return s.stypes[key]}).length;
-		if (that._getAllSpriteGroups()[key] != undefined) {
-			console.log(that._getAllSpriteGroups())
-			console.log(deleted)
-			return that._getAllSpriteGroups()[key].length-deleted;
+		if (key in that.sprite_groups) {
+			// console.log(that._getAllSpriteGroups())
+			// console.log(deleted)
+			return that.sprite_groups[key].length-deleted;
 		}
 		else{
-			return 0; // Should be __iter__ - deleted
+			return that._iterAll().filter(s => {return s.stypes.contains(key)}).length - deleted; // Should be __iter__ - deleted
 		}
 
 	}
@@ -516,9 +520,6 @@ var BasicGame = function (gamejs, args) {
 		// console.log(new_collisions)
 		// var iter = 1
 		while (Object.keys(new_collisions).length) {
-			// console.log('loop');
-			// console.log(new_collisons)
-			// console.log('stuck')
 			new_collisions = {};
 			new_effects = [];
 
