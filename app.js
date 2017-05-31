@@ -274,7 +274,7 @@ app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 				console.log('could not put experiment')
 			}
 		})
-		currentt_exp.retry();
+		current_exp.retry();
 		res.send({success: true})		
 	} else {
 		res.send('invalid experiment')
