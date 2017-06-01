@@ -254,7 +254,7 @@ app.post('/experiment/:exp_id/next', validate_exp, function (req, res) {
 app.post('/experiment/:exp_id/retry', validate_exp, function (req, res) {
 	var current_exp = experiments[req.params.exp_id];
 	current_exp.retry(function () {res.send({success:true})});
-	
+		
 })
 
 app.post('/experiment/:exp_id', validate_exp, function (req, res) {

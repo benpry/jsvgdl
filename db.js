@@ -118,7 +118,6 @@ var DB = function () {
 					('${id}', '${val_id}', '${time_stamp}', '${data}', '${game_states}')`, function (err, result) {
 						if (err) 
 							return console.error('could not update experiment', err);
-						console.log('posted-', id, time_stamp, data)
 					});
 	}
 
