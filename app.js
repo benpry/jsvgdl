@@ -85,6 +85,10 @@ function require_login (req, res, next) {
 function validate_exp (req, res, next) {
 	var exp_id = req.session.exp_id
 	var val_id = req.session.val_id
+	if (exp_id == '0') {
+		res.end();
+		return
+	}
 	if (experiments[exp_id] && experiments[exp_id].validate(val_id)) {
 		next();
 	} else {

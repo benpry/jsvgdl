@@ -76,6 +76,7 @@ var update_game_obj = function (game_obj) {
   var i = 0;
   update_text_areas()
   update_pointers();
+
 }
 
 $(document).on("click", '.game',function() {
@@ -298,9 +299,15 @@ $(document).ready(function () {
     window.location.href = '/';
   })
 
+  console.log(document.cookie)
   var cookie = eval(document.cookie)
   if (cookie) {
     update_game_obj(cookie)
+    $('.side-bar ul li').each(function () {
+      $(this).removeClass('active');
+    })
+    $(`#${cookie.name}`).addClass('active');
+    
   }
 
 })
