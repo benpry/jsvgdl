@@ -1,14 +1,15 @@
 /**
  * params {**kwargs} any number of arguments which will be used in the game
  */
+ // console.log('this is running');
 var BasicGame = function (gamejs, args) {
+	console.log(args)
 	var that = Object.create(BasicGame.prototype);
 	var MAX_SPRITES = 10000;
 
 	that.default_mapping = {'w': ['wall'], 'A': ['avatar']};
 
 	var block_size = 10;
-	var frame_rate = 20;
 	var load_save_enabled = true;
 	var disableContinuousKeyPress = true;
 	var image_dir = '/images/'
@@ -26,13 +27,15 @@ var BasicGame = function (gamejs, args) {
 			//INIT
 
 	//grab all arguments
-
+	that.frame_rate = 20;
 	for (arg in args) {
 		if (arg in that)
 			that[arg] = args[arg];
 		else
 			console.log(`WARNING: undefined parameters ${arg} for game!`);
 	}
+
+
 
 	// that.use_images = ['error.png'];
 	// contains mappings to constructor (just a few defaults are known)
@@ -809,7 +812,7 @@ var BasicGame = function (gamejs, args) {
 		// Main Game Loop
 		var pre_time = new Date().getTime();
 		var new_time = 0;
-		var mpf = 1000/frame_rate;
+		var mpf = 1000/that.frame_rate;
 
 		that.background.fill(LIGHTGRAY);
 		that.screen.blit(that.background, [0, 0]);

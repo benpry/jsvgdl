@@ -17,7 +17,7 @@ var VGDLParser = function (gamejs) {
 			tree = tools.indentTreeParser(tree).children[0];
 
 		var [sclass, args] = _parseArgs(tree.content);
-		parser.game = new sclass(gamejs); //always start it with gamejs
+		parser.game = new sclass(gamejs, args); //always start it with gamejs
 
 		tree.children.forEach(function (child) {
 			parse[child.content](child.children);
