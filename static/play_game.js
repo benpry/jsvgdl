@@ -134,12 +134,11 @@ $(document).ready(function () {
 	$('#start').click(begin_game)
 
 	// start_modal.style.display = 'none';
-	game.paused = true;
+	// game.paused = true;
 	gamejs.ready(game.run(on_game_end));
 
-	if (!(first) && exp_id != 0) {
-		begin_game();
-	}
+	begin_game();
+	
 });
 
 // // gamejs.ready will call your main function
