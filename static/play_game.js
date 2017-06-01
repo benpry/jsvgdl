@@ -37,7 +37,7 @@ var page_refresh = function () {
 }
 
 $(document).on('click', '#forfeit', function () {
-	post_experiment(exp_id, game, time_stamp, function () {
+	next_experiment(exp_id, game, time_stamp, function () {
 		location.reload();
 	})
 })
@@ -107,7 +107,7 @@ $(document).ready(function () {
 
 		if (game.win) {
 			$('#title').text('Game Won!')
-			post_experiment(exp_id, game, time_stamp, show_status);
+			next_experiment(exp_id, game, time_stamp, show_status);
 		} else {
 			$('#title').text('Game Lost!')
 			window.setTimeout(show_status, end_game_delay);

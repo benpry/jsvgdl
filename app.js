@@ -85,7 +85,7 @@ function require_login (req, res, next) {
 function validate_exp (req, res, next) {
 	var exp_id = req.session.exp_id
 	var val_id = req.session.val_id
-	if (true) {
+	if (experiments[exp_id] && experiments[exp_id].validate(val_id)) {
 		next();
 	} else {
 		res.status(404).render('404');
@@ -222,7 +222,6 @@ app.post('/admin/login', function (req, res) {
 app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {	
 	var data = {};
 	data.exp_id = req.params.exp_id;
-	console.log(req.params.exp_id, 'requested');
 	var current_exp = experiments[data.exp_id];
 	
 	if (!(current_exp)) {
@@ -247,7 +246,18 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 
 })
 
-var parse_and_push = function (action, req, res) {
+app.post('/experiment/:exp_id/next', validate_exp, function (req, res) {
+	var current_exp = experiments[req.params.exp_id]
+	current_exp.next(function () {res.send({success: true})})
+})
+
+app.post('/experiment/:exp_id/retry', validate_exp, function (req, res) {
+	var current_exp = experiments[req.params.exp_id];
+	current_exp.retry(function () {res.send({success:true})});
+	
+})
+
+app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 	var exp_id = req.params.exp_id;
 	var val_id = req.session.val_id;
 	var game_states = req.body.gameStates;
@@ -258,26 +268,8 @@ var parse_and_push = function (action, req, res) {
 	data.score = req.body.score;
 	data.win = req.body.win;
 	data = JSON.stringify(data);
-	if (current_exp) {
-		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
-		if (action == 'post') current_exp.next(function () {
-			res.send({success: true, exp_id: exp_id})
-		});
-		if (action == 'put') current_exp.retry(function () {
-			res.send({success: true, exp_id: exp_id});
-		});
-		
-	} else {
-		res.send({success: false, error: 'there was an error updating the db'})
-	}
-}
-
-app.put('/experiment/:exp_id', validate_exp, function (req, res) {
-	parse_and_push('put', req, res);
-})
-
-app.post('/experiment/:exp_id', validate_exp, function (req, res) {
-	parse_and_push('post', req, res);
+	DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
+	res.send({success: true})
 })
 
 app.post('/experiment/', function (req, res) {

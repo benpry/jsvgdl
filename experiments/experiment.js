@@ -103,10 +103,7 @@ var Experiment = function (exp_name, cookie) {
     var max_trials = games_ordered.length
 
     experiment.validate = function (validation_id) {
-        if (validation_id == cookie) {
-            return true;
-        }
-        return false;
+        return validation_id == cookie;
     }
 
     experiment.started = function () {
@@ -165,7 +162,7 @@ var Experiment = function (exp_name, cookie) {
     experiment.next = function (callback) {
         first = false;
         current_trial += 1;
-        callback();
+        callback()
     }
 
     experiment.is_done = function  () {
