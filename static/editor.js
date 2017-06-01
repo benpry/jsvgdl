@@ -1,11 +1,17 @@
+var cache_game_objs = {} 
 var current_game_obj = {}
 
 var get_game = function (game_name, callback) {
-  $.ajax({
-    type: "GET",
-    url: `/edit/${game_name}`,
-    success: callback,
-  });
+  if (game_name in cache_game_objs) {
+    callback(cache_game_objs[game_name])
+  }
+  else {
+    $.ajax({
+      type: "GET",
+      url: `/edit/${game_name}`,
+      success: callback,
+    });
+  }
 }
 
 var delete_game = function (game_name, callback) {
@@ -20,15 +26,18 @@ var delete_game = function (game_name, callback) {
   });
 }
 
-var save_game = function (game_obj, callback) {
-    if (!(game_obj.name)) {
-      callback({success: false});
-      return;
-    }
-    $.ajax({
+var save_game = function (callback) {
+
+  if (!(current_game_obj.name)) {
+    callback({success: false});
+    return;
+  }
+  current_game_obj.descs[current_game_obj.desc] = $('#game_area').val();
+  current_game_obj.levels[current_game_obj.level] = $('#level_area').val();
+  $.ajax({
     type: "PUT",
-    url: `/edit/${game_obj.name}`,
-    data: game_obj,
+    url: `/edit/${current_game_obj.name}`,
+    data: current_game_obj,
     success: callback,
   });  
 }
@@ -45,6 +54,7 @@ var add_game = function (game_obj, callback) {
 var update_text_areas = function () {
   $('#game_area').val(current_game_obj.descs[current_game_obj.desc]);
   $('#level_area').val(current_game_obj.levels[current_game_obj.level]);
+  document.cookie = `cookie=${JSON.stringify(current_game_obj)}`
   $('textarea').each(function () {
     $(this).attr('readonly', false);
   })
@@ -61,6 +71,7 @@ var update_nav_bar = function (game_name) {
 
 // Update current game object to the given game_obj
 var update_game_obj = function (game_obj) {
+  if (current_game_obj) cache_game_objs[current_game_obj.name] = current_game_obj;
   current_game_obj = game_obj;
   var i = 0;
   update_text_areas()
@@ -187,7 +198,9 @@ $(document).ready(function () {
   $('#level_area').val('');
 
   var create_modal = $('#create_modal')[0];
-
+  $('.textbox').change(function (e) {
+    save_game(function () {})
+  })
   $('.textbox').keydown(function(e) {
     var keyCode = e.keyCode || e.which;
 
@@ -241,9 +254,7 @@ $(document).ready(function () {
   // fix this code
   $('#play').click(function (e) {
     if (current_game_obj.name) {
-      current_game_obj.descs[current_game_obj.desc] = $('#game_area').val();
-      current_game_obj.levels[current_game_obj.level] = $('#level_area').val();
-      save_game(current_game_obj, function (success) {
+      save_game(function (success) {
         if (success.success) {
           window.location.href = `/play/${current_game_obj.name}/level/${current_game_obj.level}/desc/${current_game_obj.desc}`;
         }
@@ -254,9 +265,7 @@ $(document).ready(function () {
   $('#save').click(function (e) {
     console.log(`save pressed: ${current_game_obj.name}`)
     if (current_game_obj.name) {
-      current_game_obj.descs[current_game_obj.desc] = $('#game_area').val();
-      current_game_obj.levels[current_game_obj.level] = $('#level_area').val();
-      save_game(current_game_obj, function (success) {
+      save_game(function (success) {
         if (success.success) {
 
         } else {
@@ -288,5 +297,10 @@ $(document).ready(function () {
   $('#home').click(function (e) {
     window.location.href = '/';
   })
+
+  var cookie = eval(document.cookie)
+  if (cookie) {
+    update_game_obj(cookie)
+  }
 
 })

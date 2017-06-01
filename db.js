@@ -237,7 +237,7 @@ var DB = function () {
 			console.log(result.rows.filter(row => {
 				return row.table_name == table_name;
 			}).map(row => {
-				return `${row.table_name}: total size ${row.total}`
+				return row;//`${row.table_name}: total size ${row.total}`
 			})[0]);
 		})
 	}

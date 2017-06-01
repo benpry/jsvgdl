@@ -518,7 +518,7 @@ var BasicGame = function (gamejs, args) {
 		var new_effects = [];
 
 		// make a copy of the kill list
-		that.dead = that.kill_list.slice();
+		var dead = that.kill_list.slice();
 
 		while (Object.keys(new_collisions).length) {
 			new_collisions = {};
@@ -573,8 +573,8 @@ var BasicGame = function (gamejs, args) {
 					sprite1.rect.collidelistall(rects).forEach(function (ci) {
 						var sprite2 = sprite_array2[ci];
 						if (sprite1 == sprite2
-							|| that.dead.contains(sprite1) 
-							|| that.dead.contains(sprite2)
+							|| dead.contains(sprite1) 
+							|| dead.contains(sprite2)
 							|| (sprite1 in collisions
 								&& collisions[sprite1].contains(sprite2))) {
 							return;
@@ -613,7 +613,7 @@ var BasicGame = function (gamejs, args) {
 							});
 
 							spritesFiltered.forEach(function (sC) {
-								if (!(sprite1 in that.dead)) {
+								if (!(sprite1 in dead)) {
 
 									var e = effect(sprite1, sC, that, kwargs);
 								}
@@ -628,6 +628,12 @@ var BasicGame = function (gamejs, args) {
 							var [sclass, args, stypes] = that.sprite_constr[resource];
 							var resource_color = args['color'];
 							new_effects.push(effect(sprite1, sprite2, resource_color, that, kwargs));
+						} else if (effect.name == 'transformTo') {
+							new_effects.push(effect(sprite1, sprite2,that, kwargs));
+							var new_sprite = that.getSprites(kwargs['stype'])[-1]
+							new_collisions[sprite1].push(new_sprite);
+							dead.push(sprite1)
+
 						} else if (effect.name == push_effect) {
 							// console.log('push effect happening')
 							var contained = false;
