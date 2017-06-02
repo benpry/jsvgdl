@@ -73,7 +73,8 @@ var BasicGame = function (gamejs, args) {
 	that.all_objects = null;
 
 	that.lastcollisions = {};
-
+	that.steps = 0
+	that.gameStates = [];
 	that.keystate = {}
 	that.reset();
 
@@ -306,6 +307,7 @@ var BasicGame = function (gamejs, args) {
 		var actions = Object.keys(that.keystate).filter(key => {
 			return that.keystate[key]
 		})
+		that.steps += actions.length;
 		for (key in that.sprite_groups) {
 			if (!(that.sprite_groups.hasOwnProperty(key))) break;
 			var ss = {};
@@ -829,7 +831,7 @@ var BasicGame = function (gamejs, args) {
 		})
 
 
-		that.gameStates = [];
+		
 		gamejs.onTick(function () {
 
 			if (that.paused) return;

@@ -2,14 +2,15 @@ var exp_id = exp_id || undefined;
 
 
 var post_experiment = function (exp_id, game, time_stamp) {
-	var steps = game.gameStates.length;
-	var win = game.gameStates[steps-1].win;
-	var score = game.gameStates[steps-1].score;
+	var steps = game.steps
+	var last_state = game.gameStates.length;
+	var win = game.gameStates[last_state-1].win;
+	var score = game.gameStates[last_state-1].score;
 	$.ajax({
 		type: 'POST',
 		url: "/experiment/"+exp_id,
 		data: {timeStamp: JSON.stringify(time_stamp),
-		 	   gameStates: JSON.stringify([]), //JSON.stringify(game.gameStates),
+		 	   gameStates: JSON.stringify('[]') //JSON.stringify(game.gameStates),
 		 	   score: score,
 		 	   win: win,
 		 	   steps: steps},

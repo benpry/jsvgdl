@@ -123,7 +123,8 @@ var DB = function () {
 		pool.query(`insert into experiments values 
 					('${id}', '${val_id}', '${time_stamp}', '${data}', '${game_states}')`, function (err, result) {
 						if (err) 
-							return log_error(id, Date.now(), 'could not update experiment: '+err);
+							log_error(id, Date.now(), 'could not update experiment: '+err);
+							return console.error('could not update experiment: '+err)
 					});
 	}
 
