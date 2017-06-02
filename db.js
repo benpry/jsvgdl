@@ -58,6 +58,12 @@ var DB = function () {
 		})
 	})
 
+	var log_error = function (id, time, message) {
+		pool.query(`insert into logs values 
+						('${id}', '${time}', '${message}')`, function (err, result) {
+							console.log(err)
+						} )
+	} 
 
 	var reset_experiments = function (callback) {
 		console.log('deleting experiments')
@@ -117,7 +123,7 @@ var DB = function () {
 		pool.query(`insert into experiments values 
 					('${id}', '${val_id}', '${time_stamp}', '${data}', '${game_states}')`, function (err, result) {
 						if (err) 
-							return console.error('could not update experiment', err);
+							return log_error(id, Date.now(), 'could not update experiment: '+err);
 					});
 	}
 

@@ -9,7 +9,7 @@ var post_experiment = function (exp_id, game, time_stamp) {
 		type: 'POST',
 		url: "/experiment/"+exp_id,
 		data: {timeStamp: JSON.stringify(time_stamp),
-		 	   gameStates: JSON.stringify(game.gameStates),
+		 	   gameStates: JSON.stringify([]), //JSON.stringify(game.gameStates),
 		 	   score: score,
 		 	   win: win,
 		 	   steps: steps},
