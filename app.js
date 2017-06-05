@@ -149,10 +149,13 @@ app.get('/experiments', require_login, function (req, res) {
 	// })
 	// res.render('experiments', {exp: setup, games: DB.get_games_list()})
 	DB.get_experiment_info(function (result, status) {
-		if (status.success)
+		if (status.success) {
+			console.log(result);
 			res.render('db', {experiments: result});
-		else
+		}
+		else {
 			res.send('internal server error');
+		}
 	})
 	
 })
