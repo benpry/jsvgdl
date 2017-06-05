@@ -136,9 +136,10 @@ var DB = function () {
 	that.post_experiment = function (id, val_id, time_stamp, game_states, data) {
 		pool.query(`insert into experiments values 
 					('${id}', '${val_id}', '${time_stamp}', '${data}', '${game_states}')`, function (err, result) {
-						if (err) 
+						if (err) {
 							log_error(id, Date.now(), 'could not update experiment: '+err);
 							return console.error('could not update experiment: '+err)
+						}
 					});
 	}
 

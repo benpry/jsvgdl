@@ -160,6 +160,10 @@ app.get('/experiments', require_login, function (req, res) {
 	
 })
 
+app.get('/experiments/logs', require_login, function (req, res) {
+	res.send(DB.get_error_log())
+})
+
 app.get('/experiments/desc', require_login, function (req, res) {
 	res.send(Experiment.experiments[exp])
 })
