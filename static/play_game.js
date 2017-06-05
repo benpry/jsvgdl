@@ -4,7 +4,7 @@
  * Render text in a certain font to the screen.
  */
 
-
+// console.log(data);
 var gamejs = require('gamejs');;
 var vgdl_parser = VGDLParser(gamejs);
 var game = vgdl_parser.	playGame(vgdl_game.game, vgdl_game.level);
@@ -22,7 +22,7 @@ var time_stamp = {
 var retry_game = function () {
 	game.paused = true;
 	time_stamp.end_time = Date.now();
-	retry_experiment(exp_id, game, time_stamp, function () {
+	retry_experiment(exp_id, game, time_stamp, data, function () {
 		window.location.reload();
 	})
 }
@@ -30,14 +30,14 @@ var retry_game = function () {
 var page_refresh = function () {
 
 	if (game.win === null) {
-		retry_experiment(exp_id, game, time_stamp, function () {
+		retry_experiment(exp_id, game, time_stamp, data, function () {
 			console.log('game refreshed');
 		})
 	}
 }
 
 $(document).on('click', '#forfeit', function () {
-	next_experiment(exp_id, game, time_stamp, function () {
+	next_experiment(exp_id, game, time_stamp, data, function () {
 		location.reload();
 	})
 })
@@ -107,7 +107,7 @@ $(document).ready(function () {
 
 		if (game.win) {
 			$('#title').text('Game Won!')
-			next_experiment(exp_id, game, time_stamp, show_status);
+			next_experiment(exp_id, game, time_stamp, data, show_status);
 		} else {
 			$('#title').text('Game Lost!')
 			window.setTimeout(show_status, end_game_delay);

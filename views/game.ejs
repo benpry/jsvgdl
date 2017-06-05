@@ -8,8 +8,7 @@
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <script src="/gamejs-2.0.3-pre.js"></script>
-    <script src="/client/experiment.js"></script>
-
+    
     <script src="/tools.js"></script>
     <script src="/ontology/constants.js"></script>
     
@@ -34,18 +33,25 @@
         var vgdl_game = {level: `<%-game_obj.level%>`,
                          game : `<%-game_obj.game%>`};
 
+
         var exp_id = '<%-exp_id%>';
-        var first = eval('<%-first%>');
-        console.log('this is first', first);
+        var data = {};
+        data.name = '<%-game_obj.data.name%>'
+        data.round = <%=game_obj.data.round%>
+        data.desc = <%=game_obj.data.desc%>
+        data.level = <%=game_obj.data.level%>
 
         require.setModuleRoot('/');
         require.run('play_game');
     </script>
+    <script src="/client/experiment.js"></script>
+
 </head>
 <body>
     <div class="Flex-Container">
         <div>
           <h1 id="title">Game: <%=game_obj.name%> - Level: <%=game_obj.level_num%></h1>
+          <h1></h1>
         </div> 
         <div>
             <div id="gjs-loader">
@@ -56,14 +62,6 @@
 
         </div>
     </div>
-
-    <div id="start-div" class="Flex-Container"> 
-      <button id="start">Play</button>
-    </div>
-
-  <div id="end-modal" class="modal">
-
-
 
   </div>
 </body>

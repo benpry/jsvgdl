@@ -99,8 +99,21 @@ var Experiment = function (exp_name, cookie) {
     var started = true;
     var current_trial = 0;
     var current_game_number = 1;
-    var first = true;
     var max_trials = games_ordered.length
+
+    experiment.get_saves = function () {
+        return {
+            exp_name: exp_name,
+            cookie: cookie,
+            started: started,
+            current_trial: current_trial
+        }
+    }
+
+    experiment.load_saves = function (saves) {
+        started = saves.started;
+        current_trial = saves.current_trial;
+    }
 
     experiment.validate = function (validation_id) {
         return validation_id == cookie;
@@ -115,7 +128,6 @@ var Experiment = function (exp_name, cookie) {
     }
 
     experiment.retry = function (callback) {
-        first = false;
         var current_game = games_ordered[current_trial]
         if (current_game) 
             current_game.round ++;
@@ -133,7 +145,6 @@ var Experiment = function (exp_name, cookie) {
         game_obj.desc = current_game.desc;
         game_obj.level = current_game.level;
         game_obj.number = current_game.number;
-        game_obj.first = first;
         return game_obj;
     }
 
@@ -154,13 +165,11 @@ var Experiment = function (exp_name, cookie) {
         if (current_game_number == games_ordered[current_trial].number) 
             return false;
         current_game_number ++;
-        first = true
         return true;
     }
 
 
     experiment.next = function (callback) {
-        first = false;
         current_trial += 1;
         callback()
     }

@@ -1,7 +1,6 @@
-var exp_id = exp_id || undefined;
+var exp_id = exp_id || undefined
 
-
-var post_experiment = function (exp_id, game, time_stamp) {
+var post_experiment = function (exp_id, game, time_stamp, data) {
 	var steps = game.steps
 	var last_state = game.gameStates.length;
 	var win = game.gameStates[last_state-1].win;
@@ -13,15 +12,20 @@ var post_experiment = function (exp_id, game, time_stamp) {
 		 	   gameStates: JSON.stringify('[]'), //JSON.stringify(game.gameStates),
 		 	   score: score,
 		 	   win: win,
-		 	   steps: steps},
+		 	   steps: steps,
+		 	   data: data},
 		success: function (status) {
-			console.log(status)
+			if (status.success) {
+
+			} else {
+				console.log('could not post experiment');
+			}
 		},
 	})		
 }
 
-var next_experiment = function (exp_id, game, time_stamp, callback) {
-	post_experiment(exp_id, game, time_stamp);
+var next_experiment = function (exp_id, game, time_stamp, data, callback) {
+	post_experiment(exp_id, game, time_stamp, data);
 	$.ajax({
 		type: 'POST',
 		url: `/experiment/${exp_id}/next`,
@@ -35,8 +39,8 @@ var next_experiment = function (exp_id, game, time_stamp, callback) {
 	})
 }
 
-var retry_experiment = function (exp_id, game, time_stamp, callback) {
-	post_experiment(exp_id, game, time_stamp);
+var retry_experiment = function (exp_id, game, time_stamp, data, callback) {
+	post_experiment(exp_id, game, time_stamp, data);
 	$.ajax({
 		type: 'POST',
 		url: `/experiment/${exp_id}/retry`,

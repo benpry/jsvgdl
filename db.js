@@ -24,6 +24,7 @@ var DB = function () {
 
 	var pool = new pg.Pool(config);
 
+	// Converts a JS array to a Postgres Array string to be stored in the DB
 	var array2db = function (array) {
 		var db_string = '{'
 		array.forEach(string => {
@@ -58,6 +59,7 @@ var DB = function () {
 		})
 	})
 
+	// Logs a specific error for when inserting into the DB that might need to be saved.
 	var log_error = function (id, time, message) {
 		pool.query(`insert into logs values 
 						('${id}', '${time}', '${message}')`, function (err, result) {
@@ -65,6 +67,7 @@ var DB = function () {
 						} )
 	} 
 
+	// Deletes all the experiments from the database.
 	var reset_experiments = function (callback) {
 		console.log('deleting experiments')
 		pool.query('drop table experiments', function (err, result) {
@@ -86,7 +89,26 @@ var DB = function () {
 		})
 	}
 
+	// Uncomment this line and restart server to clear reset_experiments
 	// reset_experiments(console.log)
+
+	// TODO: Save the current state of the experiments in the DB 
+	// in case the server crashes and we need to reload from where we left off.
+	that.save_state = function (state, callback) {
+		pool.query('delete from saves', function (err, result) {
+			pool.query(`insert into saves values ('${state}')`, function (err, result) {
+				console.log(result)
+			})
+		})
+	}
+
+	// TODO: Loads the last saved state.
+	that.load_state = function (callback) {
+		pool.query('select * from saves', function (err, result) {
+			return result.rows[0]
+		})
+
+	}
 
 	// subjectID, game, level of game, star_timestamp, end_timestamp, score, win, fullGameStateSeries
 	that.get_experiments = function (callback) {
@@ -103,6 +125,10 @@ var DB = function () {
 		})
 	}
 
+	/* Returns a parseable array of experiments and their
+	 *	id, time_stamp, and game data {Number, round, decription, level}
+	 *
+	 **/
 	that.get_experiment_info = function (callback) {
 		pool.query('select id, time_stamp, data from experiments', function (err, result) {
 			if (err) {
@@ -119,6 +145,10 @@ var DB = function () {
 	}
 	// that.get_experiment_info(console.log);
 
+	/* Inserts a experiment's fully played game into the DB
+	 *
+	 *
+	 **/ 
 	that.post_experiment = function (id, val_id, time_stamp, game_states, data) {
 		pool.query(`insert into experiments values 
 					('${id}', '${val_id}', '${time_stamp}', '${data}', '${game_states}')`, function (err, result) {
@@ -128,6 +158,8 @@ var DB = function () {
 					});
 	}
 
+	/** A list of all the game names
+	 */
 	that.get_games_list = function () {
 		return Object.keys(games).sort();
 	}

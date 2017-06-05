@@ -12,6 +12,7 @@ var storage = multer.diskStorage({
 		callback(null, file.originalname)
 	}
 })
+// Used for uploading images to the website. No way to save images perminantly, though.
 var upload = multer({
 	dest : 'images/',
 	storage: storage
@@ -40,7 +41,12 @@ app.use(bodyParser.urlencoded({
 // app.use(bodyParser.json({limit: '5000mb'}));
 
 // PostgreSQL DB 
-var DB = require('./db.js')()
+if (process.env.PORT) {
+	var DB = require('./db.js')()
+} else {
+	var DB = require('./mock_db.js')()
+	console.log('***\nUsing mock data base for testing. Changes will only be saved locally.\n')
+}
 var Experiment = require('./experiments/experiment.js');
 var experiments = {};
 
@@ -75,6 +81,9 @@ app.use(session({
 var login_password = 'cocosciiscool';
 var logged_in = {};
 
+
+// Login middleware
+// validates session id with user login.
 function require_login (req, res, next) {
 	if (logged_in[req.session.id]) 
 		next();
@@ -82,7 +91,11 @@ function require_login (req, res, next) {
 		res.redirect('/admin/login');
 }
 
-function validate_exp (req, res, next) {
+
+// Experiment middleware
+// validates an experiment with its validation ID
+// Use during experiments. Mostly just for extra precausion. 
+function validate_exp (req, res, next) {	
 	var exp_id = req.session.exp_id
 	var val_id = req.session.val_id
 	if (exp_id == '0') {
@@ -96,11 +109,13 @@ function validate_exp (req, res, next) {
 	}
 }
 
+
+// Home Page
 app.get('/', function (req, res) {
 	res.render('home');
 });
 
-// Images
+// Images Pages
 app.get('/images', require_login, function(req, res) {
 	fs.readdir('./static/images', function (err, images) {
 		if (err) {
@@ -122,7 +137,8 @@ app.post('/images/upload', require_login, upload.any(), function(req, res) {
 	})
 })
 
-// Experiments
+// Experiments 
+// Displays the database
 app.get('/experiments', require_login, function (req, res) {
 	// var setup = Experiment.experiments[exp].slice();
 	// setup = setup.map(game => {
@@ -140,6 +156,7 @@ app.get('/experiments', require_login, function (req, res) {
 	
 })
 
+// Currently useless. Rewrite for use in making experiment structures.
 app.put('/experiments', require_login, function (req, res) {
 	var setup = Experiment.experiments[exp].slice();
 	setup = setup.map(game => {
@@ -149,7 +166,6 @@ app.put('/experiments', require_login, function (req, res) {
 	})
 	res.send({levels: DB.get_full_game(req.body.name).levels.length})
 })
-
 
 app.post('/experiments', require_login, function (req, res) {
 	var setup = Experiment.experiments[exp].slice();
@@ -161,22 +177,26 @@ app.post('/experiments', require_login, function (req, res) {
 	res.send({setup: setup, games: DB.get_full_games()})
 })
 
-// Editor
+// Editor pages
+// Handles saving and loading games
 app.get('/edit/:game_name', require_login, function (req, res) {
 	res.send(DB.get_full_game(req.params.game_name))
 })
 
+// Adds a new game to the DB
 app.post('/edit/:game_name', require_login, function (req, res) {
 	success = DB.add_game(req.body.name, req.body.descs, req.body.levels) 
 	res.send({success: success});
 })
 
+// Updates a game already in the DB
 app.put('/edit/:game_name', require_login, function (req, res) {
 	DB.update_game(req.body.name, req.body.descs, req.body.levels)
 	res.send({success: true})
 	// console.log(req.body);
 })
 
+// Removes a game from the DB
 app.delete('/edit/:game_name', require_login, function (req, res) {
 	console.log('deleting game')
 	console.log(req.params.game_name);
@@ -184,13 +204,13 @@ app.delete('/edit/:game_name', require_login, function (req, res) {
 	res.send({success: true})
 })
 
+// Play a game from the DB
 app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req, res) {
 	var level = parseInt(req.params.level);
 	var desc = parseInt(req.params.desc)
 	var data = {};
 	data.exp_id = 0;
 	data.game_obj = DB.get_game(req.params.game_name, level, desc);
-	data.first = false; //Take this out later.
 	res.render('game', data);
 });
 
@@ -201,12 +221,15 @@ app.get('/admin', require_login, function (req, res) {
 	res.render('editor', data);
 });
 
+// Administrative login page.
 app.get('/admin/login', function (req, res) {
 
 	res.render('login');
 
 });
 
+// Send a login request with user credentials. 
+// (should probably hash the password)
 app.post('/admin/login', function (req, res) {
 	if (req.body.password == login_password){
 		req.session.id = shortid.generate();
@@ -244,30 +267,33 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 		data.game_obj.name = round.number;
 		data.game_obj.level_num = current_game.level + 1
 		data.game_obj.round = round.round;
-		data.first = current_game.first
+		data.game_obj.data = current_exp.get_data();
 		res.render('game', data);
 	}
 
 })
 
+// Updates the experiment to play the next game in the experiment
 app.post('/experiment/:exp_id/next', validate_exp, function (req, res) {
 	var current_exp = experiments[req.params.exp_id]
 	current_exp.next(function () {res.send({success: true})})
 })
 
+// Updates the experiment to retry the game in the experiment
 app.post('/experiment/:exp_id/retry', validate_exp, function (req, res) {
 	var current_exp = experiments[req.params.exp_id];
 	current_exp.retry(function () {res.send({success:true})});
 		
 })
 
+// Actually uploads the data the the BD
 app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 	var exp_id = req.params.exp_id;
 	var val_id = req.session.val_id;
 	var game_states = req.body.gameStates;
 	var time_stamp = req.body.timeStamp;
 	var current_exp = experiments[req.params.exp_id];
-	var data = current_exp.get_data();
+	var data = req.body.data;
 	data.steps = req.body.steps;
 	data.score = req.body.score;
 	data.win = req.body.win;
@@ -276,6 +302,7 @@ app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 	res.send({success: true})
 })
 
+// Creates a new experiment to be run with a unique experiment ID
 app.post('/experiment/', function (req, res) {
 	var new_exp_id = shortid.generate();
 	var validation_id = shortid.generate();
@@ -285,6 +312,7 @@ app.post('/experiment/', function (req, res) {
 	res.send({exp_id: new_exp_id});
 });
 
+// If a user types in an incorrect URL, they get redirected here.
 app.get('*', function(req, res){
   res.status(404).render('404');
 });

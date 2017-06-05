@@ -3,7 +3,6 @@
  */
  // console.log('this is running');
 var BasicGame = function (gamejs, args) {
-	console.log(args)
 	var that = Object.create(BasicGame.prototype);
 	var MAX_SPRITES = 10000;
 
@@ -521,7 +520,6 @@ var BasicGame = function (gamejs, args) {
 
 		// make a copy of the kill list
 		var dead = that.kill_list.slice();
-
 		while (Object.keys(new_collisions).length) {
 			new_collisions = {};
 			new_effects = [];
