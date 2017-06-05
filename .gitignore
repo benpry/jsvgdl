@@ -4,4 +4,6 @@ gamejs-*.js
 gamejs-*.min.js
 doc/api/*
 out/*
+local_db.json
+npm-debug.log
 *~
