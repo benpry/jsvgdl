@@ -1,6 +1,9 @@
 var DB = function () {
 	var that = Object.create(DB.prototype);
 	var pg = require('pg');
+	var errors = [];
+
+	jsonfile.spaces = 2;
 	// console.log(process.env)
 
 	// create a config to configure both pooling behavior 
@@ -15,11 +18,11 @@ var DB = function () {
 	  port: 5432, 
 	  ssl: true, // needs to be true for some reason
 	  max: 10, // max number of clients in the pool 
-	  idleTimeoutMillis: 100000, // how long a client is allowed to remain idle before being closed 
+	  idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed 
 	};
 
 	//this initializes a connection pool 
-	//it will keep idle connections open for 100 seconds 
+	//it will keep idle connections open for 30 seconds 
 	//and set a limit of maximum 10 idle clients 
 
 	var pool = new pg.Pool(config);
@@ -61,11 +64,12 @@ var DB = function () {
 
 	// Logs a specific error for when inserting into the DB that might need to be saved.
 	var log_error = function (id, time, message) {
-		pool.query(`insert into logs values 
-						('${id}', '${time}', '${message}')`, function (err, result) {
-							console.log(err)
-						} )
+		errors.push({id: id, time: time, message: message})
 	} 
+
+	var get_error_log = function () {
+		return errors;
+	}
 
 	// Deletes all the experiments from the database.
 	var reset_experiments = function (callback) {
@@ -90,25 +94,7 @@ var DB = function () {
 	}
 
 	// Uncomment this line and restart server to clear reset_experiments
-	// reset_experiments(console.log)
-
-	// TODO: Save the current state of the experiments in the DB 
-	// in case the server crashes and we need to reload from where we left off.
-	that.save_state = function (state, callback) {
-		pool.query('delete from saves', function (err, result) {
-			pool.query(`insert into saves values ('${state}')`, function (err, result) {
-				console.log(result)
-			})
-		})
-	}
-
-	// TODO: Loads the last saved state.
-	that.load_state = function (callback) {
-		pool.query('select * from saves', function (err, result) {
-			return result.rows[0]
-		})
-
-	}
+	reset_experiments(console.log)
 
 	// subjectID, game, level of game, star_timestamp, end_timestamp, score, win, fullGameStateSeries
 	that.get_experiments = function (callback) {
@@ -192,7 +178,7 @@ var DB = function () {
         return_game.level = games[name].levels[level];
         return_game.name = name;
         return_game.round = 0;
-        
+
         return return_game;
 	}
 
