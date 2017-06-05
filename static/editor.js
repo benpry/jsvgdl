@@ -2,6 +2,10 @@ var cache_game_objs = {}
 var current_game_obj = {}
 var exp_descs = {};
 
+var cache_game = function () {
+  if (current_game_obj) cache_game_objs[current_game_obj.name] = current_game_obj;
+}
+
 var get_exp_descs = function (callback) {
   $.ajax({
     type: 'GET',
@@ -37,13 +41,14 @@ var delete_game = function (game_name, callback) {
 }
 
 var save_game = function (callback) {
-
+  cache_game();
   if (!(current_game_obj.name)) {
     callback({success: false});
     return;
   }
   current_game_obj.descs[current_game_obj.desc] = $('#game_area').val();
   current_game_obj.levels[current_game_obj.level] = $('#level_area').val();
+  document.cookie = `cookie=${JSON.stringify(current_game_obj)}`
   $.ajax({
     type: "PUT",
     url: `/edit/${current_game_obj.name}`,
@@ -81,7 +86,7 @@ var update_nav_bar = function (game_name) {
 
 // Update current game object to the given game_obj
 var update_game_obj = function (game_obj) {
-  if (current_game_obj) cache_game_objs[current_game_obj.name] = current_game_obj;
+  cache_game();
   current_game_obj = game_obj;
   var i = 0;
   update_text_areas()
