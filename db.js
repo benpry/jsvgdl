@@ -14,7 +14,7 @@ var DB = function () {
 	  password: 'mlKsdNWIVGgGEbO9-VwQ1S74c_', 
 	  host: 'ec2-54-235-85-65.compute-1.amazonaws.com', 
 	  port: 5432, 
-	  ssl: true, // needs to be true for some reason
+	  ssl: true, // needs to be true to connect (secure connections are good)
 	  max: 10, // max number of clients in the pool 
 	  idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed 
 	};
@@ -114,6 +114,7 @@ var DB = function () {
 	 *
 	 **/
 	that.get_experiment_info = function (callback) {
+		console.log('loading experiments')
 		pool.query('select id, time_stamp, data from experiments', function (err, result) {
 			if (err) {
 				callback([], {success: false})
@@ -268,6 +269,15 @@ var DB = function () {
 	}
 
 	that.print_size_usage('experiments');
+
+	that.print_connections = function () {
+		pool.query('SELECT sum(numbackends) FROM pg_stat_database;', function (err, result) {
+			if (err) console.error(err);
+			console.log(result)
+		})
+	}
+
+	that.print_connections()
 
 	Object.freeze(that);
 	return that;
