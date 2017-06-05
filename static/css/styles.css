@@ -115,6 +115,7 @@ li.main {
 .side-bar {
     flex-grow: 1;
     overflow-y: scroll;
+    text-overflow: ellipsis;
     /*overflow-wrap: break-word;*/
     background-color: #eee; 
 }

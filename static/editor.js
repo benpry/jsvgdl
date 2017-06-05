@@ -1,5 +1,15 @@
 var cache_game_objs = {} 
 var current_game_obj = {}
+var exp_descs = {};
+
+var get_exp_descs = function (callback) {
+  $.ajax({
+    type: 'GET',
+    url: '/experiments/desc',
+    success: callback
+  })
+}
+
 
 var get_game = function (game_name, callback) {
   if (game_name in cache_game_objs) {
@@ -93,33 +103,6 @@ $(document).on("click", '.game',function() {
   get_game(game_name, update_game_obj)
 })
 
-// $(document).on("click", '.level',function() {
-
-//   $('.level').each(function () {
-//     $(this).removeClass('active');
-//   })
-//   $(this).addClass('active');
-//   current_game_obj.level = parseInt($(this).attr('id'));
-//   update_text_areas();
-
-//   // var game_name = $(this).attr('id')
-//   // get_game(game_name, update_game_obj)
-// })
-
-// $(document).on("click", '#add-level',function() {
-//   $('.level').each(function () {
-//     $(this).removeClass('active');
-//   })
-//   current_game_obj.levels.push(['']);
-//   $('#add-level').remove();
-//   var new_level = current_game_obj.levels.length-1
-//   current_game_obj.level = new_level;
-//   $('#nav').append(`<li class="level active button" id=${new_level}>${new_level}</li><li class="button" id="add-level">+</li>`)
-//   update_text_areas();
-
-//   // var game_name = $(this).attr('id')
-//   // get_game(game_name, update_game_obj)
-// })
 
 var reset_pointer = function (id_prefix) {
   $(`#${id_prefix}-num`).text(current_game_obj[id_prefix])
@@ -193,7 +176,34 @@ $(document).on('click', '#new', function (e) {
   create_modal.style.display = 'block';
 })
 
+$(document).on('click', '.exp', function () {
+  var view_desc = exp_descs[parseInt($(this).attr('id'))]
+  $('#desc-bar').empty()
+  $('#desc-bar').append(`<li class='nav-button' id='back'><< ${view_desc[0]}</li>`)
+  view_desc[1].forEach((level_desc, i) => {
+    $('#desc-bar').append(`<li class='level-desc' id='${i}'>game: ${level_desc[0]} - level: ${level_desc[1]}</li>`)
+  })
+
+})
+
+$(document).on('click', '#back', function () {
+  $('#desc-bar').empty();
+    exp_descs.forEach((desc, index) => {
+      $('#desc-bar').append(`<li class="exp" id="${index}">${desc[0]}</li>`)
+    })    
+})
+
+// Once the document has loaded
 $(document).ready(function () {
+
+  get_exp_descs(function (descs) {
+    exp_descs = descs;
+    exp_descs.forEach((desc, index) => {
+      $('#desc-bar').append(`<li class="exp" id="${index}">${desc[0]}</li>`)
+    })    
+  })
+
+  
 
   $('#game_area').val('');
   $('#level_area').val('');
@@ -299,7 +309,6 @@ $(document).ready(function () {
     window.location.href = '/';
   })
 
-  console.log(document.cookie)
   var cookie = eval(document.cookie)
   if (cookie) {
     update_game_obj(cookie)

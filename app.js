@@ -41,7 +41,8 @@ app.use(bodyParser.urlencoded({
 // app.use(bodyParser.json({limit: '5000mb'}));
 
 // PostgreSQL DB 
-if (process.env.PORT) {
+var reset = false
+if (process.env.PORT || reset) {
 	var DB = require('./db.js')()
 } else {
 	var DB = require('./mock_db.js')()
@@ -156,7 +157,11 @@ app.get('/experiments', require_login, function (req, res) {
 	
 })
 
+app.get('/experiments/desc', require_login, function (req, res) {
+	res.send(Experiment.experiments[exp])
+})
 // Currently useless. Rewrite for use in making experiment structures.
+
 app.put('/experiments', require_login, function (req, res) {
 	var setup = Experiment.experiments[exp].slice();
 	setup = setup.map(game => {
