@@ -192,6 +192,7 @@ var DB = function () {
         return_game.level = games[name].levels[level];
         return_game.name = name;
         return_game.round = 0;
+        
         return return_game;
 	}
 

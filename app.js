@@ -211,6 +211,7 @@ app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req
 	var data = {};
 	data.exp_id = 0;
 	data.game_obj = DB.get_game(req.params.game_name, level, desc);
+	data.game_obj.data = {};
 	res.render('game', data);
 });
 
