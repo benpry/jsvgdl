@@ -334,6 +334,7 @@ var BasicGame = function (gamejs, args) {
 				'win'  : that.win,
 				'objects': Object.copy(obs),
 				'actions': actions,
+				'events': that.effectList
 		};
 	}
 
@@ -520,7 +521,11 @@ var BasicGame = function (gamejs, args) {
 
 		// make a copy of the kill list
 		var dead = that.kill_list.slice();
-		while (Object.keys(new_collisions).length) {
+		var loop = 0 // Simply to prevent infinitely looping
+		while (Object.keys(new_collisions).length && loop < 10) {
+			loop ++;
+			if (loop > 5) console.log('resolving too many collisions');
+			
 			new_collisions = {};
 			new_effects = [];
 
@@ -588,7 +593,6 @@ var BasicGame = function (gamejs, args) {
 							new_collisions[sprite1] = [sprite2]
 						}
 
-						// console.log(class1, sprite1.name, class2, sprite2.name);
 
 						if (score > 0) 
 							that.score += score;
@@ -677,10 +681,10 @@ var BasicGame = function (gamejs, args) {
 
 			// update collisions
 			// console.log(new_effects);
-			that.effectList.concat(new_effects);
+			that.effectList = that.effectList.concat(new_effects);
 			Object.keys(new_collisions).forEach(collision_sprite => {
 				if (collision_sprite in collisions)
-					collisions[collision_sprite].concat(new_collisions[collision_sprite])
+					collisions = collisions[collision_sprite].concat(new_collisions[collision_sprite])
 				else
 					collisions[collision_sprite] = new_collisions[collision_sprite]
 			})

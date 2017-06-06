@@ -14,7 +14,7 @@ function getColor(sprite) {
 }
 
 function nothing (sprite, partner, game, kwargs) {
-	return ['nothing', sprite, partner]
+	return ['nothing', sprite.ID || sprite, partner.ID || partner]
 }
 
 function killSprite (sprite, partner, game, kwargs) {
@@ -23,12 +23,12 @@ function killSprite (sprite, partner, game, kwargs) {
 	game.kill_list.push(sprite);
 
 	// console.log('kill sprite', sprite);
-	return ['killSprite', sprite, partner];
+	return ['killSprite', sprite.ID || sprite, partner.ID || partner];
 }
 
 function cloneSprite (sprite, partner, game, kwargs) {
 	game._createSprite([sprite.name], [sprite.rect.left, sprite.rect.top]);
-	return ['cloneSprite', sprite, partner];
+	return ['cloneSprite', sprite.ID || sprite, partner.ID || partner];
 }
 
 function transformTo (sprite, partner, game, kwargs) {
@@ -43,7 +43,7 @@ function transformTo (sprite, partner, game, kwargs) {
 	}
 
 	var args = {'stype': stype}
-	return ['transforrmTo', sprite, partner, args];
+	return ['transforrmTo', sprite.ID || sprite, partner.ID || partner];
 
 }
 
@@ -57,20 +57,13 @@ function triggerOnLading (sprite, partner, game, kwargs) {
 
 function stepBack (sprite, partner, game, kwargs) {
 	sprite.rect = sprite.lastrect.clone();
-	return ['stepBack', sprite.name, partner.name];
-}
-
-function undoAll(sprite, partner, game, kwargs) {
-	console.log('undo all');
-	game._iterAll().forEach(sprite => {
-		sprite.rect = sprite.lastrect.copy();
-	})	
+	return ['stepBack', sprite.ID || sprite, partner.ID || partner];
 }
 
 function bounceForward(sprite, partner, game, kwargs) {
 	sprite.physics.activeMovement(sprite, tools.unitVector(partner.lastdirection()));
 	game._updateCollisionDict(sprite);
-	return ['bounceForward', sprite.name, partner.name]
+	return ['bounceForward', sprite.ID || sprite, partner.ID || partner]
 
 }
 
@@ -80,6 +73,7 @@ function conveySprite(sprite, partner, game, kwargs) {
 	sprite.physics.activeMovement(sprite, vect, partner.strength);
 	sprite.lastrect = sprite_lastrect;
 	game._updateCollisionDict(sprite);
+	return ['conveySprite', sprite.ID || sprite, partner.ID || partner]
 }
 
 function windGust(sprite, partner, game, kwargs) {
@@ -91,6 +85,8 @@ function windGust(sprite, partner, game, kwargs) {
 		sprite.lastrect = sprite_lastrect;
 		game._updateCollisionDict(sprite);
 	}
+
+	return ['windGust', sprite.ID || sprite, partner.ID || partner]
 }
 
 function slipForward(sprite, partner, game, kwargs) {
@@ -101,12 +97,16 @@ function slipForward(sprite, partner, game, kwargs) {
 		sprite.lastrect = sprite_lastrect;
 		game._updateCollisionDict(sprite);
 	}
+
+	return ['slipForward', sprite.ID || sprite, partner.ID || partner]
 }
 
 function attractGaze(sprite, partner, game, kwargs) {
 	if (kwargs.prob > Math.random()) {
 		sprite.orientation = partner.orientation;
 	}
+
+	return ['attractGaze', sprite.ID || sprite, partner.ID || partner]
 }
 
 function turnAround(sprite, partner, game, kwargs) {
@@ -117,11 +117,13 @@ function turnAround(sprite, partner, game, kwargs) {
 	sprite.physics.activeMovement(sprite, DOWN);
 	reverseDirection(sprite, partner, game, kwargs);
 	game._updateCollisionDict(sprite);
+	return ['turnAround', sprite.ID || sprite, partner.ID || partner]
 
 }
 
 function reverseDirection(sprite, partner, game, kwargs) {
 	sprite.orientation = [-sprite.orientation[0], -sprite.orientation[1]];
+	return ['reverseDirection', sprite.ID || sprite, partner.ID || partner]
 
 }
 
@@ -152,7 +154,7 @@ function bounceDirection(sprite, partner, game, kwargs) {
     var dp = snorm[0] * inc[0] + snorm[1] * inc[1]
     sprite.orientation = [-2 * dp * snorm[0] + inc[0], -2 * dp * snorm[1] + inc[1]]
     sprite.speed *= (1. - friction)
-    // return ('bounceDirection', sprite, partner)
+    return ['bounceDirection', sprite.ID || sprite, partner.ID || partner]
 }
 
 function wallBounce(sprite, partner, game, kwargs) {
@@ -167,6 +169,7 @@ function wallBounce(sprite, partner, game, kwargs) {
     // return ('wallBounce', colorDict[str(partner.color)], colorDict[str(sprite.color)])
     // TODO: Not printing for now   
     // return ('wallBounce', sprite, partner)
+    return ['wallBounce', sprite.ID || sprite, partner.ID || partner]
 }
 
 function wallStop(sprite, partner, game, kwargs) {
@@ -183,6 +186,7 @@ function wallStop(sprite, partner, game, kwargs) {
 		sprite.orientation = [x_orient, 0];
 	sprite.speed = tools.vectNorm(sprite.orientation) * sprite.speed;
 	sprite.orientation = tools.unitVector(sprite.orientation);
+	return ['wallStop', sprite.ID || sprite, partner.ID || partner]
 }
 
 function killIfSlow(sprite, partner, game, kwargs) {
@@ -194,8 +198,10 @@ function killIfSlow(sprite, partner, game, kwargs) {
 	else
 		relspeed = tools.vectNorm([sprite._velocity()[0] - partner._velocity()[0],
 									sprite._velocity()[1] - partner._velocity()[1]]);
-	if (relspeed < limitspeed)
-		return killSprite(sprite, partner, game);
+	if (relspeed < limitspeed) {
+		killSprite(sprite, partner, game);
+		return ['killIfSlow', sprite.ID || sprite, partner.ID || partner]
+	}
 }
 
 function killIfFromAbove(sprite, partner, game, kwargs) {
@@ -203,8 +209,10 @@ function killIfFromAbove(sprite, partner, game, kwargs) {
 }
 
 function killIfAlive(sprite, partner, game, kwargs) {
-	if (!(game.kill_list.contains(partner))) 
-		return killSprite(sprite, partner, game);
+	if (!(game.kill_list.contains(partner))) {
+		killSprite(sprite, partner, game);
+		return ['killIfAlive', sprite.ID || sprite, partner.ID || partner]
+	}
 }
 
 function collectResource(sprite, partner, game, kwargs) {
@@ -212,6 +220,7 @@ function collectResource(sprite, partner, game, kwargs) {
 	var resource_type = sprite.resourceType;
 	partner.resources[resource_type] = Math.max(-1, 
 		Math.min(partner.resources[resource_type] + sprite.value, game.resources_limits[resource_type]));
+	return ['collectResourc', sprite.ID || sprite, partner.ID || partner]
 }
 
 function changeResource(sprite, partner, resourceColor, game, kwargs) {
@@ -221,7 +230,7 @@ function changeResource(sprite, partner, resourceColor, game, kwargs) {
 	var resource_limit = game.resources_limits[resource] || Infinity;
 	sprite.resources[resource] = Math.max(-1, Math.min(sprite_resource + value, resource_limit))
 	// console.log(sprite.resources);
-	return ['changeResource', sprite, partner]
+	return ['changeResource', sprite.ID || sprite, partner.ID || partner]
 }
 
 function spawnIfHasMore(sprite, partner, game, kwargs) {
@@ -230,7 +239,9 @@ function spawnIfHasMore(sprite, partner, game, kwargs) {
 	var limit = kwargs.limit || 1;
 	if (sprite.resources[resource] >= limit) {
 		game._createSprite([stype], [sprite.rect.left, sprite.rect.top]);
+		return ['spawnIfHasMore', sprite.ID || sprite, partner.ID || partner]
 	}
+	
 }
 
 function killIfHasMore(sprite, partner, game, kwargs) {
@@ -238,8 +249,11 @@ function killIfHasMore(sprite, partner, game, kwargs) {
 	var resource = kwargs.resource;
 	if (sprite.resources[resource] === undefined) 
 		sprite.resources[resource] = 0;
-	if (sprite.resources[resource] >= limit)
-		return killSprite(sprite, partner, game, kwargs);
+	if (sprite.resources[resource] >= limit) {
+		killSprite(sprite, partner, game, kwargs);
+		return ['killIfHasMore', sprite.ID || sprite, partner.ID || partner]
+	}
+	
 }
 
 function killIfHasLess(sprite, partner, game, kwargs) {
@@ -247,8 +261,10 @@ function killIfHasLess(sprite, partner, game, kwargs) {
 	var limit = kwargs.limit;
 	if (sprite.resources[resource] === undefined) 
 		sprite.resources[resource] = 0;
-	if (sprite.resources[resource] <= limit)
-		return killSprite(sprite, partner, game, kwargs);
+	if (sprite.resources[resource] <= limit){
+		killSprite(sprite, partner, game, kwargs);
+		return ['killIfHasLess', sprite.ID || sprite, partner.ID || partner]
+	}
 }
 
 function killIfOtherHasMore(sprite, partner, game, kwargs) {
@@ -256,8 +272,10 @@ function killIfOtherHasMore(sprite, partner, game, kwargs) {
 	var limit = kwargs.limit;
 	if (sprite.resources[resource] === undefined) 
 		sprite.resources[resource] = 0;
-	if (partner.resources[resource] <= limit)
-		return killSprite(sprite, partner, game, kwargs);
+	if (partner.resources[resource] <= limit){
+		killSprite(sprite, partner, game, kwargs);
+		return ['killIfOtherHasMore', sprite.ID || sprite, partner.ID || partner]
+	}
 }
 
 function killIfOtherHasLess(sprite, partner, game, kwargs) {
@@ -276,6 +294,7 @@ function wrapAround(sprite, partner, game, kwargs) {
     else if (sprite.orientation[1] < 0)
         sprite.rect.top = game.screensize[1] - sprite.rect.size[1] * (1 + offset)
     sprite.lastmove = 0
+    return ['wrapAround', sprite.ID || sprite, partner.ID || partner]
 }
 
 function pullWithIt(sprite, partner, game, kwargs) {
@@ -307,6 +326,7 @@ function teleportToExit(sprite, partner, game, kwargs) {
 
 	sprite.rect = rand_sprite.rect.copy();
 	sprite.lastmove = 0;
+	return ['teleportToExit', sprite.ID || sprite, partner.ID || partner]
 }
 
 var stochastic_effects = [teleportToExit, windGust, slipForward, attractGaze, flipDirection];

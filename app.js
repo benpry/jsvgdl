@@ -41,7 +41,7 @@ app.use(bodyParser.urlencoded({
 // app.use(bodyParser.json({limit: '5000mb'}));
 
 // PostgreSQL DB 
-var reset = false
+var reset = true
 if (process.env.PORT || reset) {
 	var DB = require('./db.js')()
 } else {
@@ -64,11 +64,11 @@ var experiments = {};
 // 	})
 // }, 30*60*1000)
 
-// var intervalID = setInterval(function () {
-// 	console.log(experiments);
-// }, 5000)
+var intervalID = setInterval(function () {
+	console.log(Object.keys(experiments));
+}, 5000)
 
-var exp = 'exp0';
+var exp = 'exp1';
 
 /**
  * Middle ware for session data
@@ -103,6 +103,7 @@ function validate_exp (req, res, next) {
 		res.end();
 		return
 	}
+	console.log(experiments[exp_id]);
 	if (experiments[exp_id] && experiments[exp_id].validate(val_id)) {
 		next();
 	} else {
@@ -150,7 +151,6 @@ app.get('/experiments', require_login, function (req, res) {
 	// res.render('experiments', {exp: setup, games: DB.get_games_list()})
 	DB.get_experiment_info(function (result, status) {
 		if (status.success) {
-			console.log(result);
 			res.render('db', {experiments: result});
 		}
 		else {

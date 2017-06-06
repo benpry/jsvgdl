@@ -48,8 +48,7 @@ var experiments = {
             '']
     ],
     exp1 : [
-        ['dodge', [[0, 0]], true], 
-        ['chase', [[0, 0]], true]
+        ['expt_antagonist', [[0, 3]], true]
     ], 
 
     exp2 : [
