@@ -116,9 +116,9 @@ var permute = function(v, m){
 
 // Generates some pairwise permutation ordering (modulo the lenght of the permutations)
 var permute_pairs = function (array, permutation) {
-	var perms = permute(array);
-	var perm = permutation % perms.length
-	return perms[perm].map((value, index) => {
+	// var perms = permute(array);
+	// var perm = array;//permutation % perms.length
+	return array.map((value, index) => {
 		return [value, array[index]]
 	})
 

@@ -1,6 +1,6 @@
 var exp_id = exp_id || undefined
 
-var post_experiment = function (exp_id, game, time_stamp, data) {
+var post_experiment = function (exp_id, game, time_stamp, data, action, callback) {
 	console.log(exp_id);
 	var steps = game.steps
 	var last_state = game.gameStates.length;
@@ -14,10 +14,11 @@ var post_experiment = function (exp_id, game, time_stamp, data) {
 		 	   score: score,
 		 	   win: win,
 		 	   steps: steps,
-		 	   data: data},
+		 	   data: data,
+		 	   action: action},
 		success: function (status) {
 			if (status.success) {
-
+				callback()
 			} else {
 				console.log('could not post experiment');
 			}
@@ -27,34 +28,12 @@ var post_experiment = function (exp_id, game, time_stamp, data) {
 
 var next_experiment = function (exp_id, game, time_stamp, data, callback) {
 	if (exp_id == '0') return;
-	post_experiment(exp_id, game, time_stamp, data);
-	$.ajax({
-		type: 'POST',
-		url: `/experiment/${exp_id}/next`,
-		success: function (status) {
-			if (status.success) {
-				callback()
-			} else {
-				console.log('could not retry experiment')
-			}
-		}
-	})
+	post_experiment(exp_id, game, time_stamp, data, 'next', callback);
 }
 
 var retry_experiment = function (exp_id, game, time_stamp, data, callback) {
 	if (exp_id == '0') return;
-	post_experiment(exp_id, game, time_stamp, data);
-	$.ajax({
-		type: 'POST',
-		url: `/experiment/${exp_id}/retry`,
-		success: function (status) {
-			if (status.success) {
-				callback()
-			} else {
-				console.log('could not retry experiment')
-			}
-		}
-	})
+	post_experiment(exp_id, game, time_stamp, data, 'retry', callback);
 }
 
 $(document).ready(function () {

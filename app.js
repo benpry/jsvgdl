@@ -286,21 +286,28 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 
 })
 
-// Updates the experiment to play the next game in the experiment
-app.post('/experiment/:exp_id/next', validate_exp, function (req, res) {
-	var current_exp = experiments[req.params.exp_id]
-	current_exp.next(function () {res.send({success: true})})
-})
+// // Updates the experiment to play the next game in the experiment
+// app.post('/experiment/:exp_id/next', validate_exp, function (req, res) {
 
-// Updates the experiment to retry the game in the experiment
-app.post('/experiment/:exp_id/retry', validate_exp, function (req, res) {
-	var current_exp = experiments[req.params.exp_id];
-	current_exp.retry(function () {res.send({success:true})});
+// })
+
+// // Updates the experiment to retry the game in the experiment
+// app.post('/experiment/:exp_id/retry', validate_exp, function (req, res) {
+
 		
-})
+// })
 
 // Actually uploads the data the the BD
 app.post('/experiment/:exp_id', validate_exp, function (req, res) {
+	if (req.body.action == 'next') {
+		console.log('next experiment')
+		var current_exp = experiments[req.params.exp_id]
+		current_exp.next(function () {})
+	} else if (req.body.action == 'retry') {
+		console.log('retrying experiment')
+		var current_exp = experiments[req.params.exp_id];
+		current_exp.retry(function () {});
+	}
 	var exp_id = req.params.exp_id;
 	var val_id = req.session.val_id;
 	var game_states = req.body.gameStates;
