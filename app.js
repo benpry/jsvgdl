@@ -300,11 +300,11 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 // Actually uploads the data the the BD
 app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 	if (req.body.action == 'next') {
-		console.log('next experiment')
+		// console.log('next experiment')
 		var current_exp = experiments[req.params.exp_id]
 		current_exp.next(function () {})
 	} else if (req.body.action == 'retry') {
-		console.log('retrying experiment')
+		// console.log('retrying experiment')
 		var current_exp = experiments[req.params.exp_id];
 		current_exp.retry(function () {});
 	}

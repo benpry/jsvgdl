@@ -19,7 +19,7 @@ var post_experiment = function (exp_id, game, time_stamp, data, action, callback
 		 	   action: action},
 		success: function (status) {
 			if (status.success) {
-				// $('body').removeClass('loading')
+				$('body').removeClass('loading')
 				callback()
 			} else {
 				console.log('could not post experiment');
