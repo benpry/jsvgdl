@@ -71,7 +71,7 @@ var DB = function () {
 
 	// Deletes all the experiments from the database.
 	var reset_experiments = function (callback) {
-		console.log('deleting experiments')
+		console.log('\ndeleting experiments...\n')
 		pool.query('drop table experiments', function (err, result) {
 			if (err) {
 				console.error('no table to delete')
@@ -86,7 +86,7 @@ var DB = function () {
 					if (err) {
 						console.error(err)
 					}
-					callback(result)
+					callback('\n...experiments deleted\n')
 				})
 		})
 	}
@@ -263,7 +263,7 @@ var DB = function () {
 			console.log(result.rows.filter(row => {
 				return row.table_name == table_name;
 			}).map(row => {
-				return row;//`${row.table_name}: total size ${row.total}`
+				return `${row.table_name}: total size ${row.total}`
 			})[0]);
 		})
 	}
@@ -277,7 +277,7 @@ var DB = function () {
 		})
 	}
 
-	that.print_connections()
+	// that.print_connections()
 
 	Object.freeze(that);
 	return that;
