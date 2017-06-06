@@ -27,6 +27,12 @@ var retry_game = function () {
 	})
 }
 
+var continue_game = function () {
+	next_experiment(exp_id, game, time_stamp, data, function () {
+		window.location.href = `/experiment/${exp_id}`
+	});
+}
+
 var page_refresh = function () {
 
 	if (game.win === null) {
@@ -42,9 +48,8 @@ $(document).on('click', '#forfeit', function () {
 	})
 })
 
-$(document).on('click', '#continue', function () {
-	window.location.href = `/experiment/${exp_id}`
-})
+$(document).on('click', '#continue', continue_game);
+
 $(document).on('click', '#return', function () {
 	window.location.href = '/admin';	
 })
@@ -107,7 +112,8 @@ $(document).ready(function () {
 
 		if (game.win) {
 			$('#title').text('Game Won!')
-			next_experiment(exp_id, game, time_stamp, data, show_status);
+			show_status()
+			
 		} else {
 			$('#title').text('Game Lost!')
 			window.setTimeout(show_status, end_game_delay);
