@@ -27,7 +27,7 @@ var VGDLParser = function (gamejs) {
 		});
 		permute_pairs(Object.keys(var_colors), color_scheme).forEach(key_pair => {
 			// console.log(key_pair)
-			// console.log(key_pair[0], key_pair[1], var_colors[key_pair[1]])
+			console.log(key_pair[0], key_pair[1], var_colors[key_pair[1]])
 			parser.game.sprite_constr[key_pair[0]][1].color = var_colors[key_pair[1]]
 			// console.log(parser.game.sprite_constr[key_pair[0]][1])
 		})
