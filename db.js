@@ -65,7 +65,7 @@ var DB = function () {
 		errors.push({id: id, time: time, message: message})
 	} 
 
-	var get_error_log = function () {
+	that.get_error_log = function () {
 		return errors;
 	}
 
