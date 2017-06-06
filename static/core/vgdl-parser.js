@@ -25,12 +25,13 @@ var VGDLParser = function (gamejs) {
 		tree.children.forEach(function (child) {
 			parse[child.content](child.children);
 		});
-		permute_pairs(Object.keys(var_colors), color_scheme).forEach(key_pair => {
-			// console.log(key_pair)
-			console.log(key_pair[0], key_pair[1], var_colors[key_pair[1]])
-			parser.game.sprite_constr[key_pair[0]][1].color = var_colors[key_pair[1]]
-			// console.log(parser.game.sprite_constr[key_pair[0]][1])
-		})
+		// commented out until fixed
+		// permute_pairs(Object.keys(var_colors), color_scheme).forEach(key_pair => {
+		// 	// console.log(key_pair)
+		// 	console.log(key_pair[0], key_pair[1], var_colors[key_pair[1]])
+		// 	parser.game.sprite_constr[key_pair[0]][1].color = var_colors[key_pair[1]]
+		// 	// console.log(parser.game.sprite_constr[key_pair[0]][1])
+		// })
 
 		parser.game.images = images.slice();
 		return parser.game;

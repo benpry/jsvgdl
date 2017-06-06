@@ -53,16 +53,16 @@ var experiments = {};
 
 /** Every 30 minutes,
  *	this deletes an experiment 
- *	that has been alive for more than 30 minutes
+ *	that has been alive for more than 1 hour
  */
-// var intervalID = setInterval(function () {
-// 	Object.keys(experiments).forEach(exp_id => {
-// 		if (experiments[exp_id].timeout()){
-// 			console.log(exp_id, 'experiment timed out')
-// 			delete experiments[exp_id];
-// 		}
-// 	})
-// }, 30*60*1000)
+var intervalID = setInterval(function () {
+	Object.keys(experiments).forEach(exp_id => {
+		if (experiments[exp_id].timeout()){
+			console.log(exp_id, 'experiment timed out')
+			delete experiments[exp_id];
+		}
+	})
+}, 30*60*1000)
 
 var exp = 'exp0';
 

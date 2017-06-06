@@ -91,7 +91,7 @@ var Experiment = function (exp_name, cookie) {
         exp_name = 'exp0'
     }
     var cookie = cookie;
-    var timeout = Date.now()+30*60*1000;
+    var timeout = Date.now()+60*60*1000;
     var games_ordered = [];
     game_number = 0;
     var mipoints = {};
