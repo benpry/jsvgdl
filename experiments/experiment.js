@@ -96,6 +96,8 @@ var Experiment = function (exp_name, cookie) {
     game_number = 0;
     var mipoints = {};
 
+    var randomize_color = false;
+
     experiments[exp_name].forEach(settings => {
         game_number ++;
         var game_name = settings[0];
@@ -103,7 +105,8 @@ var Experiment = function (exp_name, cookie) {
         mipoints[game_number] = settings[3];
         if (settings[2])
             game_levels = shuffle(game_levels);
-        var color_scheme = 0//randint(100)
+        var color_scheme = 0;
+        if (randomize_color) color_scheme = randint(100);
         game_levels.forEach(game_level => {
             games_ordered.push({name: game_name, 
                              desc: game_level[0], 
