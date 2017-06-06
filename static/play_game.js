@@ -7,7 +7,7 @@
 // console.log(data);
 var gamejs = require('gamejs');;
 var vgdl_parser = VGDLParser(gamejs);
-var game = vgdl_parser.	playGame(vgdl_game.game, vgdl_game.level);
+var game = vgdl_parser.playGame(vgdl_game.game, vgdl_game.level, color_scheme);
 // var on_game_end = function () {
 // }
 // game.paused = false;

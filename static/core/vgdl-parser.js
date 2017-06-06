@@ -1,5 +1,7 @@
 
 var VGDLParser = function (gamejs) {
+	var parser = Object.create(VGDLParser.prototype);
+
 	var images = ['error.png'];
 	var tools_module = Tools; //|| require('../../vgdl/tools.js');
 	var basic_game = BasicGame; //|| require('./basic-game.js');
@@ -7,11 +9,12 @@ var VGDLParser = function (gamejs) {
 	// ontology.extend(require('../ontology/ontology.js'));
 
 	var tools = tools_module();
+	var var_colors = {};
 
-
-	var parser = Object.create(VGDLParser.prototype);
+	
 	var verbose = false;
-	var parseGame = function (tree) {
+	var parseGame = function (tree, color_scheme) {
+		console.log('color_scheme', color_scheme)
 
 		if (!(tree instanceof tools.Node))
 			tree = tools.indentTreeParser(tree).children[0];
@@ -22,6 +25,12 @@ var VGDLParser = function (gamejs) {
 		tree.children.forEach(function (child) {
 			parse[child.content](child.children);
 		});
+		permute_pairs(Object.keys(var_colors), color_scheme).forEach(key_pair => {
+			// console.log(key_pair)
+			// console.log(key_pair[0], key_pair[1], var_colors[key_pair[1]])
+			parser.game.sprite_constr[key_pair[0]][1].color = var_colors[key_pair[1]]
+			// console.log(parser.game.sprite_constr[key_pair[0]][1])
+		})
 
 		parser.game.images = images.slice();
 		return parser.game;
@@ -64,7 +73,9 @@ var VGDLParser = function (gamejs) {
 					return s.trim();
 				});
 				var [sclass, args] = _parseArgs(sdef, parentClass, Object.assign({}, parentargs));
-				
+				if (args.color && key != 'wall') {
+					var_colors[key] = args.color;
+				}
 				if ('image' in args) {
 					images.push(args.image)
 				}
@@ -159,10 +170,10 @@ var VGDLParser = function (gamejs) {
 		return [sclass, args];
 	}
 
-	parser.playGame = function (game_str, map_str) {
+	parser.playGame = function (game_str, map_str, color_scheme) {
 
 		
-		var game = parseGame(game_str);
+		var game = parseGame(game_str, color_scheme);
 
 		game.buildLevel(map_str);
 		// game.uiud;

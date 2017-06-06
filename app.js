@@ -64,11 +64,7 @@ var experiments = {};
 // 	})
 // }, 30*60*1000)
 
-var intervalID = setInterval(function () {
-	console.log(Object.keys(experiments));
-}, 5000)
-
-var exp = 'exp1';
+var exp = 'exp0';
 
 /**
  * Middle ware for session data
@@ -103,7 +99,6 @@ function validate_exp (req, res, next) {
 		res.end();
 		return
 	}
-	console.log(experiments[exp_id]);
 	if (experiments[exp_id] && experiments[exp_id].validate(val_id)) {
 		next();
 	} else {
@@ -223,7 +218,12 @@ app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req
 	var data = {};
 	data.exp_id = 0;
 	data.game_obj = DB.get_game(req.params.game_name, level, desc);
-	data.game_obj.data = {};
+	data.game_obj.data = {name: req.params.game_name, 
+						  number: 0,
+						  round: 0,
+						  desc: desc,
+						  level: level,
+						  color_scheme: 0};
 	res.render('game', data);
 });
 

@@ -21,6 +21,25 @@ function shuffle(array) {
   return array;
 }
 
+// Returns a random integer given the parameters:
+//  if no params: returns [0, 1]
+//  if r: returns [0, r]
+//  if r, m: returns [r, m]
+//  if r, m, s: returns [r, m] such that it is divisible by s
+var randint = function (r, m, s) {
+    if (s) {
+        var max = m / s;
+        var rand = Math.floor(Math.random()*(max-r+1))+r
+        return rand*s
+
+    } else if (m) {
+        return Math.floor(Math.random()*(m-r+1))+r
+    } else if (r) {
+        return Math.floor(Math.random()*(r+1))
+    } else {
+        return Math.round(Math.random())
+    }
+}
 
 // [name, [[desc_num, level_num], ]]
 var experiments = {
@@ -84,13 +103,14 @@ var Experiment = function (exp_name, cookie) {
         mipoints[game_number] = settings[3];
         if (settings[2])
             game_levels = shuffle(game_levels);
-
+        var color_scheme = 0//randint(100)
         game_levels.forEach(game_level => {
             games_ordered.push({name: game_name, 
                              desc: game_level[0], 
                              level: game_level[1], 
                              number: game_number, 
-                             round: 1})
+                             round: 1,
+                             color_scheme: color_scheme})
             
         })
     })
