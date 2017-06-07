@@ -143,8 +143,16 @@ VGDLSprite.prototype = {
 		// import BLACK
 		// console.log('drawing resource');
 		var BLACK = '#000';
-		var WHITE = '#FFF';
+		var RCOLOR = '#FFF';
 		var tot = Object.keys(this.resources).length;
+		Object.keys(this.resources).forEach(r => {
+			if (r != 'get') {
+				if (game.sprite_constr[r][1].color) {
+					RCOLOR = game.sprite_constr[r][1].color;
+				}
+			}
+		})
+		
 		
 		var barheight = rect.height /3.5/ tot;
 		var offset = rect.top + 2*rect.height/3;
@@ -157,7 +165,7 @@ VGDLSprite.prototype = {
 		
 			that.gamejs.graphics.rect(screen, BLACK, rest);
 			// console.log(game.resources_colors[r])
-			that.gamejs.graphics.rect(screen, WHITE, filled);
+			that.gamejs.graphics.rect(screen, RCOLOR, filled);
 			// screen.fill(game.resources_colors[r], filled);
 			// screen.fill(BLACK, rest);
 			offset += barheight;
