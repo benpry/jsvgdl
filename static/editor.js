@@ -314,14 +314,15 @@ $(document).ready(function () {
     window.location.href = '/';
   })
 
-  var cookie = eval(document.cookie)
-  if (cookie) {
-    update_game_obj(cookie)
-    $('.side-bar ul li').each(function () {
-      $(this).removeClass('active');
-    })
-    $(`#${cookie.name}`).addClass('active');
+  var cookie = getCookie('cookie')
+  console.log(cookie)
+  // if (cookie) {
+  //   update_game_obj(cookie)
+  //   $('.side-bar ul li').each(function () {
+  //     $(this).removeClass('active');
+  //   })
+  //   $(`#${cookie.name}`).addClass('active');
     
-  }
+  // }
 
 })

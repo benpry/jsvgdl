@@ -1,5 +1,5 @@
 //http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-function shuffle(array) {
+function shuffle(array, static) {
   var currentIndex = array.length
   var temporaryValue = 0
   var randomIndex = 0;
@@ -9,7 +9,8 @@ function shuffle(array) {
   while (0 !== currentIndex) {
 
     // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
+    if (static.indexOf(currentIndex) == -1) randomIndex = Math.floor(Math.random() * currentIndex);
+    else randomIndex = currentIndex;
     currentIndex -= 1;
 
     // And swap it with the current element.
@@ -82,7 +83,7 @@ var experiments = {
 }
 // An object that updates what game its on
 // by calling next
-var Experiment = function (exp_name, cookie, randomize_exp=true, randomize_color=true) {
+var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[0], randomize_color=true) {
     var experiment = Object.create(Experiment.prototype);
 
 
@@ -96,9 +97,10 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, randomize_color
     var games_ordered = [];
     game_number = 0;
     var mipoints = {};
+
     var exp = experiments[exp_name]
     if (randomize_exp) {
-        exp = shuffle(exp);
+        exp = [exp[0]].concat(shuffle(exp.slice(1, exp.length), static_exps));
     }
     exp.forEach(settings => {
         game_number ++;
