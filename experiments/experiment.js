@@ -46,7 +46,7 @@ var randint = function (r, m, s) {
 var experiments = {
     exp0: [
         ['expt_exploration_exploitation', 
-            [[0, 0], [1, 1], [2, 2], [3, 3]], false, 
+            [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5,5]], false, 
             ''], // never gets shown
         ['expt_push_boulders', 
             [[0, 0], [0, 1], [0, 2], [0, 3]], false,
