@@ -110,7 +110,7 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[0]
         if (settings[2])
             game_levels = shuffle(game_levels);
         var color_scheme = 0;
-        if (randomize_color) color_scheme = randint(3628800);
+        if (randomize_color) color_scheme = randint(1307674368000);
         game_levels.forEach(game_level => {
             games_ordered.push({name: game_name, 
                              desc: game_level[0], 
