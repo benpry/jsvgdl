@@ -82,7 +82,7 @@ var experiments = {
 }
 // An object that updates what game its on
 // by calling next
-var Experiment = function (exp_name, cookie, randomize_color=true) {
+var Experiment = function (exp_name, cookie, randomize_exp=true, randomize_color=true) {
     var experiment = Object.create(Experiment.prototype);
 
 
@@ -96,8 +96,11 @@ var Experiment = function (exp_name, cookie, randomize_color=true) {
     var games_ordered = [];
     game_number = 0;
     var mipoints = {};
-
-    experiments[exp_name].forEach(settings => {
+    var exp = experiments[exp_name]
+    if (randomize_exp) {
+        exp = shuffle(exp);
+    }
+    exp.forEach(settings => {
         game_number ++;
         var game_name = settings[0];
         var game_levels = settings[1];

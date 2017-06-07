@@ -101,6 +101,9 @@ function slipForward(sprite, partner, game, kwargs) {
 	return ['slipForward', sprite.ID || sprite, partner.ID || partner]
 }
 
+function undoAll () {
+	return 
+}
 function attractGaze(sprite, partner, game, kwargs) {
 	if (kwargs.prob > Math.random()) {
 		sprite.orientation = partner.orientation;
