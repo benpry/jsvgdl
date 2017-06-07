@@ -98,13 +98,13 @@ var factorial = function (n) {
 var permutation = function(array, n){
     var l = array.length;
     n = n%factorial(l);
-    if (n == 0) return array.map(r => {return r});
+    if (n == 0) return array.slice();
     if (l == 0) return [];
     if (l == 1) {
         return array.slice(0, l-2).concat(array.slice(l-2, l).reverse())
     }
     var i = Math.floor(n/factorial(l-1))
-    return [array[i]].concat(permutation(array.slice(0, i).concat(array.slice(i+1, l)), n%(l-1)))
+    return [array[i]].concat(permutation(array.slice(0, i).concat(array.slice(i+1, l)), n%factorial(l-1)))
 
 };
 
@@ -125,6 +125,7 @@ var permute_pairs = function (array, m) {
 	})
 
 }
+
 
 /**
  * Tools used for vgdl. Some of these functions alraedy exist in the gamejs library

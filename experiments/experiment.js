@@ -179,6 +179,7 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[0]
         game_obj.desc = current_game.desc;
         game_obj.level = current_game.level;
         game_obj.number = current_game.number;
+        game_obj.randomize_color = current_game.randomize_color;
         return game_obj;
     }
 

@@ -41,7 +41,7 @@ app.use(bodyParser.urlencoded({
 // app.use(bodyParser.json({limit: '5000mb'}));
 
 // PostgreSQL DB 
-var reset = false;
+var reset = true;
 if (process.env.PORT || reset) {
 	var DB = require('./db.js')()
 } else {
