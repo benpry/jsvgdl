@@ -12,6 +12,7 @@
   var load_experiment = function (data) {
     if (data.exp_id) {
       window.location.href = '/experiment/'+data.exp_id;
+      document.cookie = `val_id=${data.val_id}`;
     } else {
       window.location.href = '/admin';
     }

@@ -14,7 +14,6 @@ var VGDLParser = function (gamejs) {
 	
 	var verbose = false;
 	var parseGame = function (tree, color_scheme) {
-		console.log('color_scheme', color_scheme)
 
 		if (!(tree instanceof tools.Node))
 			tree = tools.indentTreeParser(tree).children[0];
@@ -25,13 +24,12 @@ var VGDLParser = function (gamejs) {
 		tree.children.forEach(function (child) {
 			parse[child.content](child.children);
 		});
-		// commented out until fixed
-		// permute_pairs(Object.keys(var_colors), color_scheme).forEach(key_pair => {
-		// 	// console.log(key_pair)
-		// 	console.log(key_pair[0], key_pair[1], var_colors[key_pair[1]])
-		// 	parser.game.sprite_constr[key_pair[0]][1].color = var_colors[key_pair[1]]
-		// 	// console.log(parser.game.sprite_constr[key_pair[0]][1])
-		// })
+	
+		if (color_scheme) {
+			permute_pairs(Object.keys(var_colors), color_scheme).forEach(key_pair => {
+				parser.game.sprite_constr[key_pair[0]][1].color = var_colors[key_pair[1]]
+			})
+		}
 
 		parser.game.images = images.slice();
 		return parser.game;
@@ -74,7 +72,7 @@ var VGDLParser = function (gamejs) {
 					return s.trim();
 				});
 				var [sclass, args] = _parseArgs(sdef, parentClass, Object.assign({}, parentargs));
-				if (args.color && key != 'wall') {
+				if (args.color && key != 'wall' && key != 'avatar') {
 					var_colors[key] = args.color;
 				}
 				if ('image' in args) {

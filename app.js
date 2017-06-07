@@ -41,7 +41,7 @@ app.use(bodyParser.urlencoded({
 // app.use(bodyParser.json({limit: '5000mb'}));
 
 // PostgreSQL DB 
-var reset = true
+var reset = false;
 if (process.env.PORT || reset) {
 	var DB = require('./db.js')()
 } else {
@@ -50,21 +50,41 @@ if (process.env.PORT || reset) {
 }
 var Experiment = require('./experiments/experiment.js');
 var experiments = {};
+var exp = 'exp0';
+
+// Use once ready!
+// DB.load_state(loads => {
+// 	Object.keys(loads).forEach(exp_id => {
+// 		var load = loads[exp_id]
+// 		experiments[exp_id] = Experiment(exp, load.cookie, load.randomize_color)
+// 		experiments[exp_id].load_saves(load);
+// 	})
+// })
 
 /** Every 30 minutes,
  *	this deletes an experiment 
- *	that has been alive for more than 1 hour
+ *	that has been inactive for more than 1 hour
  */
-// var intervalID = setInterval(function () {
-// 	Object.keys(experiments).forEach(exp_id => {
-// 		if (experiments[exp_id].timeout()){
-// 			console.log(exp_id, 'experiment timed out')
-// 			delete experiments[exp_id];
-// 		}
-// 	})
-// }, 30*60*1000)
+var intervalID = setInterval(function () {
+	Object.keys(experiments).forEach(exp_id => {
+		if (experiments[exp_id].timeout()){
+			console.log(exp_id, 'experiment timed out')
+			delete experiments[exp_id];
+		}
+	})
+}, 30*60*1000)
 
-var exp = 'exp0';
+// Use once ready!
+// var save_state_periodically = setInterval(function () {
+// 	// console.log(Object.keys(experiments));
+// 	var saved_states = {}
+// 	Object.keys(experiments).map(exp_id => {
+// 		saved_states[exp_id] = experiments[exp_id].get_saves();
+// 	})
+// 	DB.save_state(saved_states, function () {
+// 		// console.log()
+// 	})
+// }, 30*1000)
 
 /**
  * Middle ware for session data
@@ -94,7 +114,10 @@ function require_login (req, res, next) {
 // Use during experiments. Mostly just for extra precausion. 
 function validate_exp (req, res, next) {	
 	var exp_id = req.session.exp_id
+	// console.log(req.session.cookie)
 	var val_id = req.session.val_id
+	// next()
+
 	if (exp_id == '0') {
 		res.end();
 		return
@@ -329,7 +352,7 @@ app.post('/experiment/', function (req, res) {
 	experiments[new_exp_id] = new Experiment(exp, validation_id);
 	req.session.exp_id = new_exp_id;
 	req.session.val_id = validation_id;
-	res.send({exp_id: new_exp_id});
+	res.send({exp_id: new_exp_id, val_id: validation_id});
 });
 
 // If a user types in an incorrect URL, they get redirected here.

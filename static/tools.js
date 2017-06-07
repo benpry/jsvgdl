@@ -37,7 +37,6 @@ Array.prototype.randomElement = function () {
 }
 
 Array.prototype.remove = function (element) {
-	// console.log(this);
 	var index = this.indexOf(element);
 	if (index > -1) 
 		this.splice(index, 1);
@@ -75,16 +74,6 @@ Object.copy = function (obj) {
 	return Object.assign({}, obj);
 }
 
-// Object.prototype.extend = function () {
-// 	// console.log(arguments);
-// 	for (argument in arguments) {
-// 		for (property in arguments[argument]) {
-// 			// console.log(property);
-// 			if (property != 'extend')
-// 				this[property] = arguments[argument][property];
-// 		}
-// 	}
-// }
 
 /**
  * @param  {String}	tabSize
@@ -100,30 +89,43 @@ String.prototype.expandTabs = function(tabSize) {
   });
 };
 
-// This should not be needed. Also, who the hell writes code like this? :http://jsfromhell.com/array/permute
-var permute = function(v, m){
-    for(var p = -1, j, k, f, r, l = v.length, q = 1, i = l + 1; --i; q *= i);
-    for(x = [new Array(l), new Array(l), new Array(l), new Array(l)], j = q, k = l + 1, i = -1;
-        ++i < l; x[2][i] = i, x[1][i] = x[0][i] = j /= --k);
-    for(r = new Array(q); ++p < q;)
-        for(r[p] = new Array(l), i = -1; ++i < l; !--x[1][i] && (x[1][i] = x[0][i],
-            x[2][i] = (x[2][i] + 1) % l), r[p][i] = m ? x[3][i] : v[x[3][i]])
-            for(x[3][i] = x[2][i], f = 0; !f; f = !f)
-                for(j = i; j; x[3][--j] == x[2][i] && (x[3][i] = x[2][i] = (x[2][i] + 1) % l, f = 1));
-    return r;
-};
+var factorial = function (n) {
+    if (n == 0) return 1;
+    return n*factorial(n-1);
+}
 
+// returns the nth permutation of an array
+var permutation = function(array, n){
+    var l = array.length;
+    n = n%factorial(l);
+    if (n == 0) return array.map(r => {return r});
+    if (l == 0) return [];
+    if (l == 1) {
+        return array.slice(0, l-2).concat(array.slice(l-2, l).reverse())
+    }
+    var i = Math.floor(n/factorial(l-1))
+    return [array[i]].concat(permutation(array.slice(0, i).concat(array.slice(i+1, l)), n%(l-1)))
+
+};
 
 // Generates some pairwise permutation ordering (modulo the lenght of the permutations)
 var permute_pairs = function (array, permutation) {
-	// var perms = permute(array);
-	// var perm = array;//permutation % perms.length
-	return array.map((value, index) => {
+	var perms = permute(array);
+	var perm = permutation % perms.length
+	return perms[perm].map((value, index) => {
 		return [value, array[index]]
 	})
 
 }
-// console.log(permute_pairs(['hello', 2, 3], 2))
+// Generates some pairwise permutation ordering (modulo the lenght of the permutations)
+var permute_pairs = function (array, m) {
+	var perm = permutation(array, m)
+	return perm.map((value, index) => {
+		return [value, array[index]]
+	})
+
+}
+
 /**
  * Tools used for vgdl. Some of these functions alraedy exist in the gamejs library
  */
@@ -219,7 +221,6 @@ var Tools = function () {
   //               [d0*size/2-(d1)*3*size/8, d1*size/2+(d0)*3*size/8],
   //               [d0*size/2+(d1)*3*size/8, d1*size/2-(d0)*3*size/8],
   //               [d0*size/32*15+(d1)*7*size/16, d1*size/32*15-(d0)*7*size/16]]);
-  //           console.log(res, typeof res);
   //           return res.map(p => {return [p[0]+rect.center[0], p[1]+rect.center[1]]});
 		// })
 

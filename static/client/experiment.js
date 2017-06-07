@@ -2,7 +2,6 @@ var exp_id = exp_id || undefined
 
 var post_experiment = function (exp_id, game, time_stamp, data, action, callback) {
 	$('body').addClass('loading')
-	console.log(exp_id);
 	var steps = game.steps
 	var last_state = game.gameStates.length;
 	var win = game.gameStates[last_state-1].win;

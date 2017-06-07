@@ -82,7 +82,7 @@ var experiments = {
 }
 // An object that updates what game its on
 // by calling next
-var Experiment = function (exp_name, cookie) {
+var Experiment = function (exp_name, cookie, randomize_color=true) {
     var experiment = Object.create(Experiment.prototype);
 
 
@@ -91,12 +91,11 @@ var Experiment = function (exp_name, cookie) {
         exp_name = 'exp0'
     }
     var cookie = cookie;
-    var timeout = Date.now()+60*60*1000;
+    var expiration = 60*60*1000
+    var timeout = Date.now()+expiration;
     var games_ordered = [];
     game_number = 0;
     var mipoints = {};
-
-    var randomize_color = false;
 
     experiments[exp_name].forEach(settings => {
         game_number ++;
@@ -106,7 +105,7 @@ var Experiment = function (exp_name, cookie) {
         if (settings[2])
             game_levels = shuffle(game_levels);
         var color_scheme = 0;
-        if (randomize_color) color_scheme = randint(100);
+        if (randomize_color) color_scheme = randint(3628800);
         game_levels.forEach(game_level => {
             games_ordered.push({name: game_name, 
                              desc: game_level[0], 
@@ -121,14 +120,19 @@ var Experiment = function (exp_name, cookie) {
     var started = true;
     var current_trial = 0;
     var current_game_number = 1;
-    var max_trials = games_ordered.length
+    var max_trials = games_ordered.length;
+
+    var update_timeout = function () {
+        timeout = Date.now()+expiration;
+    }
 
     experiment.get_saves = function () {
         return {
             exp_name: exp_name,
             cookie: cookie,
             started: started,
-            current_trial: current_trial
+            current_trial: current_trial,
+            randomize_color: randomize_color,
         }
     }
 
@@ -136,6 +140,7 @@ var Experiment = function (exp_name, cookie) {
         started = saves.started;
         current_trial = saves.current_trial;
     }
+
 
     experiment.validate = function (validation_id) {
         return validation_id == cookie;
@@ -150,6 +155,7 @@ var Experiment = function (exp_name, cookie) {
     }
 
     experiment.retry = function (callback) {
+        update_timeout();
         var current_game = games_ordered[current_trial]
         if (current_game) 
             current_game.round ++;
@@ -159,6 +165,7 @@ var Experiment = function (exp_name, cookie) {
 
 
     experiment.current_game = function () {
+        update_timeout();
         if (current_trial == max_trials)
             return false;
         var current_game = games_ordered[current_trial]
@@ -192,6 +199,7 @@ var Experiment = function (exp_name, cookie) {
 
 
     experiment.next = function (callback) {
+        update_timeout();
         current_trial += 1;
         callback()
     }
@@ -219,44 +227,6 @@ var Experiment = function (exp_name, cookie) {
 }
 
 
-Experiment.experiments = {
-    exp0: [
-        ['expt_exploration_exploitation', 
-            [[0, 0], [1, 1], [2, 2], [3, 3]], false, 
-            ''], // never gets shown
-        ['expt_push_boulders', 
-            [[0, 0], [0, 1], [0, 2], [0, 3]], false,
-            ''],
-        ['expt_preconditions', 
-            [[0, 0], [0, 1], [0, 2], [0, 3]], false,
-            ''],
-        ['expt_relational',
-            [[0, 0], [0, 1], [0, 2], [1, 3]], false,
-            ''],
-        ['expt_physics_sharpshooter',
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-            'On this game you can also use the spacebar!'],
-        ['expt_helper',
-            [[0, 0], [0, 1], [0, 2], [0, 3]], false,
-            ''],
-        ['expt_antagonist',
-            [[0, 0], [0, 1], [0, 2], [0, 3]], false,
-            '']
-    ],
-    exp1 : [
-        ['dodge', [[0, 0]], true], 
-        ['chase', [[0, 0]], true]
-    ], 
-
-    exp2 : [
-        ['aliens', [[0, 0]], false],
-        ['simpleGame4', [[0, 0], [0, 2], [0, 3]], true]
-    ],
-
-    exp3: [['aliens', [[0, 0]], false]],
-
-    exp4: [['expt_preconditions', [[0, 0]], false],
-           ['expt_relational', [[0, 0]], false]]
-}
+Experiment.experiments = experiments;
 
 module.exports = Experiment;

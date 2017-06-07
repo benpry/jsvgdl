@@ -92,7 +92,7 @@ var DB = function () {
 	}
 
 	// Uncomment this line and restart server to clear reset_experiments
-	reset_experiments(console.log)
+	// reset_experiments(console.log)
 
 	// subjectID, game, level of game, star_timestamp, end_timestamp, score, win, fullGameStateSeries
 	that.get_experiments = function (callback) {

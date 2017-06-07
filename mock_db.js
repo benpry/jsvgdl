@@ -28,10 +28,17 @@ var Mock = function () {
 
 
 	var reset_experiments =  function () {
+		console.log('reseting experiments locally')
 		experiments = [];
 		write_all();
 	}
-	reset_experiments();
+	// reset_experiments();
+	var reset_states = function () {
+		console.log('reseting statet')
+		states = [];
+		write_all();
+	}
+	// reset_states();
 	that.save_state = function (state, callback) {
 		states = []
 		states.push(state);
@@ -41,7 +48,8 @@ var Mock = function () {
 
 	that.load_state = function (callback) {
 		var loads = states[0]
-		callback(loads)
+		if (loads) callback(loads);
+		else callback({})
 	}
 
 	that.get_experiments = function (callback) {
