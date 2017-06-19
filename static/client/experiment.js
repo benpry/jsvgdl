@@ -28,12 +28,18 @@ var post_experiment = function (exp_id, game, time_stamp, data, action, callback
 }
 
 var next_experiment = function (exp_id, game, time_stamp, data, callback) {
-	if (exp_id == '0') return;
+	if (exp_id == '0') {
+		callback();
+		return;
+	}
 	post_experiment(exp_id, game, time_stamp, data, 'next', callback);
 }
 
 var retry_experiment = function (exp_id, game, time_stamp, data, callback) {
-	if (exp_id == '0') return;
+	if (exp_id == '0') {
+		callback();
+		return;
+	}
 	post_experiment(exp_id, game, time_stamp, data, 'retry', callback);
 }
 

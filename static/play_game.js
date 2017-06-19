@@ -20,11 +20,7 @@ var time_stamp = {
 }
 
 var retry_game = function () {
-	game.paused = true;
-	time_stamp.end_time = Date.now();
-	retry_experiment(exp_id, game, time_stamp, data, function () {
-		window.location.reload();
-	})
+	window.location.reload();
 }
 
 var continue_game = function () {
@@ -34,7 +30,8 @@ var continue_game = function () {
 }
 
 var page_refresh = function () {
-
+	game.paused = true;
+	time_stamp.end_time = Date.now();
 	if (game.win === null) {
 		retry_experiment(exp_id, game, time_stamp, data, function () {
 			console.log('game refreshed');

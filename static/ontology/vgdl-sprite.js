@@ -357,7 +357,7 @@ function Walker(gamejs, pos, size, args) {
 Walker.prototype = Object.create(Missile.prototype);
 
 Walker.prototype.update = function (game) {
-	if (this.airsteering || this.lastdirection[0] == 0) {
+	if (this.airsteering || this.lastdirection()[0] == 0) {
 		if (this.orientation[0] > 0)
 			var d = 1;
 		else if (this.orientation[0] < 0)
@@ -379,7 +379,7 @@ function WalkJumper(gamejs, pos, size, args) {
 WalkJumper.prototype = Object.create(Walker.prototype);
 
 WalkJumper.prototype.update = function (game) {
-	if (this.lastdirection[0] == 0) {
+	if (this.lastdirection()[0] == 0) {
 		if (this.prob < random.random()) 
 			this.physics.activeMovement(this, (0, -this.strength));
 	}

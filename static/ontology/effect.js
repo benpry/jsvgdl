@@ -301,15 +301,16 @@ function wrapAround(sprite, partner, game, kwargs) {
 }
 
 function pullWithIt(sprite, partner, game, kwargs) {
-    if (!(oncePerStep(sprite, game, 'lastpull'))) return;
-    var tmp = sprite.lastrect.copy;
-    var v = tools.unitVector(partner.lastdirection)
+    if (!(tools.oncePerStep(sprite, game, 'lastpull'))) return;
+    var tmp = sprite.lastrect.copy();
+    var v = tools.unitVector(partner.lastdirection())
+
     sprite._updatePos(v, partner.speed * sprite.physics.gridsize[0])
     if (sprite.physics instanceof ContinuousPhysics) {
         sprite.speed = partner.speed;
         sprite.orientation = partner.lastdirection;
     }
-    sprite.lastrect = tmp
+    sprite.lastrect = tmp.copy()
 }
 
 function collideFromAbove(sprite, partner, game, kwargs) {
