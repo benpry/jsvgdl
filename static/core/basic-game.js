@@ -75,6 +75,7 @@ var BasicGame = function (gamejs, args) {
 	that.steps = 0
 	that.gameStates = [];
 	that.keystate = {}
+	that.EOS = new EOS();
 	that.reset();
 
 	that.buildLevel = function (lstr) {
@@ -540,7 +541,7 @@ var BasicGame = function (gamejs, args) {
 					var ss1 = that.lastcollisions[class1];
 					ss1.forEach(function (s1) {
 						if (!(new gamejs.Rect([0, 0], that.screensize).collideRect(s1.rect))) {
-							var e = effect(s1, null, that, kwargs);
+							var e = effect(s1, that.EOS, that, kwargs);
 							if (e != null) {
 								that.effectList.push(e);
 							}

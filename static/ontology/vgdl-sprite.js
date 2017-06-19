@@ -190,7 +190,10 @@ VGDLSprite.prototype = {
 	} 
 }
 
-
+function EOS (gamejs, pos, size, args) {
+	this.ID = -1
+}
+EOS.prototype = Object.create(VGDLSprite.prototype);
 
 function Immovable (gamejs, pos, size, args) {
 	args.color = args.color || GRAY;
