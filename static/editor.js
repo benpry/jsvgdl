@@ -18,8 +18,7 @@ var get_exp_descs = function (callback) {
 var get_game = function (game_name, callback) {
   if (game_name in cache_game_objs) {
     callback(cache_game_objs[game_name])
-  }
-  else {
+  } else {
     $.ajax({
       type: "GET",
       url: `/edit/${game_name}`,
