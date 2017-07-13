@@ -1,19 +1,20 @@
 {
-  "name": "gamejs",
-  "version": "2.0.3-pre",
-  "description": "thin CommonJs library for canvas and worker",
+  "name": "jsvgdl",
+  "version": "1.2",
+  "description": "JS version of Tom Shaul's video game description language (VGDL) and web app to run experiments",
   "keywords": [
     "games",
     "gamedev",
     "web",
-    "canvas"
+    "canvas",
+    "vgdl",
+    "language",
+
   ],
   "author": {
-    "name": "Simon Oberhammer <simon@nekapuzer.at>",
-    "url": "http://nekapuzer.at"
+    "name": "Jake Burga <jrburga@mit.edu>"
   },
   "scripts": {
-    "test": "mocha vgdl_tests",
     "start": "node app.js"
   },
   "main": "./src/gamejs",
@@ -22,13 +23,13 @@
   },
   "homepage": "http://gamejs.org",
   "bugs": {
-    "email": "gamejs@googlegroups.com",
-    "url": "http://github.com/gamejs/gamejs/issues"
+    "email": "jrburga@mit.edu",
+    "url": "https://github.com/jrburga/jsvgdl/issues"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/gamejs/gamejs.git"
+    "url": "https://github.com/jrburga/jsvgdl.git"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
