@@ -559,13 +559,13 @@ var BasicGame = function (gamejs, args) {
 				var score = 0;
 
 				if ('scoreChange' in kwargs) {
-					kwargs = kwargs.copy();
+					kwargs = Object.assign({}, kwargs);
 					score = kwargs['scoreChange'];
 					delete kwargs['scoreChange'];
 				}
 				var dim = null;
 				if ('dim' in kwargs) {
-					kwargs = kwargs.copy();
+					kwargs = Object.assign({}, kwargs);
 					dim = kwargs['dim'];
 					delete kwargs['dim'];
 				}
