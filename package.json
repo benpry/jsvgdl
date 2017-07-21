@@ -1,6 +1,6 @@
 {
   "name": "jsvgdl",
-  "version": "1.2",
+  "version": "1.0.1",
   "description": "JS version of Tom Shaul's video game description language (VGDL) and web app to run experiments",
   "keywords": [
     "games",
