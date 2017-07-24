@@ -151,7 +151,7 @@ $(document).ready(function () {
 	forfeit_div.append(forfeit_button);
 
 	var end_game_delay = 1000;
-	var retry_delay = 40000;
+	var retry_delay = 60000;
 	// var forfeit_delay = 60000*2;
 	var ended = false;
 
