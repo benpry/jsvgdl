@@ -37,6 +37,7 @@ var json_parser = function () {
 
 
 var next_experiment = function (exp_id, game, parser, data, callback) {
+	$('body').addClass('loading')
 	if (exp_id == '0') {
 		callback();
 		return;
@@ -44,6 +45,7 @@ var next_experiment = function (exp_id, game, parser, data, callback) {
 	$.ajax({
 		type: 'POST', 
 		url: '/experiment/'+exp_id+'/next',
+		data: data,
 		success: function (status) {
 			if (status.success) {
 				callback();
@@ -54,6 +56,7 @@ var next_experiment = function (exp_id, game, parser, data, callback) {
 }
 
 var retry_experiment = function (exp_id, game, parser, data, callback) {
+	$('body').addClass('loading')
 	if (exp_id == '0') {
 		callback();
 		return;
