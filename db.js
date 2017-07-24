@@ -123,6 +123,7 @@ var DB = function () {
 			result.rows = result.rows.map(exp_obj => {	
 				try {
 					exp_obj.data = JSON.parse(exp_obj.data);
+					console.log(exp_obj);
 				} catch (e) {
 					console.log(e);
 				}

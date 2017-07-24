@@ -367,6 +367,7 @@ app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 		var val_id = req.params.val_id;
 		var time_stamp = req.body.timeStamp;
 		var game_states = req.body.gameStates;
+		console.log(game_states);
 		var data = req.body.data;
 		data.steps = req.body.steps;
 		data.score = req.body.score;
