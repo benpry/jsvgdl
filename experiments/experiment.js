@@ -117,7 +117,7 @@ var get_exp = function () {
 
 // An object that updates what game its on
 // by calling next
-var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[], randomize_color=true) {
+var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[], randomize_color=true) {
     var experiment = Object.create(Experiment.prototype);
 
 
@@ -133,6 +133,7 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[],
     var mipoints = {};
 
     var exp = get_exp();
+    console.log(exp);
     if (randomize_exp) {
         exp = shuffle(exp, static_exps);// [exp[0]].concat(shuffle(exp.slice(1, exp.length), static_exps));
     }
