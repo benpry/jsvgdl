@@ -346,6 +346,18 @@ app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 	res.send({success: true})
 })
 
+app.post('/experiment/:exp_id/next', validate_exp, function (req, res) {
+	var current_exp = experiments[req.params.exp_id];
+	current_exp.next(function () {})
+	res.send({success: true})
+})
+
+app.post('/experiment/:exp_id/retry', validate_exp, function (req, res) {
+	var current_exp = experiments[req.params.exp_id];
+	current_exp.retry(function () {});
+	res.send({success: true})
+})
+
 app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 	// console.log('putting experiment');
 	res.send({success: true})

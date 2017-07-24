@@ -10,7 +10,8 @@ var post_experiment = function (exp_id, game, parser, data, action, callback) {
 	$.ajax({
 		type: 'POST',
 		url: "/experiment/"+exp_id,
-		data: {timeStamp: JSON.stringify(parser.time_stamp),
+		data: {
+			   // timeStamp: JSON.stringify(parser.time_stamp),
 		 	   // gameStates: 'end',
 		 	   // score: score,
 		 	   // win: win,
@@ -69,7 +70,16 @@ var next_experiment = function (exp_id, game, parser, data, callback) {
 		callback();
 		return;
 	}
-	post_experiment(exp_id, game, parser, data, 'next', callback);
+	$.ajax({
+		type: 'POST', 
+		url: '/experiment/'+exp_id+'/next',
+		success: function (status) {
+			if (status.success) {
+				callback();
+			}
+		}
+	})
+	// post_experiment(exp_id, game, parser, data, 'next', callback);
 }
 
 var retry_experiment = function (exp_id, game, parser, data, callback) {
@@ -77,7 +87,16 @@ var retry_experiment = function (exp_id, game, parser, data, callback) {
 		callback();
 		return;
 	}
-	post_experiment(exp_id, game, parser, data, 'retry', callback);
+	$.ajax({
+		type: 'POST', 
+		url: '/experiment/'+exp_id+'/retry',
+		success: function (status) {
+			if (status.success) {
+				callback();
+			}
+		}
+	})
+	// post_experiment(exp_id, game, parser, data, 'retry', callback);
 }
 
 $(document).ready(function () {

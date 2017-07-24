@@ -45,7 +45,7 @@ var randint = function (r, m, s) {
 // [name, [[desc_num, level_num], ]]
 var experiments = {
     exp0: [
-        ['gvgai_frogs', 
+        ['gvgai_aliens', 
             [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false, 
             'On this game you can also use the spacebar.'], // never gets shown
         ['gvgai_boulderdash', 
