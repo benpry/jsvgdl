@@ -160,12 +160,12 @@ app.post('/images/upload', require_login, upload.any(), function(req, res) {
 // Experiments 
 // Displays the database
 app.get('/experiments', require_login, function (req, res) {
-	var setup = Experiment.experiments[exp].slice();
-	setup = setup.map(game => {
-		new_game = game.slice();
-		new_game.push(DB.get_full_game(game[0]).levels.length)
-		return new_game
-	})
+	// var setup = Experiment.experiments[exp].slice();
+	// setup = setup.map(game => {
+	// 	new_game = game.slice();
+	// 	new_game.push(DB.get_full_game(game[0]).levels.length)
+	// 	return new_game
+	// })
 	// res.render('experiments', {exp: setup, games: DB.get_games_list()})
 	DB.get_experiment_info(function (result, status) {
 		if (status.success) {
