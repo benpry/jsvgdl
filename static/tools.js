@@ -63,7 +63,7 @@ function defaultDict(base) {
     this.get = function (key) {
         if (this.hasOwnProperty(key)) {
         	if (key == 'get') return [];
-            return key;
+            return this[key];
         } else {
             return base;
         }
@@ -74,6 +74,43 @@ Object.copy = function (obj) {
 	return Object.assign({}, obj);
 }
 
+Math.RNG = function (seed) {
+	var seed = seed
+	var seeded = function (min, max) {
+		var max = max || 1;
+		var min = min || 0
+
+		seed = (seed * 9301 + 49297) % 233280;
+		var rnd = seed / 233280;
+
+		return min + rnd * (max - min);
+	}
+
+	return seeded
+}
+
+Array.prototype.shuffled = function (seed) {
+	var rnd = Math.random;
+	if (seed) {
+		var rnd = Math.RNG(seed);
+	}
+	var indeces = [];
+	var new_array = [];
+	var i = undefined;
+	var len = this.length;
+	while (new_array.length != len) {
+		i = Math.floor(rnd() * this.length)
+		if (!indeces.contains(i)) {
+			new_array.push(this[i])
+			indeces.push(i);
+		}
+	}
+
+	return new_array;
+}
+
+// var a = [1, 2, 3, 4, 5];
+// console.log(a.shuffled(12));
 
 /**
  * @param  {String}	tabSize

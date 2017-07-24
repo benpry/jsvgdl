@@ -395,8 +395,9 @@ var BasicGame = function (gamejs, args) {
 
 		that.kill_list.forEach(function (s) {
 			that.all_killed.push(s);
-			if (onscreen)
-				s._clear(that.screen, that.background, double = true);
+			if (onscreen) {
+				// s._clear(that.screen, that.background, double = true);
+			}
 			// delete that.sprite_groups[s.name][s];
 			that.sprite_groups[s.name].remove(s);
 			// console.log(that.sprite_groups[s.name]);

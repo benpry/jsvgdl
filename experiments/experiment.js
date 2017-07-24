@@ -45,7 +45,7 @@ var randint = function (r, m, s) {
 // [name, [[desc_num, level_num], ]]
 var experiments = {
     exp0: [
-        ['gvgai_aliens', 
+        ['gvgai_frogs', 
             [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false, 
             'On this game you can also use the spacebar.'], // never gets shown
         ['gvgai_boulderdash', 
@@ -92,7 +92,7 @@ var experiments = {
 }
 // An object that updates what game its on
 // by calling next
-var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[0], randomize_color=true) {
+var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[0], randomize_color=true) {
     var experiment = Object.create(Experiment.prototype);
 
 

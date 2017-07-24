@@ -208,6 +208,11 @@ function killIfSlow(sprite, partner, game, kwargs) {
 }
 
 function killIfFromAbove(sprite, partner, game, kwargs) {
+	if (sprite.lastrect.top > partner.lastrect.top &&
+			partner.rect.top > partner.lastrect.top) {
+		killSprite(sprite, partner, game)
+		return ['killIfFromAbove', sprite.ID || sprite, partner.ID || partner]
+	}
 
 }
 
@@ -220,10 +225,13 @@ function killIfAlive(sprite, partner, game, kwargs) {
 
 function collectResource(sprite, partner, game, kwargs) {
 	console.assert(sprite instanceof Resource)
-	var resource_type = sprite.resourceType;
+	var resource_type = sprite.name;
+	// console.log(partner.resources.get(resource_type), sprite.value, game.resources_limits[resource_type])
 	partner.resources[resource_type] = Math.max(-1, 
-		Math.min(partner.resources[resource_type] + sprite.value, game.resources_limits[resource_type]));
-	return ['collectResourc', sprite.ID || sprite, partner.ID || partner]
+		Math.min(partner.resources.get(resource_type) + sprite.value, game.resources_limits.get(resource_type)));
+	// console.log(resource_type, partner.resources.get(resource_type))
+	killSprite(sprite, partner, game, kwargs)
+	return ['collectResource', sprite.ID || sprite, partner.ID || partner]
 }
 
 function changeResource(sprite, partner, resourceColor, game, kwargs) {
@@ -273,9 +281,10 @@ function killIfHasLess(sprite, partner, game, kwargs) {
 function killIfOtherHasMore(sprite, partner, game, kwargs) {
 	var resource = kwargs.resource;
 	var limit = kwargs.limit;
-	if (sprite.resources[resource] === undefined) 
+	if (sprite.resources[resource] === undefined) {
 		sprite.resources[resource] = 0;
-	if (partner.resources[resource] <= limit){
+	}
+	if (partner.resources[resource] >= limit){
 		killSprite(sprite, partner, game, kwargs);
 		return ['killIfOtherHasMore', sprite.ID || sprite, partner.ID || partner]
 	}

@@ -218,12 +218,12 @@ function Flicker (gamejs, pos, size, args) {
 	this.limit = 1;
 	VGDLSprite.call(this, gamejs, pos, size, args);
 }
-Flicker.prototype = Object.create(Flicker.prototype);
+Flicker.prototype = Object.create(VGDLSprite.prototype);
 
 Flicker.prototype.update = function (game) {
 	VGDLSprite.prototype.update.call(this, game);
 	if (this._age > this.limit) 
-		effect.killSprite(this, null, game);
+		killSprite(this, null, game);
 
 	this._age ++;	
 }
@@ -247,6 +247,7 @@ Portal.prototype = Object.create(SpriteProducer.prototype);
 
 
 function SpawnPoint (gamejs, pos, size, args) {
+	SpriteProducer.call(this, gamejs, pos, size, args);
 	args.color = args.color || BLACK
 	if (args.prob != undefined) {
 		this.prob = args.prob
@@ -262,14 +263,17 @@ function SpawnPoint (gamejs, pos, size, args) {
 		this.cooldown = 1;
 	}
 	if (args.total != undefined) this.total = args.total;
+
 	this.counter = 0;
-	SpriteProducer.call(this, gamejs, pos, size, args);
 }
 SpawnPoint.prototype = Object.create(SpriteProducer.prototype);
 
 SpawnPoint.prototype.update = function (game) {
 	var random = this.gamejs.math.random
-	if (game.time % this.cooldown == 0 && random.random() < this.prob) {
+	// console.log(this.prob, this.cooldown)
+	var rnd = random.random()
+	// console.log(game.time, this.cooldown)
+	if (game.time % this.cooldown == 0 && rnd < this.prob) {
 		game._createSprite([this.stype], [this.rect.left, this.rect.top]);
 		this.counter ++;
 	}
@@ -348,6 +352,8 @@ function OrientedFlicker(gamejs, pos, size, args) {
 }
 OrientedFlicker.prototype = Object.create(Flicker.prototype);
 OrientedFlicker.prototype._draw = OrientedSprite.prototype._draw;
+OrientedFlicker.prototype._drawResources = function () {};
+OrientedFlicker.prototype._updatePos = function () {};
 
 function Walker(gamejs, pos, size, args) {
 	Missile.call(this, gamejs, pos, size, args);

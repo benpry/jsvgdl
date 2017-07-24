@@ -13,7 +13,7 @@ var VGDLParser = function (gamejs) {
 
 	
 	var verbose = false;
-	var parseGame = function (tree, color_scheme) {
+	var parseGame = function (tree, seed) {
 
 		if (!(tree instanceof tools.Node))
 			tree = tools.indentTreeParser(tree).children[0];
@@ -24,12 +24,10 @@ var VGDLParser = function (gamejs) {
 		tree.children.forEach(function (child) {
 			parse[child.content](child.children);
 		});
-		if (color_scheme) {
-			permute_pairs(Object.keys(var_colors), color_scheme).forEach(key_pair => {
-				// console.log(key_pair, var_colors[key_pair[1]])
-				parser.game.sprite_constr[key_pair[0]][1].color = var_colors[key_pair[1]]
-			})
-		}
+
+		// console.log(tree)
+		// use array.shuffled(seed)
+		console.log(var_colors);
 
 		parser.game.images = images.slice();
 		return parser.game;
@@ -89,7 +87,7 @@ var VGDLParser = function (gamejs) {
 						console.log('Defining:', key, sclass, args, stypes);
 					parser.game.sprite_constr[key] = [sclass, args, stypes];
 
-					if (args.color && key != 'wall' && key != 'avatar') {
+					if (args.color && !('color' in parentargs) && key != 'wall' && key != 'avatar') {
 						var_colors[key] = args.color;
 					}
 
@@ -172,10 +170,10 @@ var VGDLParser = function (gamejs) {
 		return [sclass, args];
 	}
 
-	parser.playGame = function (game_str, map_str, color_scheme) {
+	parser.playGame = function (game_str, map_str, seed) {
 
 		
-		var game = parseGame(game_str, color_scheme);
+		var game = parseGame(game_str, seed);
 
 		game.buildLevel(map_str);
 		// game.uiud;
