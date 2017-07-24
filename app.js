@@ -50,7 +50,7 @@ if (process.env.PORT || reset) {
 }
 var Experiment = require('./experiments/experiment.js');
 var experiments = {};
-var exp = 'exp0';
+var exp = 0;
 
 // Use once ready!
 // DB.load_state(loads => {
@@ -367,7 +367,6 @@ app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 		var val_id = req.params.val_id;
 		var time_stamp = req.body.timeStamp;
 		var game_states = req.body.gameStates;
-		console.log(game_states);
 		var data = req.body.data;
 		data.steps = req.body.steps;
 		data.score = req.body.score;
@@ -387,6 +386,7 @@ app.post('/experiment/', function (req, res) {
 	req.session.exp_id = new_exp_id;
 	req.session.val_id = validation_id;
 	res.send({exp_id: new_exp_id, val_id: validation_id});
+	exp ++;
 });
 
 

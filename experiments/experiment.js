@@ -1,12 +1,14 @@
 //http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffle(array, static) {
-  var currentIndex = array.length
-  var temporaryValue = 0
-  var randomIndex = 0;
-  var array = array.slice();
+    if (!static) static = [];
+    // console.log(array);
+    var currentIndex = array.length
+    var temporaryValue = 0
+    var randomIndex = 0;
+    var array = array.slice();
 
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
 
     // Pick a remaining element...
     if (static.indexOf(currentIndex) == -1) randomIndex = Math.floor(Math.random() * currentIndex);
@@ -17,9 +19,9 @@ function shuffle(array, static) {
     temporaryValue = array[currentIndex];
     array[currentIndex] = array[randomIndex];
     array[randomIndex] = temporaryValue;
-  }
+    }
 
-  return array;
+    return array;
 }
 
 // Returns a random integer given the parameters:
@@ -43,53 +45,76 @@ var randint = function (r, m, s) {
 }
 
 // [name, [[desc_num, level_num], ]]
-var experiments = {
-    exp0: [
-        ['gvgai_sokoban',
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-            ''],
-        ['gvgai_butterflies', 
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-            ''],
-        ['gvgai_aliens', 
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false, 
-            'On this game you can also use the spacebar.'], // never gets shown
-        ['gvgai_boulderdash', 
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-            'On this game you can also use the spacebar.'],
-        ['gvgai_chase',
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-            ''],
-        ['gvgai_frogs',
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-            ''],
-        ['gvgai_missilecommand',
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-            'On this game you can also use the spacebar.'],
-        ['gvgai_portals',
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-            ''],
-        ['gvgai_survivezombies',
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-            ''],
-        ['gvgai_zelda', 
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-            'On this game you can also use the spacebar.']
-    ],
-    exp1 : [
-        ['expt_antagonist', [[0, 3]], true]
-    ], 
+var experiments_normal = [
 
-    exp2 : [
-        ['aliens', [[0, 0]], false],
-        ['simpleGame4', [[0, 0], [0, 2], [0, 3]], true]
-    ],
+    ['gvgai_sokoban',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        ''],
+    ['gvgai_butterflies', 
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        ''],
+    ['gvgai_aliens', 
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false, 
+        'On this game you can also use the spacebar.'], // never gets shown
+    ['gvgai_chase',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        ''],
+    ['gvgai_frogs',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        ''],
+    ['gvgai_missilecommand',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        'On this game you can also use the spacebar.'],
+    ['gvgai_portals',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        ''],
+    ['gvgai_zelda', 
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        'On this game you can also use the spacebar.']
+    
+]
+var experiments_hard = [
+    ['gvgai_boulderdash', 
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        'On this game you can also use the spacebar.'],
+    ['gvgai_survivezombies',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '']
+]
 
-    exp3: [['aliens', [[0, 0]], false]],
+var experiments = experiments_normal.concat(experiments_hard);
 
-    exp4: [['expt_preconditions', [[0, 0]], false],
-           ['expt_relational', [[0, 0]], false]]
+
+var get_exp = function () {
+    var rnd = Math.random();
+    if (rnd < .5) {
+        var experiment_hard = experiments_hard[0];
+    } else {
+        var experiment_hard = experiments_hard[1];
+    }
+
+    // boulder_dash
+    var experiment_return = shuffle(experiments_normal).slice(0, 4);
+    experiment_return.push(experiment_hard);
+
+    if (experiment_hard[0] == experiments_hard[0][0]) {
+        experiment_return = shuffle(experiment_return);
+    }
+    return experiment_return
 }
+
+// console.log(get_exp());
+
+// experiments = experiments.map(experiment => {
+//     if (experiment[0] == boulder_dash[0]) {
+//         return shuffle(getRandomSubarray(experiments_normal, 4).push(experiment));
+//     } else if (experiments[0] == zombies[0]) {
+//         return shuffle(getRandomSubarray(experiments_normal, 4)).push(experiment);
+//     }
+// })
+
+// console.log(experiments);
+
 // An object that updates what game its on
 // by calling next
 var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[], randomize_color=true) {
@@ -107,7 +132,7 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[],
     game_number = 0;
     var mipoints = {};
 
-    var exp = experiments[exp_name]
+    var exp = get_exp();
     if (randomize_exp) {
         exp = shuffle(exp, static_exps);// [exp[0]].concat(shuffle(exp.slice(1, exp.length), static_exps));
     }
@@ -171,6 +196,7 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[],
     experiment.retry = function (callback) {
         update_timeout();
         var current_game = games_ordered[current_trial]
+        // console.log(current_game);
         if (current_game) 
             current_game.round ++;
         callback()
