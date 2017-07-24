@@ -14,7 +14,7 @@
 <div class="Flex-Container" id="db-box">
   <ul>
     <% for(var i=0; i < experiments.length; i++) {%>
-      <li class="exp_id" id='<%= experiments[i] %>'><%= experiments[i].id %> </li>
+      <li class="exp_id" id='<%= experiments[i] %>'><%= experiments[i].id %> - <%=experiments[i].data.index %></li>
       <li> -- GAME : <%= experiments[i].data.name %> </li>
       <li> -- GAME-NUM : <%= experiments[i].data.number %> </li>
       <li> -- ROUND-NUM : <%= experiments[i].data.round %> </li>

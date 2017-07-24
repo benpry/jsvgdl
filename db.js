@@ -120,9 +120,13 @@ var DB = function () {
 				callback([], {success: false})
 				return console.error('could not get experiments')
 			}
-			result.rows = result.rows.map(exp_obj => {
-				exp_obj.data = JSON.parse(exp_obj.data);
-				// console.log(exp_obj.data)
+			result.rows = result.rows.map(exp_obj => {	
+				try {
+					exp_obj.data = JSON.parse(exp_obj.data);
+				} catch (e) {
+					console.log(e);
+				}
+				
 				return exp_obj
 			})
 			callback(result.rows, {success: true})

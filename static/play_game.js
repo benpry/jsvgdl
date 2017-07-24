@@ -22,16 +22,18 @@ var json_parser = function () {
 			url: "/experiment/"+exp_id,
 			data: {timeStamp: JSON.stringify(this.time_stamp),
 			 	   gameStates: partial,
-			 	   // score: score,
-			 	   // win: win,
-			 	   // steps: steps,
+			 	   index: index,
+			 	   score: score,
+			 	   win: win,
+			 	   steps: steps,
 			 	   data: data},
 			success: function (status) {
 				if (!status.success) {
 					console.log('could not put experiment');
 				}
 			},
-		})	
+		})
+		index ++;	
 	}
 }
 
@@ -154,7 +156,7 @@ $(document).ready(function () {
 	var ended = false;
 
 	var on_game_end = function () {
-		parser.post_partial(exp_id, game, data);
+		
 		clearInterval(interval);
 		game.paused = true;
 		ended = true
@@ -188,6 +190,7 @@ $(document).ready(function () {
 			$('#title').text('Game Lost!')
 			window.setTimeout(show_status, end_game_delay);
 		}
+		parser.post_partial(exp_id, game, data);
 	}
 
 	var begin_game = function () {

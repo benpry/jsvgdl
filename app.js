@@ -160,22 +160,22 @@ app.post('/images/upload', require_login, upload.any(), function(req, res) {
 // Experiments 
 // Displays the database
 app.get('/experiments', require_login, function (req, res) {
-	// var setup = Experiment.experiments[exp].slice();
-	// setup = setup.map(game => {
-	// 	new_game = game.slice();
-	// 	new_game.push(DB.get_full_game(game[0]).levels.length)
-	// 	return new_game
-	// })
+	var setup = Experiment.experiments[exp].slice();
+	setup = setup.map(game => {
+		new_game = game.slice();
+		new_game.push(DB.get_full_game(game[0]).levels.length)
+		return new_game
+	})
 	// res.render('experiments', {exp: setup, games: DB.get_games_list()})
-	// DB.get_experiment_info(function (result, status) {
-	// 	if (status.success) {
-	// 		res.render('db', {experiments: result});
-	// 	}
-	// 	else {
-	// 		res.send('internal server error');
-	// 	}
-	// })
-	res.send("currently can't load experiments right now");
+	DB.get_experiment_info(function (result, status) {
+		if (status.success) {
+			res.render('db', {experiments: result});
+		}
+		else {
+			res.send('internal server error');
+		}
+	})
+	// res.send("currently can't load experiments right now");
 	
 })
 
@@ -361,13 +361,18 @@ app.post('/experiment/:exp_id/retry', validate_exp, function (req, res) {
 var storage;
 app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 	if (req.params.exp_id != 0) {
-		console.log(req.params.exp_id);
+		// console.log(req.params.exp_id);
 		// storage = req.params.body;
 		var exp_id = req.params.exp_id;
 		var val_id = req.params.val_id;
 		var time_stamp = req.body.timeStamp;
 		var game_states = req.body.gameStates;
 		var data = req.body.data;
+		data.steps = req.body.steps;
+		data.score = req.body.score;
+		data.win = req.body.win;
+		data.index = req.body.index;
+		var data = JSON.stringify(data);
 		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
 	}
 	res.send({success: true})

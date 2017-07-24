@@ -92,7 +92,7 @@ var experiments = {
 }
 // An object that updates what game its on
 // by calling next
-var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[0], randomize_color=true) {
+var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[], randomize_color=true) {
     var experiment = Object.create(Experiment.prototype);
 
 
@@ -109,7 +109,7 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[0]
 
     var exp = experiments[exp_name]
     if (randomize_exp) {
-        exp = [exp[0]].concat(shuffle(exp.slice(1, exp.length), static_exps));
+        exp = shuffle(exp, static_exps);// [exp[0]].concat(shuffle(exp.slice(1, exp.length), static_exps));
     }
     exp.forEach(settings => {
         game_number ++;
