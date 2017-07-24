@@ -121,7 +121,6 @@ $(document).ready(function () {
 		parser = new json_parser();
 		interval = window.setInterval(function(){
 		  parser.post_partial(exp_id, game, data)
-		  console.log('parsing')
 		}, 500);
 
 		$('#start-div').remove();

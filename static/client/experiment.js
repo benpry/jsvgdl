@@ -11,7 +11,7 @@ var post_experiment = function (exp_id, game, parser, data, action, callback) {
 		type: 'POST',
 		url: "/experiment/"+exp_id,
 		data: {timeStamp: JSON.stringify(parser.time_stamp),
-		 	   gameStates: JSON.stringify(game.gameStates),
+		 	   gameStates: 'end',
 		 	   score: score,
 		 	   win: win,
 		 	   steps: steps,
