@@ -2,19 +2,19 @@ var exp_id = exp_id || undefined
 
 var post_experiment = function (exp_id, game, parser, data, action, callback) {
 	$('body').addClass('loading')
-	var steps = game.steps
-	var last_state = game.gameStates.length;
-	var win = game.gameStates[last_state-1].win;
-	var score = game.gameStates[last_state-1].score;
+	// var steps = game.steps
+	// var last_state = game.gameStates.length;
+	// var win = game.gameStates[last_state-1].win;
+	// var score = game.gameStates[last_state-1].score;
 	parser.time_stamp.end_time = Date.now();
 	$.ajax({
 		type: 'POST',
 		url: "/experiment/"+exp_id,
 		data: {timeStamp: JSON.stringify(parser.time_stamp),
-		 	   gameStates: 'end',
-		 	   score: score,
-		 	   win: win,
-		 	   steps: steps,
+		 	   // gameStates: 'end',
+		 	   // score: score,
+		 	   // win: win,
+		 	   // steps: steps,
 		 	   data: data,
 		 	   action: action},
 		success: function (status) {

@@ -332,17 +332,17 @@ app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 		current_exp.retry(function () {});
 	}
 	// console.log(req.body);
-	var exp_id = req.params.exp_id;
-	var val_id = req.session.val_id;
-	var game_states = req.body.gameStates;
-	var time_stamp = req.body.timeStamp;
-	var current_exp = experiments[req.params.exp_id];
-	var data = req.body.data;
-	data.steps = req.body.steps;
-	data.score = req.body.score;
-	data.win = req.body.win;
-	data = JSON.stringify(data);
-	DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
+	// var exp_id = req.params.exp_id;
+	// var val_id = req.session.val_id;
+	// var game_states = req.body.gameStates;
+	// var time_stamp = req.body.timeStamp;
+	// var current_exp = experiments[req.params.exp_id];
+	// var data = req.body.data;
+	// data.steps = req.body.steps;
+	// data.score = req.body.score;
+	// data.win = req.body.win;
+	// data = JSON.stringify(data);
+	// DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
 	res.send({success: true})
 })
 
