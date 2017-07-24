@@ -1,12 +1,82 @@
+// Post requests
+
+var json_parser = function () {
+	this.parsed = [];
+	this.time_stamp = {
+		start_time: Date.now(),
+		end_time: 0
+	}
+	var frame_init = 0;
+	var index = 0;
+	this.post_partial = async function (exp_id, game, data) {
+		var frame_last = game.time;
+		var partial = JSON.stringify(game.gameStates.slice(frame_init, frame_last));
+		frame_init = frame_last;
+
+		var steps = game.steps
+		var last_state = game.gameStates.length;
+		var win = game.gameStates[last_state-1].win;
+		var score = game.gameStates[last_state-1].score;
+		$.ajax({
+			type: 'PUT',
+			url: "/experiment/"+exp_id,
+			data: {timeStamp: JSON.stringify(this.time_stamp),
+			 	   gameStates: partial,
+			 	   // score: score,
+			 	   // win: win,
+			 	   // steps: steps,
+			 	   data: data},
+			success: function (status) {
+				if (!status.success) {
+					console.log('could not put experiment');
+				}
+			},
+		})	
+	}
+}
+
+
+var next_experiment = function (exp_id, game, parser, data, callback) {
+	if (exp_id == '0') {
+		callback();
+		return;
+	}
+	$.ajax({
+		type: 'POST', 
+		url: '/experiment/'+exp_id+'/next',
+		success: function (status) {
+			if (status.success) {
+				callback();
+			}
+		}
+	})
+	// post_experiment(exp_id, game, parser, data, 'next', callback);
+}
+
+var retry_experiment = function (exp_id, game, parser, data, callback) {
+	if (exp_id == '0') {
+		callback();
+		return;
+	}
+	$.ajax({
+		type: 'POST', 
+		url: '/experiment/'+exp_id+'/retry',
+		success: function (status) {
+			if (status.success) {
+				callback();
+			}
+		}
+	})
+	// post_experiment(exp_id, game, parser, data, 'retry', callback);
+}
+
+
 /**
  * @fileoverview
  * Draw lines, polygons, circles, etc on the screen.
  * Render text in a certain font to the screen.
  */
 
-
-
-console.log(data);
 var gamejs = require('gamejs');;
 var vgdl_parser = VGDLParser(gamejs);
 var game = vgdl_parser.playGame(vgdl_game.game, vgdl_game.level, color_scheme);
@@ -121,7 +191,7 @@ $(document).ready(function () {
 		parser = new json_parser();
 		interval = window.setInterval(function(){
 		  parser.post_partial(exp_id, game, data)
-		}, 500);
+		}, 1000);
 
 		$('#start-div').remove();
 		game.paused = false;

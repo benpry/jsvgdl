@@ -1,4 +1,4 @@
-var exp_id = exp_id || undefined
+// var exp_id = exp_id || undefined
 
 var post_experiment = function (exp_id, game, parser, data, action, callback) {
 	$('body').addClass('loading')
@@ -51,9 +51,9 @@ var json_parser = function () {
 			url: "/experiment/"+exp_id,
 			data: {timeStamp: JSON.stringify(this.time_stamp),
 			 	   gameStates: partial,
-			 	   score: score,
-			 	   win: win,
-			 	   steps: steps,
+			 	   // score: score,
+			 	   // win: win,
+			 	   // steps: steps,
 			 	   data: data},
 			success: function (status) {
 				if (!status.success) {
