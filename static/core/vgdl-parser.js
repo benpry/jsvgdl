@@ -11,6 +11,7 @@ var VGDLParser = function (gamejs) {
 	var tools = tools_module();
 	var var_colors = {};
 
+	var ignore_colors = ['avatar', 'wall'];
 	
 	var verbose = false;
 	var parseGame = function (tree, seed) {
@@ -25,9 +26,23 @@ var VGDLParser = function (gamejs) {
 			parse[child.content](child.children);
 		});
 
-		// console.log(tree)
-		// use array.shuffled(seed)
-		console.log(var_colors);
+		var keys = [];
+		var colors = [];
+		for (var key in var_colors) {
+			console.log(key)
+			keys.push(key);
+			colors.push(parser.game.sprite_constr[key][1].color);
+		}
+		
+		if (seed) {
+			colors = colors.shuffled(seed);
+			var index = 0;
+			colors.forEach(color => {
+				parser.game.sprite_constr[keys[index]][1].color = color;
+				index ++;
+			})
+		}
+
 
 		parser.game.images = images.slice();
 		return parser.game;
@@ -87,7 +102,7 @@ var VGDLParser = function (gamejs) {
 						console.log('Defining:', key, sclass, args, stypes);
 					parser.game.sprite_constr[key] = [sclass, args, stypes];
 
-					if (args.color && !('color' in parentargs) && key != 'wall' && key != 'avatar') {
+					if (args.color && !('color' in parentargs) && !(ignore_colors.contains(key))) {
 						var_colors[key] = args.color;
 					}
 
