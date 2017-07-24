@@ -331,6 +331,7 @@ app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 		var current_exp = experiments[req.params.exp_id];
 		current_exp.retry(function () {});
 	}
+	// console.log(req.body);
 	var exp_id = req.params.exp_id;
 	var val_id = req.session.val_id;
 	var game_states = req.body.gameStates;
@@ -345,6 +346,11 @@ app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 	res.send({success: true})
 })
 
+app.put('/experiment/:exp_id', validate_exp, function (req, res) {
+	console.log('putting experiment');
+	res.send({success: true})
+})
+
 // Creates a new experiment to be run with a unique experiment ID
 app.post('/experiment/', function (req, res) {
 	var new_exp_id = shortid.generate();
@@ -354,6 +360,7 @@ app.post('/experiment/', function (req, res) {
 	req.session.val_id = validation_id;
 	res.send({exp_id: new_exp_id, val_id: validation_id});
 });
+
 
 // If a user types in an incorrect URL, they get redirected here.
 app.get('*', function(req, res){

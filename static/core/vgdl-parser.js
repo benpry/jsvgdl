@@ -29,11 +29,10 @@ var VGDLParser = function (gamejs) {
 		var keys = [];
 		var colors = [];
 		for (var key in var_colors) {
-			console.log(key)
 			keys.push(key);
 			colors.push(parser.game.sprite_constr[key][1].color);
 		}
-		
+
 		if (seed) {
 			colors = colors.shuffled(seed);
 			var index = 0;

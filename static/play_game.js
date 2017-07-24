@@ -4,7 +4,9 @@
  * Render text in a certain font to the screen.
  */
 
-// console.log(data);
+
+
+console.log(data);
 var gamejs = require('gamejs');;
 var vgdl_parser = VGDLParser(gamejs);
 var game = vgdl_parser.playGame(vgdl_game.game, vgdl_game.level, color_scheme);
@@ -14,33 +16,30 @@ var game = vgdl_parser.playGame(vgdl_game.game, vgdl_game.level, color_scheme);
 // gamejs.ready(game.run(on_game_end));
 // console.log('game started');
 
-var time_stamp = {
-	start_time: 0,
-	end_time: 0
-}
+var interval;
+var parser;
 
 var retry_game = function () {
 	window.location.reload();
 }
 
 var continue_game = function () {
-	next_experiment(exp_id, game, time_stamp, data, function () {
+	next_experiment(exp_id, game, parser, data, function () {
 		window.location.href = `/experiment/${exp_id}`
 	});
 }
 
 var page_refresh = function () {
 	game.paused = true;
-	time_stamp.end_time = Date.now();
 	if (game.win === null) {
-		retry_experiment(exp_id, game, time_stamp, data, function () {
+		retry_experiment(exp_id, game, parser, data, function () {
 			console.log('game refreshed');
 		})
 	}
 }
 
 $(document).on('click', '#forfeit', function () {
-	next_experiment(exp_id, game, time_stamp, data, function () {
+	next_experiment(exp_id, game, parser, data, function () {
 		location.reload();
 	})
 })
@@ -82,7 +81,8 @@ $(document).ready(function () {
 	var ended = false;
 
 	var on_game_end = function () {
-		time_stamp.end_time = Date.now();
+		parser.post_partial(exp_id, game, data);
+		clearInterval(interval);
 		game.paused = true;
 		ended = true
 		$('#retry-div').remove()
@@ -118,9 +118,14 @@ $(document).ready(function () {
 	}
 
 	var begin_game = function () {
+		parser = new json_parser();
+		interval = window.setInterval(function(){
+		  parser.post_partial(exp_id, game, data)
+		  console.log('parsing')
+		}, 500);
+
 		$('#start-div').remove();
 		game.paused = false;
-		time_stamp.start_time = Date.now();
 		window.setTimeout(function () {
 			if (!ended)
 				$('body').append(retry_container)	
