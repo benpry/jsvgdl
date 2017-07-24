@@ -830,9 +830,9 @@ var BasicGame = function (gamejs, args) {
 		that.screen.blit(that.background, [0, 0]);
 		that._drawAll();
 
-		that.collision_eff.sort((a, b) => {
-			return (a[2].name == 'killSprite')
-		})
+		// that.collision_eff.sort((a, b) => {
+		// 	return (a[2].name == 'killSprite')
+		// })
 
 
 		
