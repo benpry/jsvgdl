@@ -360,14 +360,16 @@ app.post('/experiment/:exp_id/retry', validate_exp, function (req, res) {
 })
 var storage;
 app.put('/experiment/:exp_id', validate_exp, function (req, res) {
-	console.log(req.params.exp_id);
-	// storage = req.params.body;
-	var exp_id = req.params.exp_id;
-	var val_id = req.params.val_id;
-	var time_stamp = req.body.timeStamp;
-	var game_states = req.body.gameStates;
-	var data = req.body.data;
-	DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
+	if (req.params.exp_id != 0) {
+		console.log(req.params.exp_id);
+		// storage = req.params.body;
+		var exp_id = req.params.exp_id;
+		var val_id = req.params.val_id;
+		var time_stamp = req.body.timeStamp;
+		var game_states = req.body.gameStates;
+		var data = req.body.data;
+		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
+	}
 	res.send({success: true})
 })
 
