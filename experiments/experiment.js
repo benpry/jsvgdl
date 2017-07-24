@@ -92,7 +92,7 @@ var experiments = {
 }
 // An object that updates what game its on
 // by calling next
-var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[0], randomize_color=true) {
+var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[0], randomize_color=true) {
     var experiment = Object.create(Experiment.prototype);
 
 
