@@ -167,14 +167,15 @@ app.get('/experiments', require_login, function (req, res) {
 	// 	return new_game
 	// })
 	// res.render('experiments', {exp: setup, games: DB.get_games_list()})
-	DB.get_experiment_info(function (result, status) {
-		if (status.success) {
-			res.render('db', {experiments: result});
-		}
-		else {
-			res.send('internal server error');
-		}
-	})
+	// DB.get_experiment_info(function (result, status) {
+	// 	if (status.success) {
+	// 		res.render('db', {experiments: result});
+	// 	}
+	// 	else {
+	// 		res.send('internal server error');
+	// 	}
+	// })
+	res.send("currently can't load experiments right now");
 	
 })
 

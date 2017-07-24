@@ -191,7 +191,7 @@ $(document).ready(function () {
 		parser = new json_parser();
 		interval = window.setInterval(function(){
 		  parser.post_partial(exp_id, game, data)
-		}, 1000);
+		}, 2500);
 
 		$('#start-div').remove();
 		game.paused = false;

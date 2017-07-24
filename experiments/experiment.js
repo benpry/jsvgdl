@@ -45,15 +45,18 @@ var randint = function (r, m, s) {
 // [name, [[desc_num, level_num], ]]
 var experiments = {
     exp0: [
+        ['gvgai_sokoban',
+            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+            ''],
+        ['gvgai_butterflies', 
+            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+            ''],
         ['gvgai_aliens', 
             [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false, 
             'On this game you can also use the spacebar.'], // never gets shown
         ['gvgai_boulderdash', 
             [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
             'On this game you can also use the spacebar.'],
-        ['gvgai_butterflies', 
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-            ''],
         ['gvgai_chase',
             [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
             ''],
@@ -64,9 +67,6 @@ var experiments = {
             [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
             'On this game you can also use the spacebar.'],
         ['gvgai_portals',
-            [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-            ''],
-        ['gvgai_sokoban',
             [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
             ''],
         ['gvgai_survivezombies',
