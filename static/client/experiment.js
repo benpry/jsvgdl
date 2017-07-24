@@ -69,7 +69,7 @@ var next_experiment = function (exp_id, game, parser, data, callback) {
 		callback();
 		return;
 	}
-	// post_experiment(exp_id, game, parser, data, 'next', callback);
+	post_experiment(exp_id, game, parser, data, 'next', callback);
 }
 
 var retry_experiment = function (exp_id, game, parser, data, callback) {
@@ -77,7 +77,7 @@ var retry_experiment = function (exp_id, game, parser, data, callback) {
 		callback();
 		return;
 	}
-	// post_experiment(exp_id, game, parser, data, 'retry', callback);
+	post_experiment(exp_id, game, parser, data, 'retry', callback);
 }
 
 $(document).ready(function () {

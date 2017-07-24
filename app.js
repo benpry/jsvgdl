@@ -347,7 +347,7 @@ app.post('/experiment/:exp_id', validate_exp, function (req, res) {
 })
 
 app.put('/experiment/:exp_id', validate_exp, function (req, res) {
-	console.log('putting experiment');
+	// console.log('putting experiment');
 	res.send({success: true})
 })
 
