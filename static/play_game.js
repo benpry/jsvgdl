@@ -149,8 +149,8 @@ $(document).ready(function () {
 	forfeit_div.append(forfeit_button);
 
 	var end_game_delay = 1000;
-	var retry_delay = 30000;
-	var forfeit_delay = 60000*2;
+	var retry_delay = 40000;
+	// var forfeit_delay = 60000*2;
 	var ended = false;
 
 	var on_game_end = function () {
@@ -202,10 +202,14 @@ $(document).ready(function () {
 			if (!ended)
 				$('body').append(retry_container)	
 		}, retry_delay);
-		window.setTimeout(function () {
-			if (!ended)
-				$('#retry-div').append(forfeit_div);
-		}, forfeit_delay);
+		console.log(data.round);
+		if (data.round >= 3) {
+			$('body').append(forfeit_div);
+		}
+		// window.setTimeout(function () {
+		// 	if (!ended)
+		// 		$('#retry-div').append(forfeit_div);
+		// }, forfeit_delay);
 	}
 
 
