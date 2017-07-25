@@ -45,14 +45,14 @@ var randint = function (r, m, s) {
 }
 
 // seconds
-var retry_default = 2*60;
+var retry_default = 30;
 var forfeit_default = 4*60;
 // [name, [[desc_num, level_num], ]]
 var experiments = [
 
     ['gvgai_sokoban',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '', retry_default, forfeit_default],
+        '', 20, forfeit_default],
     ['gvgai_butterflies', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
         '', retry_default, forfeit_default],
@@ -76,10 +76,10 @@ var experiments = [
         'On this game you can also use the spacebar.', retry_default, forfeit_default],
     ['gvgai_boulderdash', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        'On this game you can also use the spacebar.', retry_default, forfeit_default],
+        'On this game you can also use the spacebar.', 45, 6*60],
     ['gvgai_survivezombies',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '', retry_default, forfeit_default]
+        '', 10*60, forfeit_default]
 ]
 // var experiments = [
 
@@ -223,14 +223,13 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[],
         return false
     }
 
-    experiment.retry = function (callback) {
+    experiment.retry = function () {
         update_timeout();
         var current_game = games_ordered[current_trial]
         // console.log(current_game);
         if (current_game) {
             current_game.round ++;
         }
-        callback()
         // console.log('retrying experiment', current_game[3])
     }
 
@@ -285,7 +284,7 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[],
     }
 
 
-    experiment.next = function (callback) {
+    experiment.next = function () {
         update_timeout();
         current_trial += 1;
         callback()

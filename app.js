@@ -354,13 +354,13 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 
 app.post('/experiment/:exp_id/next', validate_exp, function (req, res) {
 	var current_exp = experiments[req.params.exp_id];
-	current_exp.next(function () {})
+	current_exp.next()
 	res.send({success: true})
 })
 
 app.post('/experiment/:exp_id/retry', validate_exp, function (req, res) {
 	var current_exp = experiments[req.params.exp_id];
-	current_exp.retry(function () {});
+	current_exp.retry();
 	res.send({success: true})
 })
 
