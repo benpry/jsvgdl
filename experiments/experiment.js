@@ -58,13 +58,13 @@ var experiments = [
         '', retry_default, forfeit_default],
     ['gvgai_aliens', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false, 
-        'On this game you can also use the spacebar.', retry_default, forfeit_default], // never gets shown
+        'On this game you can also use the spacebar.', 10*60, forfeit_default], // never gets shown
     ['gvgai_chase',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
         '', retry_default, forfeit_default],
     ['gvgai_frogs',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '', retry_default, 3],
+        '', retry_default, forfeit_default],
     ['gvgai_missilecommand',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
         'On this game you can also use the spacebar.', retry_default, forfeit_default],
@@ -117,7 +117,7 @@ var experiments = [
 // 
 // var experiments = experiments_normal.concat(experiments_hard);
 
-var overtime_limit = 25*60*1000;
+var overtime_limit = 2*60*1000;
 
 var get_exp = function () {
     return shuffle(experiments);

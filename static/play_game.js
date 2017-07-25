@@ -43,6 +43,7 @@ var json_parser = function () {
 
 var next_experiment = function (exp_id, callback) {
 	$('body').addClass('loading')
+	console.log(exp_id)
 	if (exp_id == '0') {
 		callback();
 		return;
@@ -116,6 +117,7 @@ var parser;
 var button_press = false;
 
 var forfeit_game = function () {
+	game.paused = true;
 	button_press = true;
 	forfeit_experiment(exp_id, function () {
 		window.location.href = `/experiment/${exp_id}`
@@ -123,6 +125,7 @@ var forfeit_game = function () {
 }
 
 var retry_game = function () {
+	game.paused = true;
 	button_press = true;
 	retry_experiment(exp_id, function () {
 		window.location.href = `/experiment/${exp_id}`
@@ -130,6 +133,7 @@ var retry_game = function () {
 }
 
 var continue_game = function () {
+	game.paused = true;
 	button_press = true;
 	next_experiment(exp_id, function () {
 		window.location.href = `/experiment/${exp_id}`
@@ -137,6 +141,7 @@ var continue_game = function () {
 }
 
 var page_refresh = function () {
+	game.paused = true
 	if (!button_press) {
 		game.paused = true;
 		retry_experiment(exp_id, function () {
