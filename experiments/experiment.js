@@ -117,7 +117,7 @@ var experiments = [
 // 
 // var experiments = experiments_normal.concat(experiments_hard);
 
-var overtime_limit = 2*60*1000;
+var overtime_limit = 25*60*1000;
 
 var get_exp = function () {
     return shuffle(experiments);
