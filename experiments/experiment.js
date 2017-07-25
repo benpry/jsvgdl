@@ -287,7 +287,6 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[],
     experiment.next = function () {
         update_timeout();
         current_trial += 1;
-        callback()
     }
 
     experiment.is_done = function  () {
