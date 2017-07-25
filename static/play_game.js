@@ -167,7 +167,7 @@ $(document).ready(function () {
 
 	var forfeit_div = $('<div id="forfeit-div" class="Flex-Container"></div>')
 	var forfeit_text = $(`<p id="forfeit-text">If you want to forfeit the entire game and try a new one, press "Forfeit". 
-		If you forfeit this game you’ll still get paid for the levels you won so far.</p>`);
+		If you forfeit this game you’ll still get your bonus for the levels you won so far.</p>`);
 	var forfeit_button = $('<button id="forfeit">Forfeit</button>');
 
 	var retry_container = $('<div id="retry-div" class="Flex-Container"></div>');
@@ -185,8 +185,8 @@ $(document).ready(function () {
 	forfeit_div.append(forfeit_button);
 
 	var end_game_delay = 1000;
-	var retry_delay = 1000*data.retry_delay;
-	var forfeit_delay = 1000*data.forfeit_delay-data.time;
+	var retry_delay = 1000;//1000*data.retry_delay;
+	var forfeit_delay = 1000;//1000*data.forfeit_delay-data.time;
 	var ended = false;
 
 	var on_game_end = function () {
@@ -198,7 +198,7 @@ $(document).ready(function () {
 		var show_status = function () {
 			var status_text = '';
 			if (game.win) {
-				var container = $('<div id="end-div" class="Flex-Container"></div>');
+				var container = $('<div></div>');
 				if (exp_id != '0') {
 					var button = cont_button;
 				} else {
@@ -210,8 +210,9 @@ $(document).ready(function () {
 				var button = retry_button;
 			}
 			
-			container.append('<hr>')
+			container.append('<br>')
 			container.append(button);
+			// $('#message').empty();
 			$('#message').append(container)
 			$('#forfeit-div').remove();
 			$('#retry-text').remove();

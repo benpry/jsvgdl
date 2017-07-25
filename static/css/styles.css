@@ -19,6 +19,10 @@ input {
     text-align: center;
 }
 
+#message {
+    height: 75px;
+}
+
 .Flex-Container {
     display: flex;
     flex-direction: column;
