@@ -166,7 +166,7 @@ $(document).ready(function () {
 	var return_button = $('<button id="return">Return</button>');
 
 	var forfeit_div = $('<div id="forfeit-div" class="Flex-Container"></div>')
-	var forfeit_text = $(`<p id="forfeit-text">If you want to forfeit the entire level and try a new one, press "Forfeit". 
+	var forfeit_text = $(`<p id="forfeit-text">If you want to forfeit the entire game and try a new one, press "Forfeit". 
 		If you forfeit this game you’ll still get paid for the levels you won so far.</p>`);
 	var forfeit_button = $('<button id="forfeit">Forfeit</button>');
 
