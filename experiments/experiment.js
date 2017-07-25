@@ -44,63 +44,83 @@ var randint = function (r, m, s) {
     }
 }
 
+// seconds
+var retry_default = 2*60;
+var forfeit_default = 4*60;
 // [name, [[desc_num, level_num], ]]
-var experiments_normal = [
+var experiments = [
 
     ['gvgai_sokoban',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        ''],
+        '', retry_default, forfeit_default],
     ['gvgai_butterflies', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        ''],
+        '', retry_default, forfeit_default],
     ['gvgai_aliens', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false, 
-        'On this game you can also use the spacebar.'], // never gets shown
+        'On this game you can also use the spacebar.', retry_default, forfeit_default], // never gets shown
     ['gvgai_chase',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        ''],
+        '', retry_default, forfeit_default],
     ['gvgai_frogs',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        ''],
+        '', retry_default, 3],
     ['gvgai_missilecommand',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        'On this game you can also use the spacebar.'],
+        'On this game you can also use the spacebar.', retry_default, forfeit_default],
     ['gvgai_portals',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        ''],
+        '', retry_default, forfeit_default],
     ['gvgai_zelda', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        'On this game you can also use the spacebar.']
-    
-]
-var experiments_hard = [
+        'On this game you can also use the spacebar.', retry_default, forfeit_default],
     ['gvgai_boulderdash', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        'On this game you can also use the spacebar.'],
+        'On this game you can also use the spacebar.', retry_default, forfeit_default],
     ['gvgai_survivezombies',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '']
+        '', retry_default, forfeit_default]
 ]
+// var experiments = [
 
-var experiments = experiments_normal.concat(experiments_hard);
+//     ['gvgai_sokoban',
+//         [[0, 0]], false,
+//         '', retry_default, forfeit_default],
+//     ['gvgai_butterflies', 
+//         [[0, 0]], false,
+//         '', retry_default, forfeit_default],
+//     ['gvgai_aliens', 
+//         [[0, 0]], false, 
+//         'On this game you can also use the spacebar.', retry_default, forfeit_default], // never gets shown
+//     ['gvgai_chase',
+//         [[0, 0]], false,
+//         '', retry_default, forfeit_default],
+//     ['gvgai_frogs',
+//         [[0, 0]], false,
+//         '', retry_default, 3],
+//     ['gvgai_missilecommand',
+//         [[0, 0]], false,
+//         'On this game you can also use the spacebar.', retry_default, forfeit_default],
+//     ['gvgai_portals',
+//         [[0, 0]], false,
+//         '', retry_default, forfeit_default],
+//     ['gvgai_zelda', 
+//         [[0, 0]], false,
+//         'On this game you can also use the spacebar.', retry_default, forfeit_default],
+//     ['gvgai_boulderdash', 
+//         [[0, 0]], false,
+//         'On this game you can also use the spacebar.', retry_default, forfeit_default],
+//     ['gvgai_survivezombies',
+//         [[0, 0]], false,
+//         '', retry_default, forfeit_default]
+// ]
+// 
+// var experiments = experiments_normal.concat(experiments_hard);
 
+var overtime_limit = 25*60*1000;
 
 var get_exp = function () {
-    var rnd = Math.random();
-    if (rnd < .5) {
-        var experiment_hard = experiments_hard[0];
-    } else {
-        var experiment_hard = experiments_hard[1];
-    }
-
-    // boulder_dash
-    var experiment_return = shuffle(experiments_normal).slice(0, 4);
-    experiment_return.push(experiment_hard);
-
-    if (experiment_hard[0] == experiments_hard[0][0]) {
-        experiment_return = shuffle(experiment_return);
-    }
-    return experiment_return
+    return shuffle(experiments);
 }
 
 // console.log(get_exp());
@@ -117,7 +137,7 @@ var get_exp = function () {
 
 // An object that updates what game its on
 // by calling next
-var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[], randomize_color=true) {
+var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[], randomize_color=true) {
     var experiment = Object.create(Experiment.prototype);
 
 
@@ -142,6 +162,8 @@ var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[]
         var game_name = settings[0];
         var game_levels = settings[1];
         mipoints[game_number] = settings[3];
+        var retry_delay = settings[4];
+        var forfeit_delay = settings[5];
         if (settings[2])
             game_levels = shuffle(game_levels);
         var color_scheme = 0;
@@ -152,7 +174,10 @@ var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[]
                              level: game_level[1], 
                              number: game_number, 
                              round: 1,
-                             color_scheme: color_scheme})
+                             color_scheme: color_scheme,
+                             retry_delay: retry_delay,
+                             forfeit_delay: forfeit_delay,
+                             time: 0})
             
         })
     })
@@ -161,7 +186,11 @@ var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[]
     var current_trial = 0;
     var current_game_number = 1;
     var max_trials = games_ordered.length;
-
+    var start_time = Date.now();
+    var init_time = Date.now();
+    var overtime_check = true;
+    var ended = false;
+    var continued = false;
     var update_timeout = function () {
         timeout = Date.now()+expiration;
     }
@@ -198,8 +227,9 @@ var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[]
         update_timeout();
         var current_game = games_ordered[current_trial]
         // console.log(current_game);
-        if (current_game) 
+        if (current_game) {
             current_game.round ++;
+        }
         callback()
         // console.log('retrying experiment', current_game[3])
     }
@@ -216,10 +246,18 @@ var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[]
         game_obj.level = current_game.level;
         game_obj.number = current_game.number;
         game_obj.randomize_color = current_game.randomize_color;
+        game_obj.retry_delay = current_game.retry_delay;
+        game_obj.forfeit_delay = current_game.forfeit_delay;
+        game_obj.time = Date.now() - start_time;
         return game_obj;
     }
 
+    experiment.remaining_games = function () {
+        return experiments.length - current_game_number;
+    }
+
     experiment.midpoint_text = function () {
+        init_time = Date.now();
         current_game_number = games_ordered[current_trial].number;
         return mipoints[current_game_number];
     }
@@ -231,12 +269,19 @@ var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[]
         return round_obj;
     }
 
-    experiment.mid_point = function () {
-        
+
+    experiment.mid_point_pure = function () {
         if (current_game_number == games_ordered[current_trial].number) 
             return false;
-        current_game_number ++;
-        return true;
+        return true;      
+    }
+
+    experiment.mid_point = function () {
+        if (experiment.mid_point_pure()) {
+            current_game_number ++;
+            return true
+        }
+        return false;
     }
 
 
@@ -247,14 +292,47 @@ var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[]
     }
 
     experiment.is_done = function  () {
-        if (current_trial >= games_ordered.length) {
+        if (current_trial >= games_ordered.length || ended) {
             return true;
         }
         return false;
     }
 
     experiment.get_data = function () {
+        var data = games_ordered[current_trial];
+        data.time = Date.now() - init_time;
         return games_ordered[current_trial];
+    }
+
+    experiment.forfeit = function () {
+        while (!experiment.mid_point_pure()) {
+            current_trial ++;
+        }
+        // current_trial --;
+    }
+
+    experiment.end = function () {
+        ended = true;
+    }
+
+    experiment.overtime = function () {
+        if (Date.now() - start_time > overtime_limit) {
+            if (overtime_check) {
+                overtime_check = false;
+                return true
+            } else {
+                continued = true;
+            }
+        }
+        return false;
+    }
+
+    experiment.overtime_continued = function () {
+        if (experiment.mid_point_pure() && continued) {
+            continued = false;
+            return !overtime_check;
+        }
+        return false;
     }
 
     experiment.timeout = function () {

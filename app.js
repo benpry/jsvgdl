@@ -295,6 +295,10 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 	} else if (current_exp.is_done()) {
 		res.render('thank_you', {val_id: req.session.val_id});
 		delete experiments[data.exp_id];
+	} else if (current_exp.overtime_continued()) {
+		res.render('overtime_cont', {games: current_exp.remaining_games(), exp_id: data.exp_id});
+	} else if (current_exp.overtime()) {
+		res.render('overtime', {exp_id: data.exp_id});
 	} else if (current_exp.mid_point()) {
 		res.render('midpoint', {text: current_exp.midpoint_text()})
 	} else {
@@ -305,6 +309,7 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 		data.game_obj.level_num = current_game.level + 1
 		data.game_obj.round = round.round;
 		data.game_obj.data = current_exp.get_data();
+		data.game_obj.time = current_game.time;
 		res.render('game', data);
 	}
 
@@ -322,30 +327,30 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 // })
 
 // Actually uploads the data the the BD
-app.post('/experiment/:exp_id', validate_exp, function (req, res) {
-	if (req.body.action == 'next') {
-		// console.log('next experiment')
-		var current_exp = experiments[req.params.exp_id]
-		current_exp.next(function () {})
-	} else if (req.body.action == 'retry') {
-		// console.log('retrying experiment')
-		var current_exp = experiments[req.params.exp_id];
-		current_exp.retry(function () {});
-	}
-	// console.log(req.body);
-	// var exp_id = req.params.exp_id;
-	// var val_id = req.session.val_id;
-	// var game_states = req.body.gameStates;
-	// var time_stamp = req.body.timeStamp;
-	// var current_exp = experiments[req.params.exp_id];
-	// var data = req.body.data;
-	// data.steps = req.body.steps;
-	// data.score = req.body.score;
-	// data.win = req.body.win;
-	// data = JSON.stringify(data);
-	// DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
-	res.send({success: true})
-})
+// app.post('/experiment/:exp_id', validate_exp, function (req, res) {
+// 	if (req.body.action == 'next') {
+// 		// console.log('next experiment')
+// 		var current_exp = experiments[req.params.exp_id]
+// 		current_exp.next(function () {})
+// 	} else if (req.body.action == 'retry') {
+// 		// console.log('retrying experiment')
+// 		var current_exp = experiments[req.params.exp_id];
+// 		current_exp.retry(function () {});
+// 	}
+// 	console.log(req.body);
+// 	var exp_id = req.params.exp_id;
+// 	var val_id = req.session.val_id;
+// 	var game_states = req.body.gameStates;
+// 	var time_stamp = req.body.timeStamp;
+// 	var current_exp = experiments[req.params.exp_id];
+// 	var data = req.body.data;
+// 	data.steps = req.body.steps;
+// 	data.score = req.body.score;
+// 	data.win = req.body.win;
+// 	data = JSON.stringify(data);
+// 	DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
+// 	res.send({success: true})
+// })
 
 app.post('/experiment/:exp_id/next', validate_exp, function (req, res) {
 	var current_exp = experiments[req.params.exp_id];
@@ -358,11 +363,22 @@ app.post('/experiment/:exp_id/retry', validate_exp, function (req, res) {
 	current_exp.retry(function () {});
 	res.send({success: true})
 })
-var storage;
+
+app.post('/experiment/:exp_id/forfeit', validate_exp, function (req, res) {
+	var current_exp = experiments[req.params.exp_id];
+	current_exp.forfeit();
+	res.send({success: true});
+})
+
+app.post('/experiment/:exp_id/end', validate_exp, function (req, res) {
+	var current_exp = experiments[req.params.exp_id];
+	current_exp.end();
+	res.send({success: true});
+})
+
 app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 	if (req.params.exp_id != 0) {
 		// console.log(req.params.exp_id);
-		// storage = req.params.body;
 		var exp_id = req.params.exp_id;
 		var val_id = req.params.val_id;
 		var time_stamp = req.body.timeStamp;
@@ -372,6 +388,8 @@ app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 		data.score = req.body.score;
 		data.win = req.body.win;
 		data.index = req.body.index;
+		data.frames = req.body.frames;
+		data.time = req.body.time;
 		var data = JSON.stringify(data);
 		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
 	}

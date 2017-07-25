@@ -1,4 +1,5 @@
 // Post requests
+var load_time = Date.now();
 
 var json_parser = function () {
 	this.parsed = [];
@@ -26,7 +27,9 @@ var json_parser = function () {
 			 	   score: score,
 			 	   win: win,
 			 	   steps: steps,
-			 	   data: data},
+			 	   frames: game.time,
+			 	   data: data, 
+			 	   time: (Date.now()-load_time) + time},
 			success: function (status) {
 				if (!status.success) {
 					console.log('could not put experiment');
@@ -38,7 +41,7 @@ var json_parser = function () {
 }
 
 
-var next_experiment = function (exp_id, game, parser, data, callback) {
+var next_experiment = function (exp_id, callback) {
 	$('body').addClass('loading')
 	if (exp_id == '0') {
 		callback();
@@ -57,7 +60,7 @@ var next_experiment = function (exp_id, game, parser, data, callback) {
 	// post_experiment(exp_id, game, parser, data, 'next', callback);
 }
 
-var retry_experiment = function (exp_id, game, parser, data, callback) {
+var retry_experiment = function (exp_id, callback) {
 	$('body').addClass('loading')
 	if (exp_id == '0') {
 		callback();
@@ -72,8 +75,25 @@ var retry_experiment = function (exp_id, game, parser, data, callback) {
 			}
 		}
 	})
-	// post_experiment(exp_id, game, parser, data, 'retry', callback);
 }
+
+var forfeit_experiment = function (exp_id, callback) {
+	$('body').addClass('loading')
+	if (exp_id == '0') {
+		callback();
+		return;
+	}
+	$.ajax({
+		type: 'POST', 
+		url: '/experiment/'+exp_id+'/forfeit',
+		success: function (status) {
+			if (status.success) {
+				callback();
+			}
+		}
+	})
+}
+
 
 
 /**
@@ -93,31 +113,39 @@ var game = vgdl_parser.playGame(vgdl_game.game, vgdl_game.level, color_scheme);
 
 var interval;
 var parser;
+var button_press = false;
+
+var forfeit_game = function () {
+	button_press = true;
+	forfeit_experiment(exp_id, function () {
+		window.location.href = `/experiment/${exp_id}`
+	})
+}
 
 var retry_game = function () {
-	window.location.reload();
+	button_press = true;
+	retry_experiment(exp_id, function () {
+		window.location.href = `/experiment/${exp_id}`
+	})
 }
 
 var continue_game = function () {
-	next_experiment(exp_id, game, parser, data, function () {
+	button_press = true;
+	next_experiment(exp_id, function () {
 		window.location.href = `/experiment/${exp_id}`
 	});
 }
 
 var page_refresh = function () {
-	game.paused = true;
-	if (game.win === null) {
-		retry_experiment(exp_id, game, parser, data, function () {
+	if (!button_press) {
+		game.paused = true;
+		retry_experiment(exp_id, function () {
 			console.log('game refreshed');
 		})
 	}
 }
 
-$(document).on('click', '#forfeit', function () {
-	next_experiment(exp_id, game, parser, data, function () {
-		location.reload();
-	})
-})
+$(document).on('click', '#forfeit', forfeit_game);
 
 $(document).on('click', '#continue', continue_game);
 
@@ -138,7 +166,8 @@ $(document).ready(function () {
 	var return_button = $('<button id="return">Return</button>');
 
 	var forfeit_div = $('<div id="forfeit-div" class="Flex-Container"></div>')
-	var forfeit_text = $('<p id="forfeit-text">If you want to forfeit the entire level and try a new one, press "Forfeit".</p>');
+	var forfeit_text = $(`<p id="forfeit-text">If you want to forfeit the entire level and try a new one, press "Forfeit". 
+		If you forfeit this game you’ll still get paid for the levels you won so far.</p>`);
 	var forfeit_button = $('<button id="forfeit">Forfeit</button>');
 
 	var retry_container = $('<div id="retry-div" class="Flex-Container"></div>');
@@ -147,12 +176,17 @@ $(document).ready(function () {
 	retry_container.append(retry_text)
 	retry_container.append(retry_button)
 
+	var overtime_container = $('<div id="overtime" class="Flex-Container"></div>');
+	var overtime_text = $(`<p id="overtime_text">You’ve now been playing for 25 minutes. 
+		If you want to play more games you can; we’ll pay you 75 cents for each game you win.</p>`);
+	overtime_container.append(overtime_text);
+
 	forfeit_div.append(forfeit_text);
 	forfeit_div.append(forfeit_button);
 
 	var end_game_delay = 1000;
-	var retry_delay = 60000;
-	// var forfeit_delay = 60000*2;
+	var retry_delay = 1000*data.retry_delay;
+	var forfeit_delay = 1000*data.forfeit_delay-data.time;
 	var ended = false;
 
 	var on_game_end = function () {
@@ -176,8 +210,9 @@ $(document).ready(function () {
 				var button = retry_button;
 			}
 			
+			container.append('<hr>')
 			container.append(button);
-			$('body').append(container)
+			$('#message').append(container)
 			$('#forfeit-div').remove();
 			$('#retry-text').remove();
 		}	
@@ -202,17 +237,21 @@ $(document).ready(function () {
 		$('#start-div').remove();
 		game.paused = false;
 		window.setTimeout(function () {
-			if (!ended)
-				$('body').append(retry_container)	
+			console.log('timeout')
+			console.log(ended);
+			if (!ended) {
+				console.log($('#message'));
+				$('#message').empty();
+				$('#message').append(retry_container);
+			}
 		}, retry_delay);
-		console.log(data.round);
-		if (data.round >= 3) {
-			$('body').append(forfeit_div);
-		}
-		// window.setTimeout(function () {
-		// 	if (!ended)
-		// 		$('#retry-div').append(forfeit_div);
-		// }, forfeit_delay);
+		// if (data.round >= 3) {
+		// 	$('body').append(forfeit_div);
+		// }
+		window.setTimeout(function () {
+			if (!ended)
+				$('body').append(forfeit_div);
+		}, forfeit_delay);
 	}
 
 

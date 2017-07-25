@@ -25,6 +25,7 @@
       <li> -- WIN : <%= experiments[i].data.win %> </li>
       <li> -- SCORE:  <%= experiments[i].data.score %> </li>
       <li> -- STEPS : <%= experiments[i].data.steps %> </li>
+      <li> -- TIME : <%= Math.round(experiments[i].data.time/1000) %> </li>
       <li>------------------------------------------------</li>
     <% } %>
   </ul>
