@@ -190,8 +190,8 @@ $(document).ready(function () {
 	forfeit_div.append(forfeit_button);
 
 	var end_game_delay = 1000;
-	var retry_delay = 1000;//1000*data.retry_delay;
-	var forfeit_delay = 1000;//1000*data.forfeit_delay-data.time;
+	var retry_delay = 1000*data.retry_delay;
+	var forfeit_delay = 1000*data.forfeit_delay-data.time;
 	var ended = false;
 
 	var on_game_end = function () {

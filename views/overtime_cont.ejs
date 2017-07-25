@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  
+  <link href="https://fonts.googleapis.com/css?family=Lato:thin" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Asap:700|Lato" rel="stylesheet">
+  <script type="text/javascript">
+  	var exp_id = '<%-exp_id%>';
+  </script>
+  <script src="/midpoint.js"></script>
+
+</head>
+<body>
+
+<div class="Flex-Container">
+
+<div class="Flex-Container" id="info-box">
+<!--   <h1>Time to play another game!</h1>
+ -->  <p>
+You have <%= games %> games left that you can try. Would you like to play another one?
+  </p>
+  <button id='end-hit'>No thanks, I'd like to get my code and end the HIT.</button>
+  <hr>
+  <button id='continue'>Yes, I'll play more games!</button>
+</div>
+
+</div>
+
+</body>
+</html>
