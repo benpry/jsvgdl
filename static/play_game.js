@@ -42,12 +42,13 @@ var json_parser = function () {
 
 
 var next_experiment = function (exp_id, callback) {
-	$('body').addClass('loading')
+	
 	console.log(exp_id)
 	if (exp_id == '0') {
 		callback();
 		return;
 	}
+	$('body').addClass('loading')
 	$.ajax({
 		type: 'POST', 
 		url: '/experiment/'+exp_id+'/next',
@@ -62,11 +63,12 @@ var next_experiment = function (exp_id, callback) {
 }
 
 var retry_experiment = function (exp_id, callback) {
-	$('body').addClass('loading')
+	
 	if (exp_id == '0') {
 		callback();
 		return;
 	}
+	$('body').addClass('loading')
 	$.ajax({
 		type: 'POST', 
 		url: '/experiment/'+exp_id+'/retry',
@@ -79,11 +81,12 @@ var retry_experiment = function (exp_id, callback) {
 }
 
 var forfeit_experiment = function (exp_id, callback) {
-	$('body').addClass('loading')
+	
 	if (exp_id == '0') {
 		callback();
 		return;
 	}
+	$('body').addClass('loading')
 	$.ajax({
 		type: 'POST', 
 		url: '/experiment/'+exp_id+'/forfeit',
@@ -120,7 +123,7 @@ var forfeit_game = function () {
 	game.paused = true;
 	button_press = true;
 	forfeit_experiment(exp_id, function () {
-		window.location.href = `/experiment/${exp_id}`
+		location.reload();
 	})
 }
 
@@ -128,7 +131,7 @@ var retry_game = function () {
 	game.paused = true;
 	button_press = true;
 	retry_experiment(exp_id, function () {
-		window.location.href = `/experiment/${exp_id}`
+		location.reload();
 	})
 }
 
@@ -136,7 +139,7 @@ var continue_game = function () {
 	game.paused = true;
 	button_press = true;
 	next_experiment(exp_id, function () {
-		window.location.href = `/experiment/${exp_id}`
+		location.reload();
 	});
 }
 
@@ -195,7 +198,6 @@ $(document).ready(function () {
 	var ended = false;
 
 	var on_game_end = function () {
-		
 		clearInterval(interval);
 		game.paused = true;
 		ended = true
@@ -231,14 +233,22 @@ $(document).ready(function () {
 			$('#title').text('Game Lost!')
 			window.setTimeout(show_status, end_game_delay);
 		}
-		parser.post_partial(exp_id, game, data);
+
+		if (exp_id != '0'){
+			parser.time_stamp.end_time = Date.now();
+			parser.post_partial(exp_id, game, data);
+		}
 	}
 
 	var begin_game = function () {
 		parser = new json_parser();
 		interval = window.setInterval(function(){
-		  parser.post_partial(exp_id, game, data)
-		}, 1000);
+			if (exp_id != '0') {
+				parser.post_partial(exp_id, game, data)
+			} else {
+				return;
+			}
+		}, 2500);
 
 		$('#start-div').remove();
 		game.paused = false;

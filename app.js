@@ -242,12 +242,16 @@ app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req
 	var data = {};
 	data.exp_id = 0;
 	data.game_obj = DB.get_game(req.params.game_name, level, desc);
+	data.game_obj.time = 60*10*1000
 	data.game_obj.data = {name: req.params.game_name, 
 						  number: 0,
 						  round: 0,
 						  desc: desc,
 						  level: level,
-						  color_scheme: 0};
+						  retry_delay: 60*10*1000,
+						  color_scheme: 0,
+						  forfeit_delay: 60*10*1000,
+						  time: 60*10*1000};
 	res.render('game', data);
 });
 
@@ -378,9 +382,8 @@ app.post('/experiment/:exp_id/end', validate_exp, function (req, res) {
 
 app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 	if (req.params.exp_id != 0) {
-		// console.log(req.params.exp_id);
 		var exp_id = req.params.exp_id;
-		var val_id = req.params.val_id;
+		var val_id = req.session.val_id;
 		var time_stamp = req.body.timeStamp;
 		var game_states = req.body.gameStates;
 		var data = req.body.data;
@@ -391,6 +394,7 @@ app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 		data.frames = req.body.frames;
 		data.time = req.body.time;
 		var data = JSON.stringify(data);
+		// console.log('processing request')
 		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
 	}
 	res.send({success: true})

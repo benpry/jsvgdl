@@ -832,7 +832,7 @@ var BasicGame = function (gamejs, args) {
 
 		// that.collision_eff.sort((a, b) => {
 		// 	return (a[2].name == 'killSprite')
-		// })
+		// }).reverse();
 
 
 		
