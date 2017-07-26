@@ -140,6 +140,7 @@ var DB = function () {
 	 *
 	 **/ 
 	that.post_experiment = function (id, val_id, time_stamp, game_states, data) {
+		var data = JSON.stringify(data);
 		pool.query(`insert into experiments values 
 					('${id}', '${val_id}', '${time_stamp}', '${data}', '${game_states}')`, function (err, result) {
 						if (err) {

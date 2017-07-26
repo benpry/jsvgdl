@@ -393,7 +393,6 @@ app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 		data.index = req.body.index;
 		data.frames = req.body.frames;
 		data.time = req.body.time;
-		var data = JSON.stringify(data);
 		// console.log('processing request')
 		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
 	}

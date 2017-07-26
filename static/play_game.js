@@ -18,24 +18,24 @@ var json_parser = function () {
 		var last_state = game.gameStates.length;
 		var win = game.gameStates[last_state-1].win;
 		var score = game.gameStates[last_state-1].score;
-		$.ajax({
-			type: 'PUT',
-			url: "/experiment/"+exp_id,
-			data: {timeStamp: JSON.stringify(this.time_stamp),
-			 	   gameStates: partial,
-			 	   index: index,
-			 	   score: score,
-			 	   win: win,
-			 	   steps: steps,
-			 	   frames: game.time,
-			 	   data: data, 
-			 	   time: (Date.now()-load_time) + time},
-			success: function (status) {
-				if (!status.success) {
-					console.log('could not put experiment');
-				}
-			},
-		})
+		// $.ajax({
+		// 	type: 'PUT',
+		// 	url: "/experiment/"+exp_id,
+		// 	data: {timeStamp: JSON.stringify(this.time_stamp),
+		// 	 	   gameStates: partial,
+		// 	 	   index: index,
+		// 	 	   score: score,
+		// 	 	   win: win,
+		// 	 	   steps: steps,
+		// 	 	   frames: game.time,
+		// 	 	   data: data, 
+		// 	 	   time: (Date.now()-load_time) + time},
+		// 	success: function (status) {
+		// 		if (!status.success) {
+		// 			console.log('could not put experiment');
+		// 		}
+		// 	},
+		// })
 		index ++;	
 	}
 }
