@@ -6,6 +6,11 @@ var bcrypt = require('bcrypt-nodejs');
 var multer = require('multer');
 var fs = require('fs');
 
+var mongo_connection = require('./mongodb/connection.js');
+var game_schema = require('./mongodb/game-schema.js');
+var subject_schema = require('./mongodb/subject-schema.js');
+var exp_schema = require('./mongodb/experiment-schema.js');
+
 var storage = multer.diskStorage({
 	destination: 'static/images/',
 	filename: function (req, file, callback) {
@@ -48,6 +53,22 @@ if (process.env.PORT || reset) {
 	var DB = require('./mock_db.js')()
 	console.log('***\nUsing mock data base for testing. Changes will only be saved locally.\n')
 }
+
+setTimeout(function () {
+	// console.log(DB.get_full_games());
+	// game_schema.update_game('hello_world', ['one'], ['two', 'three'], err => {
+	// 	if (err) console.log(err);	
+
+	// })
+	// game_schema.find({name: 'hello_world'}, (err, games) => {
+	// 	console.log(games)
+	// })
+	// game_schema.remove_level('hello_world', 0, (err) => {
+	// 	if (err) console.log(err);
+	// })
+
+
+}, 2000);
 var Experiment = require('./experiments/experiment.js');
 var experiments = {};
 var exp = 0;
@@ -65,14 +86,7 @@ var exp = 0;
  *	this deletes an experiment 
  *	that has been inactive for more than 1 hour
  */
-var intervalID = setInterval(function () {
-	Object.keys(experiments).forEach(exp_id => {
-		if (experiments[exp_id].timeout()){
-			console.log(exp_id, 'experiment timed out')
-			delete experiments[exp_id];
-		}
-	})
-}, 30*60*1000)
+
 
 // Use once ready!
 // var save_state_periodically = setInterval(function () {
