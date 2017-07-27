@@ -27,34 +27,34 @@ var SubjectSchema = mongoose.Schema({
 var experiments = [
     ['gvgai_sokoban',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '', 20, forfeit_default],
+        ''],
     ['gvgai_butterflies', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '', retry_default, forfeit_default],
+        ''],
     ['gvgai_aliens', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false, 
-        'On this game you can also use the spacebar.', 10*60, forfeit_default], // never gets shown
+        'On this game you can also use the spacebar.'], // never gets shown
     ['gvgai_chase',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '', retry_default, forfeit_default],
+        ''],
     ['gvgai_frogs',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '', retry_default, forfeit_default],
+        ''],
     ['gvgai_missilecommand',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        'On this game you can also use the spacebar.', retry_default, forfeit_default],
+        'On this game you can also use the spacebar.'],
     ['gvgai_portals',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '', retry_default, forfeit_default],
+        ''],
     ['gvgai_zelda', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        'On this game you can also use the spacebar.', retry_default, forfeit_default],
+        'On this game you can also use the spacebar.'],
     ['gvgai_boulderdash', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
         'On this game you can also use the spacebar.', 45, 6*60],
     ['gvgai_survivezombies',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '', 10*60, forfeit_default]
+        '']
 ]
 
 SubjectSchema.statics.add_subject = function (mturk_id, callback) {

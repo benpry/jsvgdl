@@ -55,7 +55,10 @@ if (process.env.PORT || reset) {
 }
 
 setTimeout(function () {
-	// console.log(DB.get_full_games());
+	// DB.get_full_games().forEach(game => {
+	// 	// console.log(game.name, game.levels, game.descs)
+	// 	game_schema.add_game(game.name, game.levels, game.descs);
+	// })
 	// game_schema.update_game('hello_world', ['one'], ['two', 'three'], err => {
 	// 	if (err) console.log(err);	
 
@@ -66,6 +69,12 @@ setTimeout(function () {
 	// game_schema.remove_level('hello_world', 0, (err) => {
 	// 	if (err) console.log(err);
 	// })
+
+	// game_schema.find((err, games) => {
+	// 	console.log(games)
+	// })
+
+
 
 
 }, 2000);

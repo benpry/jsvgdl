@@ -153,7 +153,6 @@ var DB = function () {
 	/** A list of all the game names
 	 */
 	that.get_games_list = function () {
-		console.log(Object.keys(games).sort())
 		return Object.keys(games).sort();
 	}
 
