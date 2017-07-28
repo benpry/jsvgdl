@@ -18,8 +18,8 @@ function nothing (sprite, partner, game, kwargs) {
 }
 
 function killSprite (sprite, partner, game, kwargs) {
-
-	// console.log(sprite.name, 'killed');
+	
+	console.log(sprite.name, 'killed');
 	game.kill_list.push(sprite);
 
 	// console.log('kill sprite', sprite);

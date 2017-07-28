@@ -524,9 +524,11 @@ var BasicGame = function (gamejs, args) {
 		// make a copy of the kill list
 		var dead = that.kill_list.slice();
 		var loop = 0 // Simply to prevent infinitely looping
-		while (Object.keys(new_collisions).length && loop < 10) {
+		while (Object.keys(new_collisions).length && loop < 7) {
 			loop ++;
-			if (loop > 5) console.log('resolving too many collisions');
+			if (loop > 5) {
+				console.log('resolving too many collisions');
+			}
 			
 			new_collisions = {};
 			new_effects = [];
