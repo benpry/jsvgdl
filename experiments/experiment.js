@@ -308,7 +308,7 @@ Experiment.end = function (experiment) {
 }
 
 Experiment.overtime = function (experiment) {
-    if (Date.now() - experiment.start_time > experiment.overtime_limit) {
+    if (Date.now() - experiment.start_time > overtime_limit) {
         if (experiment.overtime_check) {
             experiment.overtime_check = false;
             return true
