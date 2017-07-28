@@ -73,7 +73,6 @@ GameSchema.statics.get_game = function (game_name, level, desc, callback) {
 			game : game.descs[desc],
 			round : 0
 		}
-		console.log(game_obj);
 		callback(err, game_obj);
 	})
 }

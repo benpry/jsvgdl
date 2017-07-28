@@ -5,8 +5,16 @@ var session = require('express-session');
 var bcrypt = require('bcrypt-nodejs');
 var multer = require('multer');
 var fs = require('fs');
+var mongoose = require('mongoose');
+var mongoStore = require('connect-mongo')(session);
 
-var mongo_connection = require('./mongodb/connection.js');
+// console.log();
+mongoose.connect('mongodb://heroku_7lzprs54:s7keb2oh4f3ao6ukrkgpt5f55a@ds017165.mlab.com:17165/heroku_7lzprs54', {
+// mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/vgdl'	, {
+	useMongoClient: true
+});
+
+// var mongo_connection = require('./mongodb/connection.js');
 var game_schema = require('./mongodb/game-schema.js');
 var subject_schema = require('./mongodb/subject-schema.js');
 var exp_schema = require('./mongodb/experiment-schema.js');
@@ -87,6 +95,7 @@ var exp = 0;
 // 	})
 // }, 30*1000)
 
+
 /**
  * Middle ware for session data
  */
@@ -94,7 +103,11 @@ app.set('trust proxy', 1) // trust first proxy
 app.use(session({
 	secret: 'cocosciiscool',
 	resave: true,
-	saveUninitialized: true
+	saveUninitialized: true, 
+	store: new mongoStore({
+		mongooseConnection: mongoose.connection,
+		collection: 'sessions'
+	})
 }))
 var login_password = 'cocosciiscool';
 var logged_in = {};
