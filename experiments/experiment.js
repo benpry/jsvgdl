@@ -138,22 +138,23 @@ var get_exp = function () {
 // An object that updates what game its on
 // by calling next
 var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[], randomize_color=true) {
-    var experiment = Object.create(Experiment.prototype);
-
 
 
     if (exp_name == undefined) {
         exp_name = 'exp0'
     }
-    var cookie = cookie;
-    var expiration = 60*60*1000
-    var timeout = Date.now()+expiration;
-    var games_ordered = [];
-    game_number = 0;
-    var mipoints = {};
+    var experiment = {};
+
+    experiment.cookie = cookie;
+    experiment.expiration = 60*60*1000
+    experiment.timeout = Date.now()+experiment.expiration;
+    experiment.games_ordered = [];
+    experiment.midpoints = {};
+    
+    var game_number = 0;
 
     var exp = get_exp();
-    console.log(exp);
+    // console.log(exp);
     if (randomize_exp) {
         exp = shuffle(exp, static_exps);// [exp[0]].concat(shuffle(exp.slice(1, exp.length), static_exps));
     }
@@ -161,7 +162,7 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[],
         game_number ++;
         var game_name = settings[0];
         var game_levels = settings[1];
-        mipoints[game_number] = settings[3];
+        experiment.midpoints[game_number] = settings[3];
         var retry_delay = settings[4];
         var forfeit_delay = settings[5];
         if (settings[2])
@@ -169,7 +170,7 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[],
         var color_scheme = 0;
         if (randomize_color) color_scheme = randint(1307674368000);
         game_levels.forEach(game_level => {
-            games_ordered.push({name: game_name, 
+            experiment.games_ordered.push({name: game_name, 
                              desc: game_level[0], 
                              level: game_level[1], 
                              number: game_number, 
@@ -182,168 +183,157 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[],
         })
     })
 
-    var started = true;
-    var current_trial = 0;
-    var current_game_number = 1;
-    var max_trials = games_ordered.length;
-    var start_time = Date.now();
-    var init_time = Date.now();
-    var overtime_check = true;
-    var ended = false;
-    var continued = false;
-    var update_timeout = function () {
-        timeout = Date.now()+expiration;
-    }
-
-    experiment.get_saves = function () {
-        return {
-            exp_name: exp_name,
-            cookie: cookie,
-            started: started,
-            current_trial: current_trial,
-            randomize_color: randomize_color,
-        }
-    }
-
-    experiment.load_saves = function (saves) {
-        started = saves.started;
-        current_trial = saves.current_trial;
-    }
 
 
-    experiment.validate = function (validation_id) {
-        return validation_id == cookie;
-    }
+    
+    experiment.started = true;
+    experiment.current_trial = 0;
+    experiment.current_game_number = 1;
+    experiment.max_trials = experiment.games_ordered.length;
+    experiment.start_time = Date.now();
+    experiment.init_time = Date.now();
+    experiment.overtime_check = true;
+    experiment.ended = false;
+    experiment.continued = false;
 
-    experiment.started = function () {
-        if (started) {
-            started = false
-            return true;
-        }
-        return false
-    }
-
-    experiment.retry = function () {
-        update_timeout();
-        var current_game = games_ordered[current_trial]
-        // console.log(current_game);
-        if (current_game) {
-            current_game.round ++;
-        }
-        // console.log('retrying experiment', current_game[3])
-    }
+    return experiment
 
 
-    experiment.current_game = function () {
-        update_timeout();
-        if (current_trial == max_trials)
-            return false;
-        var current_game = games_ordered[current_trial]
-        game_obj = {};
-        game_obj.name = current_game.name;
-        game_obj.desc = current_game.desc;
-        game_obj.level = current_game.level;
-        game_obj.number = current_game.number;
-        game_obj.randomize_color = current_game.randomize_color;
-        game_obj.retry_delay = current_game.retry_delay;
-        game_obj.forfeit_delay = current_game.forfeit_delay;
-        game_obj.time = Date.now() - start_time;
-        return game_obj;
-    }
-
-    experiment.remaining_games = function () {
-        return experiments.length - current_game_number;
-    }
-
-    experiment.midpoint_text = function () {
-        init_time = Date.now();
-        current_game_number = games_ordered[current_trial].number;
-        return mipoints[current_game_number];
-    }
-
-    experiment.current_round = function () {
-        var current_game = games_ordered[current_trial]
-        round_obj = {};
-        round_obj.number = current_game.number;
-        return round_obj;
-    }
-
-
-    experiment.mid_point_pure = function () {
-        if (current_game_number == games_ordered[current_trial].number) 
-            return false;
-        return true;      
-    }
-
-    experiment.mid_point = function () {
-        if (experiment.mid_point_pure()) {
-            current_game_number ++;
-            return true
-        }
-        return false;
-    }
-
-
-    experiment.next = function () {
-        update_timeout();
-        current_trial += 1;
-    }
-
-    experiment.is_done = function  () {
-        if (current_trial >= games_ordered.length || ended) {
-            return true;
-        }
-        return false;
-    }
-
-    experiment.get_data = function () {
-        var data = games_ordered[current_trial];
-        data.time = Date.now() - init_time;
-        return games_ordered[current_trial];
-    }
-
-    experiment.forfeit = function () {
-        while (!experiment.mid_point_pure()) {
-            current_trial ++;
-        }
-        // current_trial --;
-    }
-
-    experiment.end = function () {
-        ended = true;
-    }
-
-    experiment.overtime = function () {
-        if (Date.now() - start_time > overtime_limit) {
-            if (overtime_check) {
-                overtime_check = false;
-                return true
-            } else {
-                continued = true;
-            }
-        }
-        return false;
-    }
-
-    experiment.overtime_continued = function () {
-        if (experiment.mid_point_pure() && continued) {
-            continued = false;
-            return !overtime_check;
-        }
-        return false;
-    }
-
-    experiment.timeout = function () {
-        if (Date.now() > timeout)
-            return true;
-        return false
-    }
-
-    Object.freeze(experiment);
-
-    return experiment;
 }
 
+Experiment.update_timeout = function (experiment) {
+        experiment.timeout = Date.now()+experiment.expiration;
+    }
+
+Experiment.validate = function (experiment, validation_id) {
+    return validation_id == experiment.cookie;
+}
+
+Experiment.started = function (experiment) {
+    if (experiment.started) {
+        experiment.started = false
+        return true;
+    }
+    return false
+}
+
+Experiment.retry = function (experiment) {
+    Experiment.update_timeout(experiment);
+    var current_game = experiment.games_ordered[experiment.current_trial]
+    // console.log(current_game);
+    if (current_game) {
+        current_game.round ++;
+    }
+    // console.log('retrying experiment', current_game[3])
+}
+
+
+Experiment.current_game = function (experiment) {
+    Experiment.update_timeout(experiment);
+    if (experiment.current_trial == experiment.max_trials)
+        return false;
+    var current_game = experiment.games_ordered[experiment.current_trial]
+    var game_obj = {};
+    game_obj.name = current_game.name;
+    game_obj.desc = current_game.desc;
+    game_obj.level = current_game.level;
+    game_obj.number = current_game.number;
+    game_obj.color_scheme = current_game.color_scheme;
+    game_obj.retry_delay = current_game.retry_delay;
+    game_obj.forfeit_delay = current_game.forfeit_delay;
+    game_obj.time = Date.now() - experiment.start_time;
+    game_obj.round = current_game.round;
+    // console.log(current_game)
+    // console.log(game_obj)
+    return game_obj;
+}
+
+Experiment.remaining_games = function (experiment) {
+    return experiments.length - experiment.current_game_number;
+}
+
+Experiment.midpoint_text = function (experiment) {
+    experiment.init_time = Date.now();
+    experiment.current_game_number = experiment.games_ordered[experiment.current_trial].number;
+    return experiment.midpoints[experiment.current_game_number];
+}
+
+Experiment.current_round = function (experiment) {
+    return {
+        number: experiment.games_ordered[experiment.current_trial].round
+    };
+}
+
+
+Experiment.mid_point_pure = function (experiment) {
+    if (experiment.current_game_number == experiment.games_ordered[experiment.current_trial].number) 
+        return false;
+    return true;      
+}
+
+Experiment.mid_point = function (experiment) {
+    if (Experiment.mid_point_pure(experiment)) {
+        experiment.current_game_number ++;
+        return true
+    }
+    return false;
+}
+
+
+Experiment.next = function (experiment) {
+    Experiment.update_timeout(experiment);
+    experiment.current_trial += 1;
+}
+
+Experiment.is_done = function  (experiment) {
+    if (experiment.current_trial >= experiment.games_ordered.length || experiment.ended) {
+        return true;
+    }
+    return false;
+}
+
+Experiment.get_data = function (experiment) {
+    var data = experiment.games_ordered[experiment.current_trial];
+    data.time = Date.now() - experiment.init_time;
+    return experiment.games_ordered[experiment.current_trial];
+}
+
+Experiment.forfeit = function (experiment) {
+    while (!Experiment.mid_point_pure(experiment)) {
+        experiment.current_trial ++;
+    }
+    // current_trial --;
+}
+
+Experiment.end = function (experiment) {
+    experiment.ended = true;
+}
+
+Experiment.overtime = function (experiment) {
+    if (Date.now() - experiment.start_time > experiment.overtime_limit) {
+        if (experiment.overtime_check) {
+            experiment.overtime_check = false;
+            return true
+        } else {
+            experiment.continued = true;
+        }
+    }
+    return false;
+}
+
+Experiment.overtime_continued = function (experiment) {
+    if (Experiment.mid_point_pure(experiment) && experiment.continued) {
+        experiment.continued = false;
+        return !experiment.overtime_check;
+    }
+    return false;
+}
+
+Experiment.timeout = function (experiment) {
+    if (Date.now() > experiment.timeout)
+        return true;
+    return false
+}
 
 Experiment.experiments = experiments;
 

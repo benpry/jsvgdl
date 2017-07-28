@@ -54,33 +54,11 @@ if (process.env.PORT || reset) {
 	console.log('***\nUsing mock data base for testing. Changes will only be saved locally.\n')
 }
 
-setTimeout(function () {
-	// DB.get_full_games().forEach(game => {
-	// 	// console.log(game.name, game.levels, game.descs)
-	// 	game_schema.add_game(game.name, game.levels, game.descs);
-	// })
-	// game_schema.update_game('hello_world', ['one'], ['two', 'three'], err => {
-	// 	if (err) console.log(err);	
-
-	// })
-	// game_schema.find({name: 'hello_world'}, (err, games) => {
-	// 	console.log(games)
-	// })
-	// game_schema.remove_level('hello_world', 0, (err) => {
-	// 	if (err) console.log(err);
-	// })
-
-	// game_schema.find((err, games) => {
-	// 	console.log(games)
-	// })
-
-
-
-
-}, 2000);
 var Experiment = require('./experiments/experiment.js');
 var experiments = {};
 var exp = 0;
+
+// console.log(Experiment)
 
 // Use once ready!
 // DB.load_state(loads => {
@@ -125,7 +103,7 @@ var logged_in = {};
 // Login middleware
 // validates session id with user login.
 function require_login (req, res, next) {
-	if (logged_in[req.session.id]) 
+	if (req.session.logged_in) 
 		next();
 	else
 		res.redirect('/admin/login');
@@ -145,7 +123,9 @@ function validate_exp (req, res, next) {
 		res.end();
 		return
 	}
-	if (experiments[exp_id] && experiments[exp_id].validate(val_id)) {
+	// console.log(exp_id, val_id)
+	// console.log(req.session.experiment)
+	if (req.session.experiment && Experiment.validate(req.session.experiment, val_id)) {
 		next();
 	} else {
 		res.status(404).render('404');
@@ -239,14 +219,28 @@ app.get('/edit/:game_name', require_login, function (req, res) {
 
 // Adds a new game to the DB
 app.post('/edit/:game_name', require_login, function (req, res) {
-	success = DB.add_game(req.body.name, req.body.descs, req.body.levels) 
-	res.send({success: success});
+	game_schema.add_game(req.body.name, req.body.descs, req.body.levels, function (err) {
+		if (err) {
+			console.log(err) 
+			res.send({success: false});	
+		} else {
+			res.send({success: true})
+		}
+	}) 
+
 })
 
 // Updates a game already in the DB
 app.put('/edit/:game_name', require_login, function (req, res) {
-	DB.update_game(req.body.name, req.body.descs, req.body.levels)
-	res.send({success: true})
+	game_schema.update_game(req.body.name, req.body.descs, req.body.levels, function (err) {
+		if (err) {
+			console.log(err);
+			res.send({success: false});
+		} else {
+			res.send({success: true});
+		}
+	})
+	
 	// console.log(req.body);
 })
 
@@ -254,8 +248,15 @@ app.put('/edit/:game_name', require_login, function (req, res) {
 app.delete('/edit/:game_name', require_login, function (req, res) {
 	console.log('deleting game')
 	console.log(req.params.game_name);
-	DB.delete_game(req.params.game_name);
-	res.send({success: true})
+	game_schema.delete_game(req.params.game_name, function (err) {
+		if (err) {
+			console.log(err);
+			res.send({success: false})
+		} else {
+			res.send({success: true})
+		}
+	});
+	
 })
 
 // Play a game from the DB
@@ -264,25 +265,40 @@ app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req
 	var desc = parseInt(req.params.desc)
 	var data = {};
 	data.exp_id = 0;
-	data.game_obj = DB.get_game(req.params.game_name, level, desc);
-	data.game_obj.time = 60*10*1000
-	data.game_obj.data = {name: req.params.game_name, 
-						  number: 0,
-						  round: 0,
-						  desc: desc,
-						  level: level,
-						  retry_delay: 60*10*1000,
-						  color_scheme: 0,
-						  forfeit_delay: 60*10*1000,
-						  time: 60*10*1000};
-	res.render('game', data);
+	game_schema.get_game(req.params.game_name, level, desc, function (err, game_obj) {
+		if (err) {
+			console.log(err);
+			res.render('game', data)
+		} else {
+			data.game_obj = game_obj;
+			data.game_obj.time = 60*10*1000
+			data.game_obj.data = {name: req.params.game_name, 
+								  number: 0,
+								  round: 0,
+								  desc: desc,
+								  level: level,
+								  retry_delay: 60*10*1000,
+								  color_scheme: 0,
+								  forfeit_delay: 60*10*1000,
+								  time: 60*10*1000};
+			res.render('game', data);
+		}
+	});
+	
 });
 
 // Administrative
 app.get('/admin', require_login, function (req, res) {
-	var data = {};
-	data.games = DB.get_games_list();
-	res.render('editor', data);
+	var data = {games : []};
+	game_schema.get_games_list((err, games) => {
+		if (err) {
+			console.log(err)
+		} else {
+			data.games = games;
+		}
+		res.render('editor', data);
+	});
+	
 });
 
 // Administrative login page.
@@ -297,7 +313,7 @@ app.get('/admin/login', function (req, res) {
 app.post('/admin/login', function (req, res) {
 	if (req.body.password == login_password){
 		req.session.id = shortid.generate();
-		logged_in[req.session.id] = true;
+		req.session.logged_in = true;
 		req.session.save();
 
 		res.redirect('/admin');
@@ -313,31 +329,42 @@ app.post('/admin/login', function (req, res) {
 app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {	
 	var data = {};
 	data.exp_id = req.params.exp_id;
-	var current_exp = experiments[data.exp_id];
+	// var current_exp = experiments[data.exp_id];
+	var current_exp = req.session.experiment;
 	
 	if (!(current_exp)) {
 		next();
-	} else if (current_exp.started()) {
+	} else if (Experiment.started(current_exp)) {
 		res.render('start')
-	} else if (current_exp.is_done()) {
+	} else if (Experiment.is_done(current_exp)) {
 		res.render('thank_you', {val_id: req.session.val_id});
-		delete experiments[data.exp_id];
-	} else if (current_exp.overtime_continued()) {
-		res.render('overtime_cont', {games: current_exp.remaining_games(), exp_id: data.exp_id});
-	} else if (current_exp.overtime()) {
+		// delete experiments[data.exp_id];
+		delete req.session.experiment;
+	} else if (Experiment.overtime_continued(current_exp)) {
+		res.render('overtime_cont', {games: Experiment.remaining_games(current_exp), exp_id: data.exp_id});
+	} else if (Experiment.overtime(current_exp)) {
 		res.render('overtime', {exp_id: data.exp_id});
-	} else if (current_exp.mid_point()) {
-		res.render('midpoint', {text: current_exp.midpoint_text()})
+	} else if (Experiment.mid_point(current_exp)) {
+		res.render('midpoint', {text: Experiment.midpoint_text(current_exp)})
 	} else {
-		current_game = current_exp.current_game();
-		data.game_obj = DB.get_game(current_game.name, current_game.level, current_game.desc);
-		var round = current_exp.current_round()
-		data.game_obj.name = round.number;
-		data.game_obj.level_num = current_game.level + 1
-		data.game_obj.round = round.round;
-		data.game_obj.data = current_exp.get_data();
-		data.game_obj.time = current_game.time;
-		res.render('game', data);
+		var current_game = Experiment.current_game(current_exp);
+		// console.log('current_game', current_game)
+		game_schema.get_game(current_game.name, current_game.level, current_game.desc, function (err, game_obj) {
+			if (err) {
+				console.log(err);
+				next();
+			} else {
+				data.game_obj = game_obj;
+				data.game_obj.name = current_game.round;
+				data.game_obj.level_num = current_game.level + 1
+				data.game_obj.round = current_game.round;
+				data.game_obj.data = Experiment.get_data(current_exp);
+				data.game_obj.time = current_game.time;
+				res.render('game', data);
+			}
+		});
+
+		
 	}
 
 })
@@ -380,26 +407,25 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 // })
 
 app.post('/experiment/:exp_id/next', validate_exp, function (req, res) {
-	var current_exp = experiments[req.params.exp_id];
-	current_exp.next()
+	// var current_exp = experiments[req.params.exp_id];
+
+	Experiment.next(req.session.experiment)
 	res.send({success: true})
 })
 
 app.post('/experiment/:exp_id/retry', validate_exp, function (req, res) {
-	var current_exp = experiments[req.params.exp_id];
-	current_exp.retry();
+	Experiment.retry(req.session.experiment);
 	res.send({success: true})
 })
 
 app.post('/experiment/:exp_id/forfeit', validate_exp, function (req, res) {
-	var current_exp = experiments[req.params.exp_id];
-	current_exp.forfeit();
+	Experiment.forfeit(req.session.experiment);
 	res.send({success: true});
 })
 
 app.post('/experiment/:exp_id/end', validate_exp, function (req, res) {
 	var current_exp = experiments[req.params.exp_id];
-	current_exp.end();
+	Experiment.end(req.session.experiment);
 	res.send({success: true});
 })
 
@@ -426,7 +452,9 @@ app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 app.post('/experiment/', function (req, res) {
 	var new_exp_id = shortid.generate();
 	var validation_id = shortid.generate();
-	experiments[new_exp_id] = new Experiment(exp, validation_id);
+	// var experiment = Experiment(exp, validation_id);
+	req.session.experiment = Experiment(exp, validation_id);
+	// console.log(req.session.experiment)
 	req.session.exp_id = new_exp_id;
 	req.session.val_id = validation_id;
 	res.send({exp_id: new_exp_id, val_id: validation_id});

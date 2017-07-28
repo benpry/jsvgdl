@@ -73,6 +73,7 @@ GameSchema.statics.get_game = function (game_name, level, desc, callback) {
 			game : game.descs[desc],
 			round : 0
 		}
+		console.log(game_obj);
 		callback(err, game_obj);
 	})
 }
@@ -82,7 +83,7 @@ GameSchema.statics.get_games_list = function (callback) {
 		var game_names = games.map(game => {
 			return game.name
 		})
-		callback(err, game_names);
+		callback(err, game_names.sort());
 	})
 }
 

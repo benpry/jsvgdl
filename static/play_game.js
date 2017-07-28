@@ -2,7 +2,6 @@
 var load_time = Date.now();
 
 var json_parser = function () {
-	this.parsed = [];
 	this.time_stamp = {
 		start_time: Date.now(),
 		end_time: 0
