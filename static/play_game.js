@@ -247,7 +247,7 @@ $(document).ready(function () {
 			} else {
 				return;
 			}
-		}, 2500);
+		}, 2000);
 
 		$('#start-div').remove();
 		game.paused = false;

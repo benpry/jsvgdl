@@ -299,9 +299,7 @@ Experiment.get_data = function (experiment) {
 }
 
 Experiment.forfeit = function (experiment) {
-    while (!Experiment.mid_point_pure(experiment)) {
-        experiment.current_trial ++;
-    }
+    experiment.current_game_number ++;
     // current_trial --;
 }
 
