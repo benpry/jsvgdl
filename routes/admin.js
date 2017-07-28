@@ -1,25 +1,31 @@
 var express = require('express');
+var require_login = require('./middleware').require_login;
 var router = express.Router();
 
-// Login middleware
-// validates session id with user login.
-function require_login (req, res, next) {
-	if (logged_in[req.session.id]) 
-		next();
-	else
-		res.redirect('/admin/login');
-}
+var login_password = 'cocosciiscool';
 
-app.get('/admin', require_login, function (req, res) {
+// Admin home
+router.get('/', require_login, function (req, res) {
 	var data = {};
 	data.games = DB.get_games_list();
 	res.render('editor', data);
 });
 
-app.get('/admin/login', function (req, res) {
-
+router.get('/login', function (req, res) {
 	res.render('login');
+})
+
+router.post('/login', function (req, res) {
+	if (req.body.password == login_password){
+		req.session.logged_in = true;
+		req.session.save();
+
+		res.redirect('/admin');
+	} else {
+		res.redirect('/admin/login');
+	}
 
 });
+
 
 module.exports = router;
