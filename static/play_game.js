@@ -8,7 +8,8 @@ var json_parser = function () {
 	}
 	var frame_init = 0;
 	var index = 0;
-	this.post_partial = async function (exp_id, game, data) {
+	this.post_partial = async function (exp_id, game, data, callback) {
+		if (exp_id == '0') return;
 		var frame_last = game.time;
 		var partial = JSON.stringify(game.gameStates.slice(frame_init, frame_last));
 		frame_init = frame_last;
@@ -29,11 +30,7 @@ var json_parser = function () {
 			 	   frames: game.time,
 			 	   data: data, 
 			 	   time: (Date.now()-load_time) + time},
-			success: function (status) {
-				if (!status.success) {
-					console.log('could not put experiment');
-				}
-			},
+			success: callback,
 		})
 		index ++;	
 	}
@@ -47,7 +44,6 @@ var next_experiment = function (exp_id, callback) {
 		callback();
 		return;
 	}
-	$('body').addClass('loading')
 	$.ajax({
 		type: 'POST', 
 		url: '/experiment/'+exp_id+'/next',
@@ -67,7 +63,7 @@ var retry_experiment = function (exp_id, callback) {
 		callback();
 		return;
 	}
-	$('body').addClass('loading')
+	
 	$.ajax({
 		type: 'POST', 
 		url: '/experiment/'+exp_id+'/retry',
@@ -85,7 +81,7 @@ var forfeit_experiment = function (exp_id, callback) {
 		callback();
 		return;
 	}
-	$('body').addClass('loading')
+	
 	$.ajax({
 		type: 'POST', 
 		url: '/experiment/'+exp_id+'/forfeit',
@@ -119,36 +115,50 @@ var parser;
 var button_press = false;
 
 var forfeit_game = function () {
+	$('body').addClass('loading')
 	game.paused = true;
 	button_press = true;
-	forfeit_experiment(exp_id, function () {
-		location.reload();
-	})
+	parser.post_partial(exp_id, game, data, function () {
+		forfeit_experiment(exp_id, function () {
+			location.reload();
+		})
+	});
+
 }
 
 var retry_game = function () {
+	$('body').addClass('loading')
 	game.paused = true;
 	button_press = true;
-	retry_experiment(exp_id, function () {
-		location.reload();
-	})
-}
-
-var continue_game = function () {
-	game.paused = true;
-	button_press = true;
-	next_experiment(exp_id, function () {
-		location.reload();
+	parser.post_partial(exp_id, game, data, function () {
+		retry_experiment(exp_id, function () {
+			location.reload();
+		})
 	});
 }
 
+var continue_game = function () {
+	$('body').addClass('loading')
+	game.paused = true;
+	button_press = true;
+	parser.post_partial(exp_id, game, data, function () {
+		next_experiment(exp_id, function () {
+			location.reload();
+		});
+	})
+}
+
 var page_refresh = function () {
+	$('body').addClass('loading')
 	game.paused = true
 	if (!button_press) {
 		game.paused = true;
-		retry_experiment(exp_id, function () {
-			console.log('game refreshed');
+		parser.post_partial(exp_id, game, data, function () {
+			retry_experiment(exp_id, function () {
+				console.log('game refreshed');
+			})			
 		})
+
 	}
 }
 
@@ -232,22 +242,17 @@ $(document).ready(function () {
 			$('#title').text('Game Lost!')
 			window.setTimeout(show_status, end_game_delay);
 		}
-
-		if (exp_id != '0'){
-			parser.time_stamp.end_time = Date.now();
-			parser.post_partial(exp_id, game, data);
-		}
 	}
 
 	var begin_game = function () {
 		parser = new json_parser();
-		// interval = window.setInterval(function(){
-		// 	if (exp_id != '0') {
-		// 		parser.post_partial(exp_id, game, data)
-		// 	} else {
-		// 		return;
-		// 	}
-		// }, 1500);
+		interval = window.setInterval(function(){
+			if (exp_id != '0') {
+				parser.post_partial(exp_id, game, data)
+			} else {
+				return;
+			}
+		}, 2500);
 
 		$('#start-div').remove();
 		game.paused = false;

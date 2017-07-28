@@ -299,7 +299,9 @@ Experiment.get_data = function (experiment) {
 }
 
 Experiment.forfeit = function (experiment) {
-    experiment.current_game_number ++;
+    while (experiment.games_ordered[experiment.current_trial].number == experiment.current_game_number) {
+        experiment.current_trial = experiment.current_trial + 1;
+    }
     // current_trial --;
 }
 
