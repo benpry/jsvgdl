@@ -369,7 +369,7 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 				next();
 			} else {
 				data.game_obj = game_obj;
-				data.game_obj.name = current_game.round;
+				data.game_obj.name = current_exp.current_game_number;
 				data.game_obj.level_num = current_game.level + 1
 				data.game_obj.round = current_game.round;
 				data.game_obj.data = Experiment.get_data(current_exp);
