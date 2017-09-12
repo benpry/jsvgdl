@@ -456,8 +456,9 @@ app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 		data.index = req.body.index;
 		data.frames = req.body.frames;
 		data.time = req.body.time;
+		console.log('posting experiment')
 		// console.log('processing request')
-		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
+		// DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
 	}
 	res.send({success: true})
 })

@@ -48,39 +48,63 @@ var randint = function (r, m, s) {
 var retry_default = 30;
 var forfeit_default = 4*60;
 // [name, [[desc_num, level_num], ]]
-var experiments = [
 
-    ['gvgai_sokoban',
-        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '', 20, forfeit_default],
-    ['gvgai_butterflies', 
-        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+var experiments = [
+    ['expt_push_boulders',
+        [[0, 0], [0, 1], [0, 2], [0, 3]], false, 
         '', retry_default, forfeit_default],
-    ['gvgai_aliens', 
-        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false, 
-        'On this game you can also use the spacebar.', 10*60, forfeit_default], // never gets shown
-    ['gvgai_chase',
-        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+    ['expt_relational',
+        [[0, 0], [0, 1], [0, 2], [1, 3]], false, 
         '', retry_default, forfeit_default],
-    ['gvgai_frogs',
-        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+    ['expt_preconditions',
+        [[0, 0], [0, 1], [0, 2], [0, 3]], false, 
         '', retry_default, forfeit_default],
-    ['gvgai_missilecommand',
-        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        'On this game you can also use the spacebar.', retry_default, forfeit_default],
-    ['gvgai_portals',
-        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+    ['expt_antagonist',
+        [[0, 0], [0, 1], [0, 2], [0, 3]], false, 
         '', retry_default, forfeit_default],
-    ['gvgai_zelda', 
-        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        'On this game you can also use the spacebar.', retry_default, forfeit_default],
     ['gvgai_boulderdash', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
         'On this game you can also use the spacebar.', 45, 6*60],
-    ['gvgai_survivezombies',
+    ['gvgai_butterflies', 
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '', 10*60, forfeit_default]
+        '', retry_default, forfeit_default],
+    ['gvgai_portals',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', retry_default, forfeit_default],
 ]
+// var experiments = [
+
+//     ['gvgai_sokoban',
+//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+//         '', 20, forfeit_default],
+//     ['gvgai_butterflies', 
+//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+//         '', retry_default, forfeit_default],
+//     ['gvgai_aliens', 
+//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false, 
+//         'On this game you can also use the spacebar.', 10*60, forfeit_default], // never gets shown
+//     ['gvgai_chase',
+//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+//         '', retry_default, forfeit_default],
+//     ['gvgai_frogs',
+//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+//         '', retry_default, forfeit_default],
+//     ['gvgai_missilecommand',
+//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+//         'On this game you can also use the spacebar.', retry_default, forfeit_default],
+//     ['gvgai_portals',
+//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+//         '', retry_default, forfeit_default],
+//     ['gvgai_zelda', 
+//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+//         'On this game you can also use the spacebar.', retry_default, forfeit_default],
+//     ['gvgai_boulderdash', 
+//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+//         'On this game you can also use the spacebar.', 45, 6*60],
+//     ['gvgai_survivezombies',
+//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+//         '', 10*60, forfeit_default]
+// ]
 // var experiments = [
 
 //     ['gvgai_sokoban',
@@ -119,8 +143,12 @@ var experiments = [
 
 var overtime_limit = 25*60*1000;
 
-var get_exp = function () {
-    return shuffle(experiments);
+var get_exp = function (randomize) {
+    if (randomize) {
+        return shuffle(experiments);
+    } else {
+        return experiments
+    }
 }
 
 // console.log(get_exp());
@@ -137,7 +165,7 @@ var get_exp = function () {
 
 // An object that updates what game its on
 // by calling next
-var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[], randomize_color=true) {
+var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[], randomize_color=false) {
 
 
     if (exp_name == undefined) {
@@ -153,11 +181,12 @@ var Experiment = function (exp_name, cookie, randomize_exp=true, static_exps=[],
     
     var game_number = 0;
 
-    var exp = get_exp();
+    var exp = get_exp(randomize_exp);
     // console.log(exp);
-    if (randomize_exp) {
+    if (randomize_exp === true) {
         exp = shuffle(exp, static_exps);// [exp[0]].concat(shuffle(exp.slice(1, exp.length), static_exps));
     }
+    console.log(exp)
     exp.forEach(settings => {
         game_number ++;
         var game_name = settings[0];

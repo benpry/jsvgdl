@@ -9,6 +9,8 @@ var json_parser = function () {
 	var frame_init = 0;
 	var index = 0;
 	this.post_partial = async function (exp_id, game, data, callback) {
+		callback({success: true});
+		return;
 		if (exp_id == '0') return;
 		var frame_last = game.time;
 		var partial = JSON.stringify(game.gameStates.slice(frame_init, frame_last));
