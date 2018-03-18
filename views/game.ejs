@@ -45,7 +45,7 @@
 
         var color_scheme = <%=game_obj.data.color_scheme%>
         require.setModuleRoot('/');
-        require.run('play_game');
+        require.run('play_game_normal');
     </script>
     
 
@@ -64,6 +64,9 @@
             </div>
             <canvas id="gjs-canvas"></canvas>
 
+        </div>
+        <div id='start-div'>
+            <button id="start">Start</button>
         </div>
     </div>
 

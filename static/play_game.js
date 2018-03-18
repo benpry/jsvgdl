@@ -132,11 +132,12 @@ var retry_game = function () {
 	$('body').addClass('loading')
 	game.paused = true;
 	button_press = true;
-	parser.post_partial(exp_id, game, data, function () {
-		retry_experiment(exp_id, function () {
-			location.reload();
-		})
-	});
+	location.reload();
+	// parser.post_partial(exp_id, game, data, function () {
+	// 	retry_experiment(exp_id, function () {
+	// 		location.reload();
+	// 	})
+	// });
 }
 
 var continue_game = function () {
@@ -164,18 +165,20 @@ var page_refresh = function () {
 	}
 }
 
-$(document).on('click', '#forfeit', forfeit_game);
+var go_back = function () {
+	window.location.href = '/games';
+}
 
+$(document).on('click', '#forfeit', go_back);
 $(document).on('click', '#continue', continue_game);
 
-$(document).on('click', '#return', function () {
-	window.location.href = '/admin';	
-})
+$(document).on('click', '#return', go_back);
 $(document).on('click', '#retry', retry_game);
 
 $(document).on('click', '#pause', function () {
 	game.paused = !game.paused;
 })
+
 $(window).bind('beforeunload', page_refresh);
 
 
@@ -247,6 +250,7 @@ $(document).ready(function () {
 	}
 
 	var begin_game = function () {
+		console.log('starting game');
 		parser = new json_parser();
 		interval = window.setInterval(function(){
 			if (exp_id != '0') {
@@ -281,11 +285,9 @@ $(document).ready(function () {
 	$('#gjs-canvas').focus();
 	$('#start').click(begin_game)
 
-	// start_modal.style.display = 'none';
-	// game.paused = true;
+	start_modal('show');
+	game.paused = true;
 	gamejs.ready(game.run(on_game_end));
-
-	begin_game();
 	
 });
 
