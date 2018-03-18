@@ -70,7 +70,7 @@ var images = require('./routes/images');
 images.use(require_login);
 
 var play = require('./routes/play');
-play.use(require_login);
+// play.use(require_login);
 
 var admin = require('./routes/admin');
 admin.use(require_login);
@@ -81,12 +81,16 @@ experiment.use(validate_exp);
 var experiments = require('./routes/experiments');
 experiments.use(require_login);
 
+var games = require('./routes/games');
+
+
 app.use('/experiment', experiment);
 app.use('/experiments', experiments);
 app.use('/edit', edit);
 app.use('/play', play);
 app.use('/admin', admin);
 app.use('/images', images);
+app.use('/games', games);
 
 // Home Page
 app.get('/', function (req, res) {

@@ -274,7 +274,7 @@ app.delete('/edit/:game_name', require_login, function (req, res) {
 })
 
 // Play a game from the DB
-app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req, res) {
+app.get('/play/:game_name/level/:level/desc/:desc', function (req, res) {
 	var level = parseInt(req.params.level);
 	var desc = parseInt(req.params.desc)
 	var data = {};
@@ -474,6 +474,19 @@ app.post('/experiment/', function (req, res) {
 	req.session.val_id = validation_id;
 	res.send({exp_id: new_exp_id, val_id: validation_id});
 	exp ++;
+});
+
+// Play games without login
+app.get('/games', function (req, res) {
+	var data = {games : []};
+	game_schema.get_games_list((err, games) => {
+		if (err) {
+			console.log(err)
+		} else {
+			data.games = games;
+		}
+		res.render('games', data);
+	});
 });
 
 

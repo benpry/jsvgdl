@@ -124,6 +124,16 @@ li.main {
     background-color: #eee; 
 }
 
+.game-bar {
+    padding-left: 10px;
+    flex-grow: 1;
+    overflow-y: scroll;
+    text-overflow: ellipsis;
+    /*overflow-wrap: break-word;*/
+    background-color: #eee; 
+}
+
+
 .textbox {
     /*float: right;*/
     /*position: fixed;*/
@@ -199,6 +209,25 @@ ul {
 }
 
 .side-bar li.active {
+    background-color: #6D7D7F;
+}
+
+.game-bar li {
+    /*font-size: 18px;*/
+    padding: 0px 0px 10px 10px;
+}
+
+.game-bar li:hover {
+    color: #555599;
+    cursor: pointer;
+}
+
+
+.game-bar li:active {
+    background-color: #AFC8CC;
+}
+
+.game-bar li.active {
     background-color: #6D7D7F;
 }
 
