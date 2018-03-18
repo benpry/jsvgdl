@@ -20,20 +20,20 @@ var json_parser = function () {
 		var last_state = game.gameStates.length;
 		var win = game.gameStates[last_state-1].win;
 		var score = game.gameStates[last_state-1].score;
-		$.ajax({
-			type: 'PUT',
-			url: "/experiment/"+exp_id,
-			data: {timeStamp: JSON.stringify(this.time_stamp),
-			 	   gameStates: partial,
-			 	   index: index,
-			 	   score: score,
-			 	   win: win,
-			 	   steps: steps,
-			 	   frames: game.time,
-			 	   data: data, 
-			 	   time: (Date.now()-load_time) + time},
-			success: callback,
-		})
+		// $.ajax({
+		// 	type: 'PUT',
+		// 	url: "/experiment/"+exp_id,
+		// 	data: {timeStamp: JSON.stringify(this.time_stamp),
+		// 	 	   gameStates: partial,
+		// 	 	   index: index,
+		// 	 	   score: score,
+		// 	 	   win: win,
+		// 	 	   steps: steps,
+		// 	 	   frames: game.time,
+		// 	 	   data: data, 
+		// 	 	   time: (Date.now()-load_time) + time},
+		// 	success: callback,
+		// })
 		index ++;	
 	}
 }
@@ -46,16 +46,7 @@ var next_experiment = function (exp_id, callback) {
 		callback();
 		return;
 	}
-	$.ajax({
-		type: 'POST', 
-		url: '/experiment/'+exp_id+'/next',
-		data: data,
-		success: function (status) {
-			if (status.success) {
-				callback();
-			}
-		}
-	})
+	callback();
 	// post_experiment(exp_id, game, parser, data, 'next', callback);
 }
 
@@ -65,34 +56,7 @@ var retry_experiment = function (exp_id, callback) {
 		callback();
 		return;
 	}
-	
-	$.ajax({
-		type: 'POST', 
-		url: '/experiment/'+exp_id+'/retry',
-		success: function (status) {
-			if (status.success) {
-				callback();
-			}
-		}
-	})
-}
-
-var forfeit_experiment = function (exp_id, callback) {
-	
-	if (exp_id == '0') {
-		callback();
-		return;
-	}
-	
-	$.ajax({
-		type: 'POST', 
-		url: '/experiment/'+exp_id+'/forfeit',
-		success: function (status) {
-			if (status.success) {
-				callback();
-			}
-		}
-	})
+	callback();
 }
 
 
@@ -116,20 +80,8 @@ var interval;
 var parser;
 var button_press = false;
 
-var forfeit_game = function () {
-	$('body').addClass('loading')
-	game.paused = true;
-	button_press = true;
-	parser.post_partial(exp_id, game, data, function () {
-		forfeit_experiment(exp_id, function () {
-			location.reload();
-		})
-	});
-
-}
-
 var retry_game = function () {
-	$('body').addClass('loading')
+	// $('body').addClass('loading')
 	game.paused = true;
 	button_press = true;
 	location.reload();
@@ -140,37 +92,15 @@ var retry_game = function () {
 	// });
 }
 
-var continue_game = function () {
-	$('body').addClass('loading')
-	game.paused = true;
-	button_press = true;
-	parser.post_partial(exp_id, game, data, function () {
-		next_experiment(exp_id, function () {
-			location.reload();
-		});
-	})
-}
-
 var page_refresh = function () {
-	$('body').addClass('loading')
+	// $('body').addClass('loading')
 	game.paused = true
-	if (!button_press) {
-		game.paused = true;
-		parser.post_partial(exp_id, game, data, function () {
-			retry_experiment(exp_id, function () {
-				console.log('game refreshed');
-			})			
-		})
-
-	}
+	location.reload();
 }
 
 var go_back = function () {
 	window.location.href = '/games';
 }
-
-$(document).on('click', '#forfeit', go_back);
-$(document).on('click', '#continue', continue_game);
 
 $(document).on('click', '#return', go_back);
 $(document).on('click', '#retry', retry_game);
@@ -179,7 +109,6 @@ $(document).on('click', '#pause', function () {
 	game.paused = !game.paused;
 })
 
-$(window).bind('beforeunload', page_refresh);
 
 
 $(document).ready(function () {
@@ -187,28 +116,14 @@ $(document).ready(function () {
 	var cont_button = $('<button id="continue">Continue</button>');
 	var return_button = $('<button id="return">Return</button>');
 
-	var forfeit_div = $('<div id="forfeit-div" class="Flex-Container"></div>')
-	var forfeit_text = $(`<p id="forfeit-text">If you want to forfeit the entire game and try a new one, press "Forfeit". 
-		If you forfeit this game you’ll still get your bonus for the levels you won so far.</p>`);
-	var forfeit_button = $('<button id="forfeit">Forfeit</button>');
-
 	var retry_container = $('<div id="retry-div" class="Flex-Container"></div>');
 	var retry_text = $('<p id="retry-text">If you get stuck, you can press "Retry" to reset this level.</p>')
 	var retry_button = $('<button id="retry">Retry</button>')
 	retry_container.append(retry_text)
 	retry_container.append(retry_button)
 
-	var overtime_container = $('<div id="overtime" class="Flex-Container"></div>');
-	var overtime_text = $(`<p id="overtime_text">You’ve now been playing for 25 minutes. 
-		If you want to play more games you can; we’ll pay you 75 cents for each game you win.</p>`);
-	overtime_container.append(overtime_text);
-
-	forfeit_div.append(forfeit_text);
-	forfeit_div.append(forfeit_button);
-
 	var end_game_delay = 1000;
 	var retry_delay = 1000*data.retry_delay;
-	var forfeit_delay = 1000*data.forfeit_delay-data.time;
 	var ended = false;
 
 	var on_game_end = function () {
@@ -233,9 +148,8 @@ $(document).ready(function () {
 			
 			container.append('<br>')
 			container.append(button);
-			// $('#message').empty();
+
 			$('#message').append(container)
-			$('#forfeit-div').remove();
 			$('#retry-text').remove();
 		}	
 
@@ -251,33 +165,10 @@ $(document).ready(function () {
 
 	var begin_game = function () {
 		console.log('starting game');
-		// parser = new json_parser();
-		// interval = window.setInterval(function(){
-		// 	if (exp_id != '0') {
-		// 		parser.post_partial(exp_id, game, data)
-		// 	} else {
-		// 		return;
-		// 	}
-		// }, 2500);
 
 		$('#start-div').remove();
 		game.paused = false;
-		window.setTimeout(function () {
-			console.log('timeout')
-			console.log(ended);
-			if (!ended) {
-				console.log($('#message'));
-				$('#message').empty();
-				$('#message').append(retry_container);
-			}
-		}, retry_delay);
-		// if (data.round >= 3) {
-		// 	$('body').append(forfeit_div);
-		// }
-		window.setTimeout(function () {
-			if (!ended)
-				$('body').append(forfeit_div);
-		}, forfeit_delay);
+
 	}
 
 
@@ -285,7 +176,7 @@ $(document).ready(function () {
 	$('#gjs-canvas').focus();
 	$('#start').click(begin_game)
 
-	
+	game.paused = true;
 	gamejs.ready(game.run(on_game_end));
 	
 });

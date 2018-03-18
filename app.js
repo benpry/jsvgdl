@@ -302,6 +302,18 @@ app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req
 });
 
 
+var convert = function (game_name) {
+	var new_name = game_name;
+	var split_name = game_name.split('_');
+	if (split_name[0] == 'expt') {
+		new_name = 'challenge'+game_name.slice(4);
+	} else if (split_name[0] != 'gvgai') {
+		new_name = 'challenge_'+game_name
+	}
+
+	return [game_name, new_name];
+}
+
 // Play games without login
 app.get('/games', function (req, res) {
 	var data = {games : []};
@@ -310,14 +322,7 @@ app.get('/games', function (req, res) {
 			console.log(err)
 		} else {
 			data.games = games.map(game_name => {
-				var new_name = game_name;
-				if (game_name.split('_') == 'gvgai') {
-					new_name = 'challenge'+game_name.slice(5);
-				} else if (new_name[0]) {
-					new_name = 'challenge'+game_name.slice(4);
-				}
-
-				return [game_name, new_name];
+				return convert(game_name);
 			});
 		}
 		res.render('games', data);
@@ -329,13 +334,8 @@ app.get('/games/:game_name/level/:level/desc/:desc', function (req, res) {
 	var desc = parseInt(req.params.desc)
 	var data = {};
 	data.exp_id = 0;
-	game_name = req.params.game_name;
+	var [game_name, new_name] = convert(req.params.game_name);
 	var new_name = game_name;
-	if (game_name.split('_') == 'gvgai') {
-		new_name = 'challenge'+game_name.slice(5);
-	} else if (new_name[0]) {
-		new_name = 'challenge'+game_name.slice(4);
-	}
 	game_schema.get_game(game_name, level, desc, function (err, game_obj) {
 		if (err) {
 			console.log(err);
