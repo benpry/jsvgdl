@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="/games.js"></script>
+  <script src="/cookies.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto|Lato:regular,bold" rel="stylesheet">
+</head>
+<body>
+  <div class='topnav'>
+    <ul id='nav'>
+      <li id="games">
+        Games
+      </li>
+    </ul>
+  </div>
+  <div class='container'>
+    <div class='game-bar FlexItem'>
+      <ul id='game-bar'>
+        <% for(var i=0; i < games.length; i++) {%>
+         <li class="game" id='<%= games[i] %>'><%= games[i] %></li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+
+</body>
+</html>

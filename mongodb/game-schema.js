@@ -86,14 +86,7 @@ GameSchema.statics.get_games_list = function (callback) {
 	})
 }
 
-GameSchema.statics.get_working_games = function (callback) {
-	this.find((err, games) => {
-		var game_names = games.map(game => {
-			return game.name;
-		})
-		callback(err, game_names.sort());
-	})
-}
+
 
 module.exports = mongoose.model('Game', GameSchema);
 
