@@ -212,7 +212,7 @@ $(document).ready(function () {
 	var ended = false;
 
 	var on_game_end = function () {
-		clearInterval(interval);
+		// clearInterval(interval);
 		game.paused = true;
 		ended = true
 		$('#retry-div').remove()
@@ -251,14 +251,14 @@ $(document).ready(function () {
 
 	var begin_game = function () {
 		console.log('starting game');
-		parser = new json_parser();
-		interval = window.setInterval(function(){
-			if (exp_id != '0') {
-				parser.post_partial(exp_id, game, data)
-			} else {
-				return;
-			}
-		}, 2500);
+		// parser = new json_parser();
+		// interval = window.setInterval(function(){
+		// 	if (exp_id != '0') {
+		// 		parser.post_partial(exp_id, game, data)
+		// 	} else {
+		// 		return;
+		// 	}
+		// }, 2500);
 
 		$('#start-div').remove();
 		game.paused = false;
@@ -285,8 +285,7 @@ $(document).ready(function () {
 	$('#gjs-canvas').focus();
 	$('#start').click(begin_game)
 
-	start_modal('show');
-	game.paused = true;
+	
 	gamejs.ready(game.run(on_game_end));
 	
 });

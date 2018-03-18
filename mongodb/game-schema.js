@@ -86,6 +86,37 @@ GameSchema.statics.get_games_list = function (callback) {
 	})
 }
 
+var good_games = [
+	'expt_antagonist',
+	'expt_exploration_exploitation',
+	'expt_helper',
+	'expt_preconditions',
+	'expt_push_boulders',
+	'expt_relational',
+	'expt_physics_sharpshooter',
+	'frogs',
+	'gvgai_aliens',
+	'gvgai_butterflies',
+	'gvgai_chase',
+	'gvgai_frogs',
+	'gvgai_missile_command',
+	'gvgai_portals',
+	'gvgai_sokoban',
+	'gvgai_zelda'
+
+]
+GameSchema.statics.get_good_games_list = function (callback) {
+	this.find((err, games) => {
+		var game_names = games.map(game => {
+			return game.name
+		}).filter(game_name => {
+			return good_games.includes(game_name);
+		})
+		callback(err, game_names.sort());
+	})
+}
+
+
 
 
 module.exports = mongoose.model('Game', GameSchema);

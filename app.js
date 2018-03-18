@@ -274,7 +274,7 @@ app.delete('/edit/:game_name', require_login, function (req, res) {
 })
 
 // Play a game from the DB
-app.get('/play/:game_name/level/:level/desc/:desc', function (req, res) {
+app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req, res) {
 	var level = parseInt(req.params.level);
 	var desc = parseInt(req.params.desc)
 	var data = {};
@@ -300,6 +300,62 @@ app.get('/play/:game_name/level/:level/desc/:desc', function (req, res) {
 	});
 	
 });
+
+
+// Play games without login
+app.get('/games', function (req, res) {
+	var data = {games : []};
+	game_schema.get_good_games_list((err, games) => {
+		if (err) {
+			console.log(err)
+		} else {
+			data.games = games.map(game_name => {
+				var new_name = game_name;
+				if (game_name.split('_') == 'gvgai') {
+					new_name = 'challenge'+game_name.slice(5);
+				} else if (new_name[0]) {
+					new_name = 'challenge'+game_name.slice(4);
+				}
+
+				return [game_name, new_name];
+			});
+		}
+		res.render('games', data);
+	});
+});
+
+app.get('/games/:game_name/level/:level/desc/:desc', function (req, res) {
+	var level = parseInt(req.params.level);
+	var desc = parseInt(req.params.desc)
+	var data = {};
+	data.exp_id = 0;
+	game_name = req.params.game_name;
+	var new_name = game_name;
+	if (game_name.split('_') == 'gvgai') {
+		new_name = 'challenge'+game_name.slice(5);
+	} else if (new_name[0]) {
+		new_name = 'challenge'+game_name.slice(4);
+	}
+	game_schema.get_game(game_name, level, desc, function (err, game_obj) {
+		if (err) {
+			console.log(err);
+			res.render('game', data)
+		} else {
+			data.game_obj = game_obj;
+			data.game_obj.time = 60*10*1000
+			data.game_obj.data = {name: new_name, 
+								  number: 0,
+								  round: 0,
+								  desc: desc,
+								  level: level,
+								  retry_delay: 60*10*1000,
+								  color_scheme: 0,
+								  forfeit_delay: 60*10*1000,
+								  time: 60*10*1000};
+			res.render('play_game', data);
+		}
+	});
+})
 
 // Administrative
 app.get('/admin', require_login, function (req, res) {
@@ -476,18 +532,6 @@ app.post('/experiment/', function (req, res) {
 	exp ++;
 });
 
-// Play games without login
-app.get('/games', function (req, res) {
-	var data = {games : []};
-	game_schema.get_games_list((err, games) => {
-		if (err) {
-			console.log(err)
-		} else {
-			data.games = games;
-		}
-		res.render('games', data);
-	});
-});
 
 
 // If a user types in an incorrect URL, they get redirected here.
