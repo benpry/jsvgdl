@@ -1,5 +1,5 @@
 var play_game = function (game_name, desc, level) {
-  window.location.href = `/games/${game_name}/level/${level}/desc/${desc}`;
+  window.location.href = `/games/${game_name}`;
 }
 
 $(document).ready(function () {

@@ -66,10 +66,10 @@ var retry_experiment = function (exp_id, callback) {
  * Draw lines, polygons, circles, etc on the screen.
  * Render text in a certain font to the screen.
  */
-
 var gamejs = require('gamejs');;
 var vgdl_parser = VGDLParser(gamejs);
-var game = vgdl_parser.playGame(vgdl_game.game, vgdl_game.level, color_scheme);
+
+
 // var on_game_end = function () {
 // }
 // game.paused = false;
@@ -112,6 +112,7 @@ $(document).on('click', '#pause', function () {
 
 
 $(document).ready(function () {
+	var game = vgdl_parser.playGame(vgdl_game.game, vgdl_game.level, color_scheme);
 
 	var cont_button = $('<button id="continue">Continue</button>');
 	var return_button = $('<button id="return">Return</button>');

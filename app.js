@@ -19,6 +19,13 @@ var game_schema = require('./mongodb/game-schema.js');
 var subject_schema = require('./mongodb/subject-schema.js');
 var exp_schema = require('./mongodb/experiment-schema.js');
 
+// game_schema.delete_level('expt_exploration_exploitation', 0, function () {
+// 	console.log('level deleted');
+// })
+// game_schema.delete_description('expt_exploration_exploitation', 0, function () {
+// 	console.log('desc deleted');
+// })
+
 var storage = multer.diskStorage({
 	destination: 'static/images/',
 	filename: function (req, file, callback) {
@@ -329,14 +336,14 @@ app.get('/games', function (req, res) {
 	});
 });
 
-app.get('/games/:game_name/level/:level/desc/:desc', function (req, res) {
+app.get('/games/:game_name', function (req, res) {
 	var level = parseInt(req.params.level);
 	var desc = parseInt(req.params.desc)
 	var data = {};
 	data.exp_id = 0;
 	var [game_name, new_name] = convert(req.params.game_name);
-	var new_name = game_name;
-	game_schema.get_game(game_name, level, desc, function (err, game_obj) {
+	
+	game_schema.get_game(game_name, 0, 0, function (err, game_obj) {
 		if (err) {
 			console.log(err);
 			res.render('game', data)

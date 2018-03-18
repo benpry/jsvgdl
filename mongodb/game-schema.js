@@ -33,16 +33,24 @@ GameSchema.statics.delete_game = function (game_name, callback) {
 }
 
 GameSchema.statics.delete_level = function (game_name, level_num, callback) {
-	this.findOne({name: game_name}, (err, game) => {
-		game.levels.splice(level_num, 1);
-		game.save();
+	this.findOne({}, game_name, (err, game) => {
+		if (game) {
+			game.levels.splice(level_num, 1);
+			game.save();
+		} else {
+			console.log('Could not delete level. Game was not found', game_name);
+		}
 	}, callback)
 }
 
 GameSchema.statics.delete_description = function (game_name, desc_num, callback) {
-	this.findOne({name: game_name}, (err, game) => {
-		game.descs.splice(desc_num, 1);
-		game.save();
+	this.findOne({}, game_name, (err, game) => {
+		if (game) {
+			game.descs.splice(desc_num, 1);
+			game.save();
+		} else {
+			console.log('Could not delete description. game was not found', game_name)
+		}
 	}, callback)
 }
 
@@ -94,7 +102,6 @@ var good_games = [
 	'expt_push_boulders',
 	'expt_relational',
 	'expt_physics_sharpshooter',
-	'frogs',
 	'gvgai_aliens',
 	'gvgai_butterflies',
 	'gvgai_chase',
