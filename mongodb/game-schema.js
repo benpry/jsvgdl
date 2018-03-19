@@ -18,6 +18,7 @@ GameSchema.statics.add_game = function (game_name, descs, levels, callback) {
 }
 
 GameSchema.statics.update_game = function (game_name, descs, levels, callback) {
+	console.log(descs[0]);
 	this.update({name: game_name}, {
 		levels: levels,
 		descs: descs
@@ -65,8 +66,6 @@ GameSchema.statics.get_full_games = function (callback) {
 
 GameSchema.statics.get_full_game = function (game_name, callback) {
 	this.findOne({name: game_name}, (err, game) => {
-		game.level = 0
-		game.desc = 0
 		callback(err, game);
 	})
 }

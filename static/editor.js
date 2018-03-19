@@ -1,10 +1,9 @@
-var cache_game_objs = {} 
 var current_game_obj = {}
 var exp_descs = {};
 
-var cache_game = function () {
-  if (current_game_obj) cache_game_objs[current_game_obj.name] = current_game_obj;
-}
+// var cache_game = function () {
+//   if (current_game_obj) cache_game_objs[current_game_obj.name] = current_game_obj;
+// }
 
 var get_exp_descs = function (callback) {
   $.ajax({
@@ -16,15 +15,12 @@ var get_exp_descs = function (callback) {
 
 
 var get_game = function (game_name, callback) {
-  if (game_name in cache_game_objs) {
-    callback(cache_game_objs[game_name])
-  } else {
-    $.ajax({
-      type: "GET",
-      url: `/edit/${game_name}`,
-      success: callback,
-    });
-  }
+  $.ajax({
+    type: "GET",
+    url: `/edit/${game_name}`,
+    success: callback,
+  });
+
 }
 
 var delete_game = function (game_name, callback) {
@@ -40,14 +36,13 @@ var delete_game = function (game_name, callback) {
 }
 
 var save_game = function (callback) {
-  cache_game();
   if (!(current_game_obj.name)) {
     callback({success: false});
     return;
   }
   current_game_obj.descs[current_game_obj.desc] = $('#game_area').val();
   current_game_obj.levels[current_game_obj.level] = $('#level_area').val();
-  document.cookie = `cookie=${JSON.stringify(current_game_obj)}`
+  // document.cookie = `cookie=${JSON.stringify(current_game_obj)}`
   $.ajax({
     type: "PUT",
     url: `/edit/${current_game_obj.name}`,
@@ -68,7 +63,7 @@ var add_game = function (game_obj, callback) {
 var update_text_areas = function () {
   $('#game_area').val(current_game_obj.descs[current_game_obj.desc]);
   $('#level_area').val(current_game_obj.levels[current_game_obj.level]);
-  document.cookie = `cookie=${JSON.stringify(current_game_obj)}`
+  // document.cookie = `cookie=${JSON.stringify(current_game_obj)}`
   $('textarea').each(function () {
     $(this).attr('readonly', false);
   })
@@ -85,7 +80,8 @@ var update_nav_bar = function (game_name) {
 
 // Update current game object to the given game_obj
 var update_game_obj = function (game_obj) {
-  cache_game();
+  game_obj.level = 0;
+  game_obj.desc = 0;
   current_game_obj = game_obj;
   var i = 0;
   update_text_areas()
@@ -313,8 +309,8 @@ $(document).ready(function () {
     window.location.href = '/';
   })
 
-  var cookie = getCookie('cookie')
-  console.log(cookie)
+  // var cookie = getCookie('cookie')
+  // console.log(cookie)
   // if (cookie) {
   //   update_game_obj(cookie)
   //   $('.side-bar ul li').each(function () {

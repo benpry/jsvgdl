@@ -28,12 +28,8 @@ var BasicGame = function (gamejs, args) {
 	//grab all arguments
 	that.frame_rate = 20;
 	for (arg in args) {
-		if (arg in that)
-			that[arg] = args[arg];
-		else
-			console.log(`WARNING: undefined parameters ${arg} for game!`);
+		that[arg] = args[arg];
 	}
-
 
 
 	// that.use_images = ['error.png'];
