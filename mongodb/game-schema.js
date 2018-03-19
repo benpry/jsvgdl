@@ -18,7 +18,6 @@ GameSchema.statics.add_game = function (game_name, descs, levels, callback) {
 }
 
 GameSchema.statics.update_game = function (game_name, descs, levels, callback) {
-	console.log(descs[0]);
 	this.update({name: game_name}, {
 		levels: levels,
 		descs: descs
