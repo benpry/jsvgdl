@@ -1,7 +1,6 @@
 var tools = Tools();
 
 function VGDLSprite(gamejs, pos, size, args) {
-
 	
 	this.gamejs = gamejs
 
@@ -59,7 +58,6 @@ VGDLSprite.dirtyrects = [];
 
 VGDLSprite.prototype = {
 	update : function (game) {
-
 		this.x = this.rect.x;
 		this.y = this.rect.y;
 

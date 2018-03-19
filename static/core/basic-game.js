@@ -85,7 +85,7 @@ var BasicGame = function (gamejs, args) {
 		console.assert(that.width > 1 && that.height > 1, 'Level too small');
 
 		// rescale pixels per block to adapt to the level
-		that.block_size = Math.max(2, Math.floor(800/Math.max(that.width, that.height)));
+		that.block_size = Math.min(50, Math.floor(500/Math.max(that.width, that.height)));
 		that.screensize = [that.width*that.block_size, that.height*that.block_size];
 
 		//Set up resources

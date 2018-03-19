@@ -236,7 +236,6 @@ app.post('/experiments', require_login, function (req, res) {
 // Editor pages
 // Handles saving and loading games
 app.get('/edit/:game_name', require_login, function (req, res) {
-	console.log(req.params.game_name);
 	game_schema.get_full_game(req.params.game_name, function (err, game_obj) {
 		res.send(game_obj)
 	})

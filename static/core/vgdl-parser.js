@@ -21,8 +21,6 @@ var VGDLParser = function (gamejs) {
 
 		var [sclass, args] = _parseArgs(tree.content);
 		parser.game = new sclass(gamejs, args); //always start it with gamejs
-		console.log(args);
-
 		tree.children.forEach(function (child) {
 			parse[child.content](child.children);
 		});
