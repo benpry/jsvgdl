@@ -101,12 +101,10 @@ var good_games = [
 	'expt_preconditions',
 	'expt_push_boulders',
 	'expt_relational',
-	'expt_physics_sharpshooter',
-	'gvgai_aliens',
+	'gvgai_boulderdash',
 	'gvgai_butterflies',
 	'gvgai_chase',
 	'gvgai_frogs',
-	'gvgai_missile_command',
 	'gvgai_portals',
 	'gvgai_sokoban',
 	'gvgai_zelda'
