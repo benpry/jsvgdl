@@ -31,6 +31,8 @@ var BasicGame = function (gamejs, args) {
 		that[arg] = args[arg];
 	}
 
+	that.block_size = block_size*5
+
 
 	// that.use_images = ['error.png'];
 	// contains mappings to constructor (just a few defaults are known)
@@ -82,10 +84,15 @@ var BasicGame = function (gamejs, args) {
 
 		that.width = lengths[0];
 		that.height = lines.length;
+
 		console.assert(that.width > 1 && that.height > 1, 'Level too small');
 
 		// rescale pixels per block to adapt to the level
-		that.block_size = Math.min(50, Math.floor(500/Math.max(that.width, that.height)));
+		var window_width = window.innerWidth/1.5;
+		var window_height = window.innerHeight/2;
+
+		console.log(window_height/that.height, window_width/that.width)
+		that.block_size =parseInt(Math.min(window_height/that.height, window_width/that.width));
 		that.screensize = [that.width*that.block_size, that.height*that.block_size];
 
 		//Set up resources
