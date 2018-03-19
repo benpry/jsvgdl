@@ -74,6 +74,7 @@ var experiments = {};
 var exp = 0;
 
 
+var Playable = require('./experiments/playable.js')();
 // console.log(Experiment)
 
 // Use once ready!
@@ -336,32 +337,47 @@ app.get('/games', function (req, res) {
 	});
 });
 
-app.get('/games/:game_name', function (req, res) {
-	var level = parseInt(req.params.level);
-	var desc = parseInt(req.params.desc)
-	var data = {};
-	data.exp_id = 0;
-	var [game_name, new_name] = convert(req.params.game_name);
-	
-	game_schema.get_game(game_name, 0, 0, function (err, game_obj) {
-		if (err) {
-			console.log(err);
-			res.render('game', data)
-		} else {
-			data.game_obj = game_obj;
-			data.game_obj.time = 60*10*1000
-			data.game_obj.data = {name: new_name, 
-								  number: 0,
-								  round: 0,
-								  desc: desc,
-								  level: level,
-								  retry_delay: 60*10*1000,
-								  color_scheme: 0,
-								  forfeit_delay: 60*10*1000,
-								  time: 60*10*1000};
-			res.render('play_game', data);
+app.get('/games/:game_name/:pair', function (req, res, next) {
+
+	var pair = parseInt(req.params.pair);
+	var game_name = req.params.game_name
+	var current = Playable.get_pair(game_name, pair);
+	var next = false;
+	var prev = false;
+
+	if (!current) {
+		next();
+	} else {
+		if (Playable.get_pair(game_name, pair+1)) {
+			next = true;
 		}
-	});
+		if (Playable.get_pair(game_name, pair-1)) {
+			prev = true;
+		}
+		var level = current.level;
+		var desc = current.desc;
+		var data = {};
+		data.exp_id = 0;
+		var [game_name, new_name] = convert(game_name);
+		
+		game_schema.get_game(game_name, level, desc, function (err, game_obj) {
+			if (err) {
+				console.log(err);
+				res.render('game', data)
+			} else {
+				data.game_obj = game_obj;
+				data.game_obj.time = 60*10*1000
+				data.game_obj.data = {real: game_name,
+									  name: new_name, 
+									  desc: desc,
+									  level: level,
+									  pair: pair,
+									  next: next,
+									  prev: prev}
+				res.render('play_game', data);
+			}
+		});
+	}
 })
 
 // Administrative

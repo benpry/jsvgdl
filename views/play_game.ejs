@@ -33,17 +33,13 @@
 
         var exp_id = '<%-exp_id%>';
         var data = {};
+        data.real = '<%-game_obj.data.real%>'
         data.name = '<%-game_obj.data.name%>'
-        data.number = <%=game_obj.data.number%>
-        data.round = <%=game_obj.data.round%>
         data.desc = <%=game_obj.data.desc%>
         data.level = <%=game_obj.data.level%>
-        data.retry_delay = <%=game_obj.data.retry_delay%>
-        data.forfeit_delay = <%=game_obj.data.forfeit_delay%>
-        data.time = <%=game_obj.data.time%>
-        var time = <%=game_obj.time%>
+        data.pair = <%=game_obj.data.pair%>
+        data.next = <%=game_obj.data.next%>
 
-        var color_scheme = <%=game_obj.data.color_scheme%>
         require.setModuleRoot('/');
         require.run('play_game');
     </script>
@@ -65,8 +61,28 @@
             <canvas id="gjs-canvas"></canvas>
 
         </div>
-        <div id='start-div'>
-            <button id="start">Start</button>
+        <div class="flex-buttons">
+            <div class="flex-button" id='start-div'>
+                <button id="start">Start</button>
+            </div>
+        </div>
+        <div class="flex-buttons">
+            <% if (game_obj.data.prev) { %>
+            <div class="flex-button" id='prev-div'>
+                <button id='prev'>Previous Level</button>
+            </div>
+            <% } %>
+
+            <% if (game_obj.data.next) { %>
+            <div class="flex-button" id='next-div'>  
+                <button id='next'>Next Level</button>
+            </div>
+            <% } %>
+        </div>
+        <div class="flex-buttons">
+            <div class="flex-button" id="return-div">
+                <button id="return">Return to Games List</button>
+            </div>
         </div>
     </div>
 

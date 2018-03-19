@@ -110,8 +110,8 @@ var good_games = [
 	'gvgai_portals',
 	'gvgai_sokoban',
 	'gvgai_zelda'
-
 ]
+
 GameSchema.statics.get_good_games_list = function (callback) {
 	this.find((err, games) => {
 		var game_names = games.map(game => {

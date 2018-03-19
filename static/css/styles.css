@@ -30,6 +30,17 @@ input {
     justify-content: center;
 }
 
+.flex-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-button {
+    margin: 10px;
+}
+
 p {
     text-align: center;
 }
