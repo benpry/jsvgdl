@@ -9,7 +9,7 @@ var pairs = {'gvgai_sokoban': [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]],
              'expt_relational': [[0, 0], [0, 1], [0, 2], [1, 3]], 
              'expt_preconditions': [[0, 0], [0, 1], [0, 2], [0, 3]], 
              'expt_antagonist': [[0, 0], [0, 1], [0, 2], [0, 3]],
-             'expt_exploration_exploitation': [[0, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5]],
+             'expt_exploration_exploitation': [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5]],
              'expt_physics_sharpshooter': [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]],
              'expt_helper': [[0, 0], [0, 1], [0, 2], [0, 3]]}
 
