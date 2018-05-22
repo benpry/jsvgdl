@@ -98,14 +98,15 @@ var good_games = [
 	'expt_helper',
 	'expt_preconditions',
 	'expt_push_boulders',
-	'expt_relational',
+	'gvgai_aliens',
 	'gvgai_boulderdash',
 	'gvgai_butterflies',
 	'gvgai_chase',
 	'gvgai_frogs',
+	'gvgai_missilecommand', // new
 	'gvgai_portals',
 	'gvgai_sokoban',
-	'gvgai_zelda'
+	'gvgai_zelda' // new
 ]
 
 GameSchema.statics.get_good_games_list = function (callback) {
