@@ -62,12 +62,12 @@ app.use(bodyParser.urlencoded({
 
 // PostgreSQL DB 
 var reset = true;
-if (process.env.PORT || reset) {
-	var DB = require('./db.js')()
-} else {
-	var DB = require('./mock_db.js')()
-	console.log('***\nUsing mock data base for testing. Changes will only be saved locally.\n')
-}
+// if (process.env.PORT || reset) {
+var DB = require('./db.js')()
+// } else {
+// 	var DB = require('./mock_db.js')()
+// 	console.log('***\nUsing mock data base for testing. Changes will only be saved locally.\n')
+// }
 
 var Experiment = require('./experiments/experiment.js');
 var experiments = {};
