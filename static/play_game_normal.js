@@ -248,14 +248,14 @@ $(document).ready(function () {
 
 	var begin_game = function () {
 		console.log('starting game')
-		// parser = new json_parser();
-		// interval = window.setInterval(function(){
-		// 	if (exp_id != '0') {
-		// 		parser.post_partial(exp_id, game, data)
-		// 	} else {
-		// 		return;
-		// 	}
-		// }, 2500);
+		parser = new json_parser();
+		interval = window.setInterval(function(){
+			if (exp_id != '0') {
+				parser.post_partial(exp_id, game, data)
+			} else {
+				return;
+			}
+		}, 2500);
 
 		$('#start-div').remove();
 		game.paused = false;
