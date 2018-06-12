@@ -74,9 +74,9 @@ var forfeit_default = 4*60;
 // ]
 
 var experiments = [
-    ['gvgai_clusters',
-        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-        '', 20, forfeit_default],
+    //['gvgai_clusters',
+    //    [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+    //    '', 20, forfeit_default],
     ['gvgai_sokoban',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
         '', 20, forfeit_default],
