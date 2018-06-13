@@ -224,9 +224,9 @@ var overtime_limit = 25*60*1000;
 
 var get_exp = function (randomize) {
     if (randomize) {
-        return shuffle(experiments)[:num_per_participant];
+        return shuffle(experiments).slice(0, num_per_participant);
     } else {
-        return experiments[:num_per_participant];
+        return experiments.slice(0, num_per_participant);
     }
 }
 
