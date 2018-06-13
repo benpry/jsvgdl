@@ -13,6 +13,12 @@ function getColor(sprite) {
 	}
 }
 
+function scoreChange(sprite, partner, game, kwargs) {
+	game.score += kwargs.score;
+
+	return ['scoreChange', sprite.ID || sprite, partner.ID || partner]
+}
+
 function nothing (sprite, partner, game, kwargs) {
 	return ['nothing', sprite.ID || sprite, partner.ID || partner]
 }

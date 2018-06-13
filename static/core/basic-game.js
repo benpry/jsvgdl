@@ -566,7 +566,8 @@ var BasicGame = function (gamejs, args) {
 
 				if ('scoreChange' in kwargs) {
 					kwargs = Object.assign({}, kwargs);
-					score = kwargs['scoreChange'];
+					kwargs.score = kwargs['scoreChange'];
+					effect = scoreChange;
 					delete kwargs['scoreChange'];
 				}
 				var dim = null;
