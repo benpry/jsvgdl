@@ -47,6 +47,7 @@ var randint = function (r, m, s) {
 // seconds
 var retry_default = 30;
 var forfeit_default = 4*60;
+var num_per_participant = 10;
 // [name, [[desc_num, level_num], ], random_flag, help_string, retry_delay, forfeit_delay]
 
 // var experiments = [
@@ -77,7 +78,76 @@ var experiments = [
     //['gvgai_clusters',
     //    [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
     //    '', 20, forfeit_default],
+    ['gvgai_angelsdemons',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_avoidgeorge',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_bait',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_boulderchase',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_camelRace',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_chopper',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_clusters',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_cookmepasta',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_infection',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_jaws',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_lemmings',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_modality',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
     ['gvgai_watergame',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_myAliens',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_overload',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_plants',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_plaqueattack',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_shipwreck',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_superman',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_tercio',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_thesnowman',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_watergame',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_waves',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_wildgunman',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
         '', 20, forfeit_default],
     ['gvgai_sokoban',
@@ -154,9 +224,9 @@ var overtime_limit = 25*60*1000;
 
 var get_exp = function (randomize) {
     if (randomize) {
-        return shuffle(experiments);
+        return shuffle(experiments)[:num_per_participants];
     } else {
-        return experiments
+        return experiments[:num_per_participants]
     }
 }
 
