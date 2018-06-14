@@ -1,9 +1,10 @@
 var Resource = function (gamejs, pos, size, args) {
 	var that = this;
 	VGDLSprite.call(this, gamejs, pos, size, args);
-	this.value = 1;
-	this.limit = 2;
-	this.res_type = null;
+	console.log(args);
+	this.value = args.value || 1;
+	this.limit = args.limit || 2;
+	this.res_type = args.res_type || null;
 	// console.log(this.rect);
 	// return that
 }
