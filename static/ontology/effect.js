@@ -19,6 +19,8 @@ function scoreChange(sprite, partner, game, kwargs) {
 	return ['scoreChange', sprite.ID || sprite, partner.ID || partner]
 }
 
+changeScore = scoreChange;
+
 function nothing (sprite, partner, game, kwargs) {
 	return ['nothing', sprite.ID || sprite, partner.ID || partner]
 }
