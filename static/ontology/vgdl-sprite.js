@@ -449,7 +449,7 @@ Chaser.prototype._closestTargets = function (game) {
 	var res = [];
 	var that = this;
 	// console.log(this.stype);
-	// console.log(game.getSprites(this.stype)[0].name);
+	// console.log(game.getSprites(this.stype).map(s => {return s.name}));
 	game.getSprites(this.stype).forEach(target => {
 		var d = that.physics.distance(that.rect, target.rect);
 		// console.log(d)
@@ -494,8 +494,9 @@ Chaser.prototype.update = function (game) {
 	this._closestTargets(game).forEach(target => {
 		options = options.concat(that._movesToward(game, target));
 	});
-	if (options.length == 0)
+	if (options.length == 0) {
 		options = BASEDIRS;
+	}
 	this.physics.activeMovement(this, options.randomElement());
 }
 

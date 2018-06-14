@@ -157,13 +157,13 @@ var BasicGame = function (gamejs, args) {
 				return;
 			}
 			var [sclass, args, stypes] = that.sprite_constr[key];
+			console.log(stypes);
 			var anyother = false;
 
 			// console.log(stypes);
 			// console.log(that.singletons)
 			// console.log(stypes);
 			stypes.reverse().forEach(pk => {
-				if (anyother) return;
 				if (that.singletons.contains(pk)){
 					if (that.numSprites(pk) > 0) {
 						anyother = true;
@@ -233,11 +233,10 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that.getSprites = function (key) {
-		if (that.sprite_groups[key] instanceof Array){
-			return that.sprite_groups[key].filter(function(s) {return that.kill_list.indexOf(s) == -1});
-		}
+		if (that.sprite_groups[key] instanceof Array)
+			return that.sprite_groups[key].filter(s => {return that.kill_list.indexOf(s) == -1});
 		else
-			return that._iterAll().filter(function(s) {return that.kill_list.indexOf(s) == -1});
+			return that._iterAll().filter(s => {return (s.stypes.contains(key) && that.kill_list.indexOf(s) == -1)});
 	}
 
 	that.getAvatars = function () {
