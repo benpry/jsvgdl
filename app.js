@@ -125,10 +125,12 @@ var logged_in = {};
 // Login middleware
 // validates session id with user login.
 function require_login (req, res, next) {
-	if (req.session.logged_in) 
+	if (req.session.logged_in) {
 		next();
-	else
-		res.redirect('/admin/login');
+	}
+	else{
+		res.redirect('/admin/login/?path='+req.path);
+	}
 }
 
 
@@ -410,14 +412,18 @@ app.post('/admin/login', function (req, res) {
 		req.session.id = shortid.generate();
 		req.session.logged_in = true;
 		req.session.save();
-
 		res.redirect('/admin');
 	} else {
+
 		res.redirect('/admin/login');
 	}
 
 });
 
+// Database downloads
+app.get('/db', require_login, function (req, res) {
+	res.render('downloads');
+})
 
 
 // Sends the current game to be played for the given experiment id
