@@ -205,9 +205,10 @@ $(document).ready(function () {
 	var forfeit_delay = 1000*data.forfeit_delay-data.time;
 	var ended = false;
 
-	var score_container = $('<h2 id="score">Score: <span id="score-value">0</span></h2>');
-
-	$('#header').append(score_container)
+	if (show_score) {
+		var score_container = $('<h2 id="score">Score: <span id="score-value">0</span></h2>');
+		$('#game-body').prepend(score_container)
+	}
 
 	var on_game_end = function () {
 		// clearInterval(interval);

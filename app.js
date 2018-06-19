@@ -69,6 +69,7 @@ var DB = require('./db.js')()
 // 	console.log('***\nUsing mock data base for testing. Changes will only be saved locally.\n')
 // }
 
+var show_score = true;
 var Experiment = require('./experiments/experiment.js');
 var experiments = {};
 var exp = 0;
@@ -298,7 +299,7 @@ app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req
 		} else {
 			data.game_obj = game_obj;
 			data.game_obj.time = 60*10*1000
-			data.game_obj.show_score = true;
+			data.game_obj.show_score = show_score;
 			data.game_obj.data = {name: req.params.game_name, 
 								  number: 0,
 								  round: 0,
@@ -372,7 +373,7 @@ app.get('/games/:game_name/:pair', function (req, res, next) {
 			} else {
 				data.game_obj = game_obj;
 				data.game_obj.time = 60*10*1000
-				data.game_obj.show_score = true;
+				data.game_obj.show_score = show_score;
 				data.game_obj.data = {real: game_name,
 									  name: new_name, 
 									  desc: desc,
