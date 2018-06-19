@@ -495,6 +495,17 @@ var BasicGame = function (gamejs, args) {
 		return Object.assign(lastcollisions, that.sprite_groups);
 	}
 
+	that._multi_effect = function () {
+	  function r (sprite, partner, game, kwargs) {
+	  	  var value;
+		  for (var i = 0; i < arguments.length; i++) {
+		    value = arguments[i](sprite, partner, game, kwargs)
+		  }
+		  return value;
+		}
+	  return r;
+	}
+
 	that._eventHandling = function () {
 
 		that.effectList = [];
@@ -553,7 +564,7 @@ var BasicGame = function (gamejs, args) {
 				if ('scoreChange' in kwargs) {
 					kwargs = Object.assign({}, kwargs);
 					kwargs.score = kwargs['scoreChange'];
-					effect = scoreChange;
+					var effect = that._multi_effect(effect, scoreChange)
 					delete kwargs['scoreChange'];
 				}
 				var dim = null;

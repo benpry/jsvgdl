@@ -1135,8 +1135,11 @@ Rect.prototype.collidePoint = function() {
  * @returns {Boolean} true if the given Rect collides with this Rect
  */
 Rect.prototype.collideRect = function(rect) {   
-   return (this.left < rect.right && this.right > rect.left &&
-			this.top < rect.bottom && this.bottom > rect.top);
+   collision = (Math.floor(this.left) < Math.floor(rect.right) && 
+   				Math.floor(this.right) > Math.floor(rect.left) &&
+				Math.floor(this.top) < Math.floor(rect.bottom) && 
+				Math.floor(this.bottom) > Math.floor(rect.top));
+   return collision;
 };
 
 /**
