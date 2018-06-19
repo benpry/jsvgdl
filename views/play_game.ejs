@@ -39,7 +39,8 @@
         data.level = <%=game_obj.data.level%>
         data.pair = <%=game_obj.data.pair%>
         data.next = <%=game_obj.data.next%>
-        data.show_score = <%=game_obj.data.show_score%>
+        
+        var show_score = <%=game_obj.show_score%>
 
         require.setModuleRoot('/');
         require.run('play_game');
@@ -49,7 +50,7 @@
 </head>
 <body>
     <div class="Flex-Container">
-        <div id='header'>
+        <div id='header' class="Flex-Container">
           <h1 id="title"><%=game_obj.data.name%></h1>
         </div> 
         <div id='message'>

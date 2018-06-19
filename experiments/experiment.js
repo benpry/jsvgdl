@@ -48,6 +48,7 @@ var randint = function (r, m, s) {
 var retry_default = 30;
 var forfeit_default = 4*60;
 var num_per_participant = 10;
+var show_score = true;
 // [name, [[desc_num, level_num], ], random_flag, help_string, retry_delay, forfeit_delay]
 
 // var experiments = [
@@ -244,7 +245,7 @@ var get_exp = function (randomize) {
 
 // An object that updates what game its on
 // by calling next
-var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[], randomize_color=false) {
+var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[], randomize_color=false, show_score=true) {
 
 
     if (exp_name == undefined) {
@@ -303,6 +304,7 @@ var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[]
     experiment.overtime_check = true;
     experiment.ended = false;
     experiment.continued = false;
+    experiment.show_score = show_score;
 
     return experiment
 
@@ -444,5 +446,7 @@ Experiment.timeout = function (experiment) {
 }
 
 Experiment.experiments = experiments;
+
+Experiment.show_score = show_score;
 
 module.exports = Experiment;

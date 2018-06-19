@@ -534,6 +534,7 @@ Rect.prototype.collideRect = function(rect) {
    return (this.left < rect.right && this.right > rect.left &&
       this.top < rect.bottom && this.bottom > rect.top);
 };
+
 /**
  * test if all rectangles in a list intersect
  * @param {Array [gamejs.Rect]} Array of rects the Rect to test check for collision

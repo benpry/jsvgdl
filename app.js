@@ -298,6 +298,7 @@ app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req
 		} else {
 			data.game_obj = game_obj;
 			data.game_obj.time = 60*10*1000
+			data.game_obj.show_score = true;
 			data.game_obj.data = {name: req.params.game_name, 
 								  number: 0,
 								  round: 0,
@@ -306,8 +307,7 @@ app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req
 								  retry_delay: 60*10*1000,
 								  color_scheme: 0,
 								  forfeit_delay: 60*10*1000,
-								  time: 60*10*1000,
-								  show_score: true};
+								  time: 60*10*1000};
 			res.render('game', data);
 		}
 	});
@@ -372,14 +372,14 @@ app.get('/games/:game_name/:pair', function (req, res, next) {
 			} else {
 				data.game_obj = game_obj;
 				data.game_obj.time = 60*10*1000
+				data.game_obj.show_score = true;
 				data.game_obj.data = {real: game_name,
 									  name: new_name, 
 									  desc: desc,
 									  level: level,
 									  pair: pair,
 									  next: next,
-									  prev: prev,
-									  show_score: true}
+									  prev: prev}
 				res.render('play_game', data);
 			}
 		});
@@ -463,7 +463,7 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 				data.game_obj.round = current_game.round;
 				data.game_obj.data = Experiment.get_data(current_exp);
 				data.game_obj.time = current_game.time;
-				data.game_obj.show_score = true;
+				data.game_obj.show_score = Experiment.show_score;
 				res.render('game', data);
 			}
 		});

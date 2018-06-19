@@ -848,6 +848,8 @@ var BasicGame = function (gamejs, args) {
 				return
 			};
 
+
+
 			// console.log(that.kill_list);
 
 			new_time = new Date().getTime();
@@ -856,6 +858,8 @@ var BasicGame = function (gamejs, args) {
 			if (ms < mpf) return;
 
 			pre_time = new_time;
+
+			$('#score-value').text(that.score);
 
 			that._terminationHandling();
 			that._eventHandling();
