@@ -63,6 +63,9 @@ $(document).ready(function () {
 	var end_game_delay = 1000
 	var ended = false;
 
+	var score_container = $('<h2 id="score">Score: 0</h2>');
+
+	$('#header').append(score_container)
 	var on_game_end = function () {
 		game.paused = true;
 		ended = true
@@ -100,7 +103,6 @@ $(document).ready(function () {
 	}
 
 	var begin_game = function () {
-		console.log('starting game');
 
 		$('#start').remove();
 		game.paused = false;

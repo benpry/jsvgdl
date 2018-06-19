@@ -91,7 +91,6 @@ var BasicGame = function (gamejs, args) {
 		var window_width = window.innerWidth/1.5;
 		var window_height = window.innerHeight/2;
 
-		console.log(window_height/that.height, window_width/that.width)
 		that.block_size =parseInt(Math.min(window_height/that.height, window_width/that.width));
 		that.screensize = [that.width*that.block_size, that.height*that.block_size];
 
@@ -157,7 +156,6 @@ var BasicGame = function (gamejs, args) {
 				return;
 			}
 			var [sclass, args, stypes] = that.sprite_constr[key];
-			console.log(stypes);
 			var anyother = false;
 
 			// console.log(stypes);
