@@ -14,7 +14,7 @@ function getColor(sprite) {
 }
 
 function scoreChange(sprite, partner, game, kwargs) {
-	game.score += kwargs.score;
+	game.score += kwargs.score || kwargs.value;
 
 	return ['scoreChange', sprite.ID || sprite, partner.ID || partner]
 }

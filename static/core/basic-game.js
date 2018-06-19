@@ -150,7 +150,7 @@ var BasicGame = function (gamejs, args) {
 	that._createSprite = function (keys, pos) {
 		var res = [];
 		keys.forEach(function (key) {
-			// console.log(key);
+
 			if (that.num_sprites > MAX_SPRITES) {
 				console.log('Sprite limit reached.');
 				return;
@@ -158,9 +158,6 @@ var BasicGame = function (gamejs, args) {
 			var [sclass, args, stypes] = that.sprite_constr[key];
 			var anyother = false;
 
-			// console.log(stypes);
-			// console.log(that.singletons)
-			// console.log(stypes);
 			stypes.reverse().forEach(pk => {
 				if (that.singletons.contains(pk)){
 					if (that.numSprites(pk) > 0) {
@@ -173,7 +170,7 @@ var BasicGame = function (gamejs, args) {
 			args.key = key;
 			var s = new sclass(gamejs, pos, [that.block_size, that.block_size], args);
 			s.stypes = stypes;
-			// console.log('adding', s, 'to', key);
+
 			if (that.sprite_groups[key])
 				that.sprite_groups[key].push(s);
 			else 
@@ -220,8 +217,6 @@ var BasicGame = function (gamejs, args) {
 
 		var deleted = that.kill_list.filter(function (s) {return s.stypes[key]}).length;
 		if (key in that.sprite_groups) {
-			// console.log(that._getAllSpriteGroups())
-			// console.log(deleted)
 			return that.sprite_groups[key].length-deleted;
 		}
 		else{
@@ -390,8 +385,6 @@ var BasicGame = function (gamejs, args) {
 	}
 
 	that._clearAll = function (onscreen = true) {
-		// console.log('not implemented');
-		// return ;
 
 		that.kill_list.forEach(function (s) {
 			that.all_killed.push(s);
@@ -400,7 +393,6 @@ var BasicGame = function (gamejs, args) {
 			}
 			// delete that.sprite_groups[s.name][s];
 			that.sprite_groups[s.name].remove(s);
-			// console.log(that.sprite_groups[s.name]);
 		});
 
 		if (onscreen)
@@ -478,7 +470,7 @@ var BasicGame = function (gamejs, args) {
 
 		that.collision_eff.forEach(function (eff) {
 			var [class1, class2, effect, kwargs] = eff;
-			// console.log(eff);	
+	
 			[class1, class2].forEach(function (sprite_class) {
 				if (!(sprite_class in lastcollisions)) {
 					var sprite_array = [];
@@ -488,11 +480,9 @@ var BasicGame = function (gamejs, args) {
 
 						var sprites_array = [];;
 						Object.keys(that.sprite_groups).forEach(key => {
-							// console.log('key', key);
 
 							var sprites = that.sprite_groups[key].slice();	
 							if (sprites.length && sprites[0].stypes.contains(sprite_class)) {
-								// console.log('concat', sprite_array.concat(sprites))
 								sprite_array = sprite_array.concat(sprites);
 							}
 							
@@ -554,13 +544,12 @@ var BasicGame = function (gamejs, args) {
 					return;
 				}
 
-				// console.log(ss);
 				var sprite_array1 = that.lastcollisions[class1];
 				var sprite_array2 = that.lastcollisions[class2];
 
+				
 
 				var score = 0;
-
 				if ('scoreChange' in kwargs) {
 					kwargs = Object.assign({}, kwargs);
 					kwargs.score = kwargs['scoreChange'];
@@ -574,11 +563,8 @@ var BasicGame = function (gamejs, args) {
 					delete kwargs['dim'];
 				}
 
-				// console.log(sprite_array2);
 				sprite_array1.forEach(sprite1 => {
 					var rects = sprite_array2.map(os => {return os.rect});
-					// if (sprite_array2.length)
-					// 	console.log(sprite1.name, sprite_array2[0].name);
 					if (sprite1.rect.collidelistall(rects) == -1) return ;
 					sprite1.rect.collidelistall(rects).forEach(function (ci) {
 						var sprite2 = sprite_array2[ci];
@@ -626,7 +612,6 @@ var BasicGame = function (gamejs, args) {
 
 									var e = effect(sprite1, sC, that, kwargs);
 								}
-								// console.log(e);
 								that.effectList.push(e);
 								return;
 							});
@@ -644,11 +629,9 @@ var BasicGame = function (gamejs, args) {
 							dead.push(sprite1)
 
 						} else if (effect.name == push_effect) {
-							// console.log('push effect happening')
 							var contained = false;
 							if (force_collisions.length) {
 								force_collisions.forEach(collision_set => {
-									// console.log(collision_set)
 									if (collision_set.contains(sprite2)) {
 										collision_set.push(sprite1)
 										contained = true;
@@ -682,10 +665,6 @@ var BasicGame = function (gamejs, args) {
 					});
 				});
 			});
-			// console.log(new_effects);
-
-			// update collisions
-			// console.log(new_effects);
 			that.effectList = that.effectList.concat(new_effects);
 			Object.keys(new_collisions).forEach(collision_sprite => {
 				if (collision_sprite in collisions)
@@ -694,13 +673,11 @@ var BasicGame = function (gamejs, args) {
 					collisions[collision_sprite] = new_collisions[collision_sprite]
 			})
 		}
-		// console.log(that.effectList);
 		return that.effectList;
 	}
 
 
 	that.run = function (on_game_end) {
-		// console.log(that.images)
 		if (that.images.length) {
 			that.images.forEach(image => {
 				gamejs.preload(that.images.map(image => {return image_dir + image}))
