@@ -69,6 +69,7 @@ var DB = require('./db.js')()
 // 	console.log('***\nUsing mock data base for testing. Changes will only be saved locally.\n')
 // }
 
+var show_score = true;
 var Experiment = require('./experiments/experiment.js');
 var experiments = {};
 var exp = 0;
@@ -125,10 +126,12 @@ var logged_in = {};
 // Login middleware
 // validates session id with user login.
 function require_login (req, res, next) {
-	if (req.session.logged_in) 
+	if (req.session.logged_in) {
 		next();
-	else
-		res.redirect('/admin/login');
+	}
+	else{
+		res.redirect('/admin/login/?path='+req.path);
+	}
 }
 
 
@@ -296,6 +299,7 @@ app.get('/play/:game_name/level/:level/desc/:desc', require_login, function (req
 		} else {
 			data.game_obj = game_obj;
 			data.game_obj.time = 60*10*1000
+			data.game_obj.show_score = show_score;
 			data.game_obj.data = {name: req.params.game_name, 
 								  number: 0,
 								  round: 0,
@@ -369,6 +373,7 @@ app.get('/games/:game_name/:pair', function (req, res, next) {
 			} else {
 				data.game_obj = game_obj;
 				data.game_obj.time = 60*10*1000
+				data.game_obj.show_score = show_score;
 				data.game_obj.data = {real: game_name,
 									  name: new_name, 
 									  desc: desc,
@@ -410,14 +415,18 @@ app.post('/admin/login', function (req, res) {
 		req.session.id = shortid.generate();
 		req.session.logged_in = true;
 		req.session.save();
-
 		res.redirect('/admin');
 	} else {
+
 		res.redirect('/admin/login');
 	}
 
 });
 
+// Database downloads
+app.get('/db', require_login, function (req, res) {
+	res.render('downloads');
+})
 
 
 // Sends the current game to be played for the given experiment id
@@ -455,6 +464,7 @@ app.get('/experiment/:exp_id', validate_exp, function (req, res, next) {
 				data.game_obj.round = current_game.round;
 				data.game_obj.data = Experiment.get_data(current_exp);
 				data.game_obj.time = current_game.time;
+				data.game_obj.show_score = Experiment.show_score;
 				res.render('game', data);
 			}
 		});
@@ -539,7 +549,7 @@ app.put('/experiment/:exp_id', validate_exp, function (req, res) {
 		data.time = req.body.time;
 		console.log('posting experiment')
 		// console.log('processing request')
-		// DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
+		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
 	}
 	res.send({success: true})
 })

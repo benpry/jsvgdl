@@ -1,6 +1,8 @@
 var DB = function () {
 	var that = Object.create(DB.prototype);
 	var pg = require('pg');
+	var query_striem = require('pg-query-stream');
+	var json_stream = require('JSONStream');
 	var errors = [];
 	// console.log(process.env)
 

@@ -530,10 +530,9 @@ Rect.prototype.collidePoint = function() {
  * @param {gamejs.Rect} rect the Rect to test check for collision
  * @returns {Boolean} true if the given Rect collides with this Rect
  */
-Rect.prototype.collideRect = function(rect) {
-   console.log('collideRect', this, rect);
-   return (this.left <= rect.right || this.right >= rect.left ||
-      this.top <= rect.bottom || this.bottom >= rect.top);
+Rect.prototype.collideRect = function(rect) {   
+   return (this.left < rect.right && this.right > rect.left &&
+      this.top < rect.bottom && this.bottom > rect.top);
 };
 
 /**

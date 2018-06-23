@@ -11,6 +11,13 @@ h1 {
     margin: .5em 0em 0em 0em;
 }
 
+h2 {
+    font-size: 24pt;
+    font-weight: normal;
+    padding: 0;
+    margin: .5em 0em 0em 0em;
+}
+
 input {
     margin: 20px;
 }

@@ -33,6 +33,7 @@ SpriteCounter.prototype = Object.create(Termination.prototype);
 
 SpriteCounter.prototype.isDone = function (game) {
 	if (game.numSprites(this.stype) <= this.limit) {
+		console.log(this.stype);
 		return [true, this.win];
 	}
 	else
@@ -55,7 +56,8 @@ MultiSpriteCounter.prototype.isDone = function (game) {
 			return game.numSprites(st)
 		}).reduce((s, n) => {
 			return s+n
-		}, 0) <= this.limit) {
+		}, 0) == this.limit) {
+		console.log(this.stypes);
 		return [true, this.win];
 	}
 	else {

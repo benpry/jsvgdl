@@ -9,8 +9,6 @@ var json_parser = function () {
 	var frame_init = 0;
 	var index = 0;
 	this.post_partial = async function (exp_id, game, data, callback) {
-		callback({success: true});
-		return;
 		if (exp_id == '0') return;
 		var frame_last = game.time;
 		var partial = JSON.stringify(game.gameStates.slice(frame_init, frame_last));
@@ -56,7 +54,6 @@ var next_experiment = function (exp_id, callback) {
 			}
 		}
 	})
-	// post_experiment(exp_id, game, parser, data, 'next', callback);
 }
 
 var retry_experiment = function (exp_id, callback) {
@@ -208,6 +205,11 @@ $(document).ready(function () {
 	var forfeit_delay = 1000*data.forfeit_delay-data.time;
 	var ended = false;
 
+	if (show_score) {
+		var score_container = $('<h2 id="score">Score: <span id="score-value">0</span></h2>');
+		$('#game-body').prepend(score_container)
+	}
+
 	var on_game_end = function () {
 		// clearInterval(interval);
 		game.paused = true;
@@ -248,14 +250,14 @@ $(document).ready(function () {
 
 	var begin_game = function () {
 		console.log('starting game')
-		// parser = new json_parser();
-		// interval = window.setInterval(function(){
-		// 	if (exp_id != '0') {
-		// 		parser.post_partial(exp_id, game, data)
-		// 	} else {
-		// 		return;
-		// 	}
-		// }, 2500);
+		parser = new json_parser();
+		interval = window.setInterval(function(){
+			if (exp_id != '0') {
+				parser.post_partial(exp_id, game, data)
+			} else {
+				return;
+			}
+		}, 2500);
 
 		$('#start-div').remove();
 		game.paused = false;

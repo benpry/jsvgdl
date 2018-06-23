@@ -47,7 +47,9 @@ var randint = function (r, m, s) {
 // seconds
 var retry_default = 30;
 var forfeit_default = 4*60;
-// [name, [[desc_num, level_num], ]]
+var num_per_participant = 10;
+var show_score = true;
+// [name, [[desc_num, level_num], ], random_flag, help_string, retry_delay, forfeit_delay]
 
 // var experiments = [
 //     ['expt_push_boulders',
@@ -70,12 +72,87 @@ var forfeit_default = 4*60;
 //         '', retry_default, forfeit_default],
 //     ['gvgai_portals',
 //         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-//         '', retry_default, forfeit_default],
+//         '', retry_default, forfeit_default]
 // ]
 
 var experiments = [
-    ['expt_antogonist',
-        [[0, 0], [0, 1], [0, 2], [0, 3]], false,
+    //['gvgai_clusters',
+    //    [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+    //    '', 20, forfeit_default],
+    ['gvgai_angelsdemons',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_avoidgeorge',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_bait',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_boulderchase',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_camelRace',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_chopper',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_clusters',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_cookmepasta',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_infection',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_jaws',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_lemmings',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_modality',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_watergame',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_myAliens',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_overload',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_plants',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_plaqueattack',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_shipwreck',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_superman',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_tercio',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_thesnowman',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_watergame',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_waves',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_wildgunman',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
+        '', 20, forfeit_default],
+    ['gvgai_sokoban',
+        [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
         '', 20, forfeit_default],
     ['gvgai_sokoban',
         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
@@ -147,11 +224,11 @@ var experiments = [
 var overtime_limit = 25*60*1000;
 
 var get_exp = function (randomize) {
-    if (randomize) {
-        return shuffle(experiments);
-    } else {
-        return experiments
-    }
+    //if (randomize) {
+    return shuffle(experiments).slice(0, num_per_participant);
+    //} else {
+    //    return experiments.slice(0, num_per_participant);
+    //}
 }
 
 // console.log(get_exp());
@@ -168,7 +245,7 @@ var get_exp = function (randomize) {
 
 // An object that updates what game its on
 // by calling next
-var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[], randomize_color=false) {
+var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[], randomize_color=false, show_score=true) {
 
 
     if (exp_name == undefined) {
@@ -227,6 +304,7 @@ var Experiment = function (exp_name, cookie, randomize_exp=false, static_exps=[]
     experiment.overtime_check = true;
     experiment.ended = false;
     experiment.continued = false;
+    experiment.show_score = show_score;
 
     return experiment
 
@@ -368,5 +446,7 @@ Experiment.timeout = function (experiment) {
 }
 
 Experiment.experiments = experiments;
+
+Experiment.show_score = show_score;
 
 module.exports = Experiment;

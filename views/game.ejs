@@ -41,6 +41,8 @@
         data.retry_delay = <%=game_obj.data.retry_delay%>
         data.forfeit_delay = <%=game_obj.data.forfeit_delay%>
         data.time = <%=game_obj.data.time%>
+
+        var show_score = <%=game_obj.show_score%>
         var time = <%=game_obj.time%>
 
         var color_scheme = <%=game_obj.data.color_scheme%>
@@ -52,12 +54,12 @@
 </head>
 <body>
     <div class="Flex-Container">
-        <div id='header'>
-          <h1 id="title">Game: <%=game_obj.name%> - Level: <%=game_obj.level_num%></h1>
-        </div> 
+        <div id='header' class="Flex-Container">
+            <h1 id="title">Game: <%=game_obj.name%> - Level: <%=game_obj.level_num%></h1>
+        </div>
         <div id='message'>
         </div>
-        <div>
+        <div id='game-body' class='Flex-Container'>
             <div id="gjs-loader">
              <progress max=1 min=0 steps=0.1></progress>
              <br/>Loading...
