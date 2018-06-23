@@ -463,11 +463,12 @@ var BasicGame = function (gamejs, args) {
 			that.ended = ended;
 			if (that.ended) {
 				if (win) {
-					if (that.score <= 0)
-						that.score = 1;
+					//if (that.score <= 0)
+					that.score += 1;
 
 					that.win = true;
 				} else {
+					that.score -= 1;
 					that.win = false;
 				}
 				break_loop = true;
