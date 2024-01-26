@@ -50,30 +50,6 @@ var num_per_participant = 10;
 var show_score = true;
 // [name, [[desc_num, level_num], ], random_flag, help_string, retry_delay, forfeit_delay]
 
-// var experiments = [
-//     ['expt_push_boulders',
-//         [[0, 0], [0, 1], [0, 2], [0, 3]], false,
-//         '', retry_default, forfeit_default],
-//     ['expt_relational',
-//         [[0, 0], [0, 1], [0, 2], [1, 3]], false,
-//         '', retry_default, forfeit_default],
-//     ['expt_preconditions',
-//         [[0, 0], [0, 1], [0, 2], [0, 3]], false,
-//         '', retry_default, forfeit_default],
-//     ['expt_antagonist',
-//         [[0, 0], [0, 1], [0, 2], [0, 3]], false,
-//         '', retry_default, forfeit_default],
-//     ['gvgai_boulderdash',
-//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-//         'On this game you can also use the spacebar.', 45, 6*60],
-//     ['gvgai_butterflies',
-//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-//         '', retry_default, forfeit_default],
-//     ['gvgai_portals',
-//         [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
-//         '', retry_default, forfeit_default]
-// ]
-
 var experiments = [
   //['gvgai_clusters',
   //    [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], false,
@@ -88,41 +64,6 @@ var experiments = [
   ["JRNL_relational_v1", [[0, 0]], false, "", 20, forfeit_default],
   ["JRNL_watergame_v1", [[0, 0]], false, "", 20, forfeit_default],
 ];
-// var experiments = [
-
-//     ['gvgai_sokoban',
-//         [[0, 0]], false,
-//         '', retry_default, forfeit_default],
-//     ['gvgai_butterflies',
-//         [[0, 0]], false,
-//         '', retry_default, forfeit_default],
-//     ['gvgai_aliens',
-//         [[0, 0]], false,
-//         'On this game you can also use the spacebar.', retry_default, forfeit_default], // never gets shown
-//     ['gvgai_chase',
-//         [[0, 0]], false,
-//         '', retry_default, forfeit_default],
-//     ['gvgai_frogs',
-//         [[0, 0]], false,
-//         '', retry_default, 3],
-//     ['gvgai_missilecommand',
-//         [[0, 0]], false,
-//         'On this game you can also use the spacebar.', retry_default, forfeit_default],
-//     ['gvgai_portals',
-//         [[0, 0]], false,
-//         '', retry_default, forfeit_default],
-//     ['gvgai_zelda',
-//         [[0, 0]], false,
-//         'On this game you can also use the spacebar.', retry_default, forfeit_default],
-//     ['gvgai_boulderdash',
-//         [[0, 0]], false,
-//         'On this game you can also use the spacebar.', retry_default, forfeit_default],
-//     ['gvgai_survivezombies',
-//         [[0, 0]], false,
-//         '', retry_default, forfeit_default]
-// ]
-//
-// var experiments = experiments_normal.concat(experiments_hard);
 
 var overtime_limit = 25 * 60 * 1000;
 
