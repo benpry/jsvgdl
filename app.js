@@ -459,6 +459,31 @@ app.get("/experiment/:exp_id", validate_exp, function (req, res, next) {
 		res.render("overtime", { exp_id: data.exp_id });
 	} else if (Experiment.mid_point(current_exp)) {
 		res.render("midpoint", { text: Experiment.midpoint_text(current_exp) });
+	} else if (Experiment.description_phase(current_exp)) {
+		var current_game = Experiment.current_game(current_exp);
+		game_schema.get_game(
+			current_game.name,
+			current_game.level,
+			current_game.desc,
+			function (err, game_obj) {
+				if (err) {
+					console.log(err);
+					next();
+				} else {
+					data.game_obj = game_obj;
+					data.game_obj.name = current_exp.current_game_number;
+					data.game_obj.level_num = current_game.level + 1;
+					data.game_obj.round = current_game.round;
+					data.game_obj.color_scheme = current_game.color_scheme;
+					data.continue_fn = function () {
+						console.log("in continue fn");
+						Experiment.next(current_exp);
+					};
+
+					res.render(`write_description`, data);
+				}
+			},
+		);
 	} else {
 		var current_game = Experiment.current_game(current_exp);
 		// console.log('current_game', current_game)
@@ -559,7 +584,7 @@ app.put("/experiment/:exp_id", validate_exp, function (req, res) {
 		data.time = req.body.time;
 		console.log("posting experiment");
 		// console.log('processing request')
-		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data);
+		//DB.post_experiment(exp_id, val_id, time_stamp, game_states, data);
 	}
 	res.send({ success: true });
 });

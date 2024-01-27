@@ -1,38 +1,72 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
 // Sends the current game to be played for the given experiment id
-router.get('/:exp_id', function (req, res, next) {	
+router.get("/:exp_id", function (req, res, next) {
 	var data = {};
 	data.exp_id = req.params.exp_id;
 	var current_exp = experiments[data.exp_id];
-	
-	if (!(current_exp)) {
+
+	if (!current_exp) {
 		next();
 	} else if (current_exp.started()) {
-		res.render('start')
+		res.render("start");
 	} else if (current_exp.is_done()) {
-		res.render('thank_you', {val_id: req.session.val_id});
+		res.render("thank_you", { val_id: req.session.val_id });
 		delete experiments[data.exp_id];
 	} else if (current_exp.overtime_continued()) {
-		res.render('overtime_cont', {games: current_exp.remaining_games(), exp_id: data.exp_id});
+		res.render("overtime_cont", {
+			games: current_exp.remaining_games(),
+			exp_id: data.exp_id,
+		});
 	} else if (current_exp.overtime()) {
-		res.render('overtime', {exp_id: data.exp_id});
+		res.render("overtime", { exp_id: data.exp_id });
 	} else if (current_exp.mid_point()) {
-		res.render('midpoint', {text: current_exp.midpoint_text()})
+		res.render("midpoint", { text: current_exp.midpoint_text() });
+	} else if (current_exp.description_phase()) {
+		// Load previous game state to display during message writing
+		game_schema.get_game(
+			current_game.name,
+			current_game.level,
+			current_game.desc,
+			function (err, game_obj) {
+				if (err) {
+					console.log(err);
+					next();
+				} else {
+					data.game_obj = game_obj;
+					data.game_obj.name = current_exp.current_game_number;
+					data.game_obj.level_num = current_game.level + 1;
+					data.game_obj.round = current_game.round;
+					data.game_obj.color_scheme = current_game.color_scheme;
+					data.messages =
+						current_exp.received_messages[
+							current_exp.received_messages.length - 1
+						];
+					data.generation = generation;
+					data.condition = condition;
+					data.is_practice = is_practice;
+
+					res.render(`write_description`, data);
+				}
+			},
+		);
 	} else {
 		current_game = current_exp.current_game();
-		data.game_obj = DB.get_game(current_game.name, current_game.level, current_game.desc);
-		var round = current_exp.current_round()
+		data.game_obj = DB.get_game(
+			current_game.name,
+			current_game.level,
+			current_game.desc,
+		);
+		var round = current_exp.current_round();
 		data.game_obj.name = round.number;
-		data.game_obj.level_num = current_game.level + 1
+		data.game_obj.level_num = current_game.level + 1;
 		data.game_obj.round = round.round;
 		data.game_obj.data = current_exp.get_data();
 		data.game_obj.time = current_game.time;
-		res.render('game', data);
+		res.render("game", data);
 	}
-
-})
+});
 
 // // Updates the experiment to play the next game in the experiment
 // router.post('/:exp_id/next', function (req, res) {
@@ -42,7 +76,6 @@ router.get('/:exp_id', function (req, res, next) {
 // // Updates the experiment to retry the game in the experiment
 // router.post('/:exp_id/retry', function (req, res) {
 
-		
 // })
 
 // Actually uploads the data the the BD
@@ -71,31 +104,31 @@ router.get('/:exp_id', function (req, res, next) {
 // 	res.send({success: true})
 // })
 
-router.post('/:exp_id/next', function (req, res) {
+router.post("/:exp_id/next", function (req, res) {
 	var current_exp = experiments[req.params.exp_id];
-	current_exp.next()
-	res.send({success: true})
-})
+	current_exp.next();
+	res.send({ success: true });
+});
 
-router.post('/:exp_id/retry', function (req, res) {
+router.post("/:exp_id/retry", function (req, res) {
 	var current_exp = experiments[req.params.exp_id];
 	current_exp.retry();
-	res.send({success: true})
-})
+	res.send({ success: true });
+});
 
-router.post('/:exp_id/forfeit', function (req, res) {
+router.post("/:exp_id/forfeit", function (req, res) {
 	var current_exp = experiments[req.params.exp_id];
 	current_exp.forfeit();
-	res.send({success: true});
-})
+	res.send({ success: true });
+});
 
-router.post('/:exp_id/end', function (req, res) {
+router.post("/:exp_id/end", function (req, res) {
 	var current_exp = experiments[req.params.exp_id];
 	current_exp.end();
-	res.send({success: true});
-})
+	res.send({ success: true });
+});
 
-router.put('/:exp_id', function (req, res) {
+router.put("/:exp_id", function (req, res) {
 	if (req.params.exp_id != 0) {
 		var exp_id = req.params.exp_id;
 		var val_id = req.session.val_id;
@@ -109,9 +142,9 @@ router.put('/:exp_id', function (req, res) {
 		data.frames = req.body.frames;
 		data.time = req.body.time;
 		// console.log('processing request')
-		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data)
+		DB.post_experiment(exp_id, val_id, time_stamp, game_states, data);
 	}
-	res.send({success: true})
-})
+	res.send({ success: true });
+});
 
 module.exports = router;

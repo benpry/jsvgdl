@@ -141,6 +141,7 @@ var Experiment = function (
     });
   });
 
+  experiment.state = "game";
   experiment.started = true;
   experiment.current_trial = 0;
   experiment.current_game_number = 1;
@@ -235,8 +236,20 @@ Experiment.mid_point = function (experiment) {
 };
 
 Experiment.next = function (experiment) {
+  console.log("next experiment");
   Experiment.update_timeout(experiment);
-  experiment.current_trial += 1;
+  console.log("game state", experiment.state);
+  if (experiment.state == "game") {
+    experiment.state = "write_description";
+  } else if (experiment.state == "write_description") {
+    experiment.state = "game";
+    experiment.current_trial += 1;
+  }
+};
+
+Experiment.description_phase = function (experiment) {
+  if (experiment.state == "write_description") return true;
+  return false;
 };
 
 Experiment.is_done = function (experiment) {
